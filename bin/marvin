@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+# Copyright [2017] [B2W Digital]
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from __future__ import print_function
+
+import sys
+import os.path
+
+from marvin_python_toolbox.config import find_inidir, parse_ini
+from marvin_python_toolbox.management import create_cli
+
+# Find the ini directory
+inifilename = 'marvin.ini'
+inidir = find_inidir(inifilename)
+if not inidir:
+    print("ERROR: marvinini file '{}' not found".format(inifilename))
+    sys.exit(1)
+
+# Load the ini file
+inipath = os.path.join(inidir, inifilename)
+config_defaults = {
+    'inidir': inidir,
+    'marvin_packagedir': '{inidir}/{marvin_package}',
+}
+config = parse_ini(inipath, config_defaults)
+
+package_name = config['marvin_package']
+package_path = config['marvin_packagedir']
+
+type_ = config.get('marvin_type', None)
+
+exclude_commands = config.get('marvin_exclude', None)
+
+cli = create_cli(package_name, package_path, type_=type_,
+                 exclude=exclude_commands, config=config)
+
+cli()
+

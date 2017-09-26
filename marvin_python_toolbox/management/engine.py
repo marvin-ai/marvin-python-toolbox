@@ -1,0 +1,517 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+# Copyright [2017] [B2W Digital]
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from __future__ import print_function
+
+import click
+import json
+import os
+import sys
+import time
+import os.path
+import re
+import shutil
+import subprocess
+import jinja2
+import six
+from unidecode import unidecode
+
+
+@click.group('engine')
+def cli():
+    pass
+
+
+@cli.command('engine-dryrun', help='Marvin Dryrun Utility - Run marvin engines in a stadalone way')
+@click.option(
+    '--action',
+    '-a',
+    default='all',
+    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor']),
+    help='Marvin engine action name')
+@click.option('--initial-dataset', '-id', help='Initial dataset file path', type=click.Path(exists=True))
+@click.option('--dataset', '-d', help='Dataset file path', type=click.Path(exists=True))
+@click.option('--model', '-m', help='Engine model file path', type=click.Path(exists=True))
+@click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
+@click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
+@click.option('--messages-file', '-mf', default='engine.messages', help='Marvin engine predictor input messages file path', type=click.Path(exists=True))
+@click.option('--response', '-r', default=False, is_flag=True, help='If enable, print responses from engine online actions (ppreparator and predictor)')
+@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.pass_context
+def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, model, metrics, response, spark_conf):
+
+    print(chr(27) + "[2J")
+
+    initial_start_time = time.time()
+
+    # setting spark configuration directory
+    os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
+
+    params = read_file(params_file)
+    messages = read_file(messages_file)
+
+    if action in ['all', 'ppreparator', 'predictor'] and not messages:
+        print('Please, set the input message to be used by the dry run process. Use --input_message flag to informe in a json valid form.')
+        sys.exit("Stoping process!")
+
+    if action == 'all':
+        pipeline = ['acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor']
+    else:
+        pipeline = [action]
+
+    dryrun = MarvinDryRun(ctx=ctx, messages=messages, print_response=response)
+
+    for step in pipeline:
+        dryrun.execute(clazz=CLAZZES[step], params=params, initial_dataset=initial_dataset, dataset=dataset, model=model, metrics=metrics)
+
+    print("Total Time : {:.2f}s".format(time.time() - initial_start_time))
+
+    print("\n")
+
+
+CLAZZES = {
+    "acquisitor": "AcquisitorAndCleaner",
+    "tpreparator": "TrainingPreparator",
+    "trainer": "Trainer",
+    "evaluator": "MetricsEvaluator",
+    "ppreparator": "PredictionPreparator",
+    "predictor": "Predictor"
+}
+
+
+class MarvinDryRun(object):
+    def __init__(self, ctx, messages, print_response):
+        self.messages = messages
+        self.pmessages = []
+        self.package_name = ctx.obj['package_name']
+        self.kwargs = None
+        self.print_response = print_response
+
+    def execute(self, clazz, params, initial_dataset, dataset, model, metrics):
+        self.print_start_step(clazz)
+
+        _Step = dynamic_import("{}.{}".format(self.package_name, clazz))
+
+        if not self.kwargs:
+            self.kwargs = generate_kwargs(_Step, params, initial_dataset, dataset, model, metrics)
+
+        step = _Step(**self.kwargs)
+
+        def call_online_actions(step, msg, msg_idx):
+            def print_message(result):
+                try:
+                    print(json.dumps(result, indent=4, sort_keys=True))
+                except TypeError:
+                    print("Unable to serialize the object returned!")
+
+            if self.print_response:
+                    print("\nMessage {} :\n".format(msg_idx))
+                    print_message(msg)
+
+            result = step.execute(input_message=msg)
+
+            if self.print_response:
+                print("\nResult for Message {} :\n".format(msg_idx))
+                print_message(result)
+
+            return result
+
+        if clazz == 'PredictionPreparator':
+            for idx, msg in enumerate(self.messages):
+                self.pmessages.append(call_online_actions(step, msg, idx))
+
+        elif clazz == 'Predictor':
+
+            self.execute("PredictionPreparator", params, initial_dataset, dataset, model, metrics)
+
+            self.pmessages = self.messages if not self.pmessages else self.pmessages
+
+            for idx, msg in enumerate(self.pmessages):
+                call_online_actions(step, msg, idx)
+
+        else:
+            step.execute()
+
+        self.print_finish_step()
+
+    def print_finish_step(self):
+        print("\n                                               STEP TAKES {:.4f} (seconds) ".format((time.time() - self.start_time)))
+
+    def print_start_step(self, name):
+        print("\n------------------------------------------------------------------------------")
+        print("MARVIN DRYRUN - STEP [{}]".format(name))
+        print("------------------------------------------------------------------------------\n")
+        self.start_time = time.time()
+
+
+def dynamic_import(clazz):
+    components = clazz.split('.')
+    mod = __import__(components[0])
+    for comp in components[1:]:
+        mod = getattr(mod, comp)
+    return mod
+
+
+def read_file(filename):
+    fname = os.path.join("", filename)
+    if os.path.exists(fname):
+
+        print("Engine file {} loaded!".format(filename))
+
+        with open(fname, 'r') as fp:
+            return json.load(fp)
+    else:
+        print("Engine file {} doesn't exists...".format(filename))
+        return {}
+
+
+def generate_kwargs(clazz, params=None, initial_dataset=None, dataset=None, model=None, metrics=None):
+    kwargs = {}
+
+    if params:
+        kwargs["params"] = params
+    if dataset:
+        kwargs["dataset"] = clazz.retrieve_obj(dataset)
+    if initial_dataset:
+        kwargs["initial_dataset"] = clazz.retrieve_obj(initial_dataset)
+    if model:
+        kwargs["model"] = clazz.retrieve_obj(model)
+    if metrics:
+        kwargs["metrics"] = clazz.retrieve_obj(metrics)
+
+    kwargs["persistence_mode"] = 'local'
+    kwargs["default_root_path"] = '/vagrant/projects/.marvin'
+    kwargs["is_remote_calling"] = True
+
+    return kwargs
+
+
+class MarvinEngineServer(object):
+    @classmethod
+    def create(self, ctx, action, port, workers, params, initial_dataset, dataset, model, metrics, pipeline):
+        package_name = ctx.obj['package_name']
+
+        def create_object(act):
+            clazz = CLAZZES[act]
+            _Action = dynamic_import("{}.{}".format(package_name, clazz))
+            kwargs = generate_kwargs(_Action, params, initial_dataset, dataset, model, metrics)
+            return _Action(**kwargs)
+
+        root_obj = create_object(action)
+        previous_object = root_obj
+
+        if pipeline:
+            for step in list(reversed(pipeline)):
+                previous_object._previous_step = create_object(step)
+                previous_object = previous_object._previous_step
+
+        server = root_obj._prepare_remote_server(port=port, workers=workers)
+
+        print("Starting GRPC server [{}] for {} Action".format(port, action))
+        server.start()
+
+        return server
+
+
+@cli.command('engine-server', help='Marvin gRPC engine action server Start thats run an marvin engines in a server way')
+@click.option(
+    '--action',
+    '-a',
+    default='all',
+    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor']),
+    help='Marvin engine action name')
+@click.option('--initial-dataset', '-id', help='Initial dataset file path', type=click.Path(exists=True))
+@click.option('--dataset', '-d', help='Dataset file path', type=click.Path(exists=True))
+@click.option('--model', '-m', help='Engine model file path', type=click.Path(exists=True))
+@click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
+@click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
+@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.pass_context
+def engine_server(ctx, action, params_file, initial_dataset, dataset, model, metrics, spark_conf):
+
+    print("Starting server ...")
+
+    # setting spark configuration directory
+    os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
+
+    params = read_file(params_file)
+
+    default_actions = {
+        'acquisitor': {'pipeline': [], 'port': 50051},
+        'tpreparator': {'pipeline': [], 'port': 50052},
+        'trainer': {'pipeline': [], 'port': 50053},
+        'evaluator': {'pipeline': ['tpreparator', 'trainer'], 'port': 50054},
+        'predictor': {'pipeline': ['ppreparator'], 'port': 50055}
+    }
+
+    if action == 'all':
+        action = default_actions
+    else:
+        action = {action: default_actions[action]}
+
+    servers = []
+    for action_name in action.keys():
+        # initializing server configuration
+        engine_server = MarvinEngineServer.create(
+            ctx=ctx,
+            action=action_name,
+            port=action[action_name]["port"],
+            workers=10,
+            params=params,
+            initial_dataset=initial_dataset,
+            dataset=dataset,
+            model=model,
+            metrics=metrics,
+            pipeline=action[action_name]["pipeline"]
+        )
+
+        servers.append(engine_server)
+
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("Terminating server ...")
+        for server in servers:
+            server.stop(0)
+
+
+TEMPLATE_BASES = {
+    'python-engine': os.path.join(os.path.dirname(__file__), 'templates', 'python-engine')
+}
+
+RENAME_DIRS = [
+    ('project_package', '{{project.package}}'),
+]
+
+IGNORE_DIRS = [
+    # Ignore service internal templates
+    'templates'
+]
+
+
+_orig_type = type
+
+
+@cli.command('engine-generateenv', help='Generate a new marvin engine environment and install default requirements.')
+@click.option('--no-link', is_flag=True, default=False, help='Don\'t create symlink')
+@click.argument('engine-path', type=click.Path(exists=True))
+def generate_env(no_link, engine_path):
+    dest = engine_path
+    dir_ = os.path.basename(os.path.abspath(engine_path))
+
+    if not no_link:
+        symlink_dest = os.path.join(os.path.expanduser('~'), dir_)
+        _create_symlinks(dest, symlink_dest)
+    else:
+        symlink_dest = dest
+
+    venv_name = _create_virtual_env(dir_, symlink_dest)
+
+    print('\nDone!!!!')
+    print('Now to workon in the new engine project use: workon {}'.format(venv_name))
+
+
+@cli.command('engine-generate', help='Generate a new marvin engine project and install default requirements.')
+@click.option('--type', '-t', prompt='Project type', default='python-engine', help='Lib type')
+@click.option('--name', '-n', prompt='Project name', help='Project name')
+@click.option('--description', '-d', prompt='Short description', default='Marvin engine', help='Library short description')
+@click.option('--mantainer', '-m', prompt='Mantainer name', default='B2W Labs Team', help='Mantainer name')
+@click.option('--email', '-e', prompt='Mantainer email', default='@b2wdigital.com', help='Mantainer email')
+@click.option('--package', '-p', default='', help='Package name')
+@click.option('--dest', '-d', default='/vagrant/projects', type=click.Path(exists=True), help='Root folder path for the creation')
+@click.option('--no-link', is_flag=True, default=False, help='Don\'t create symlink')
+@click.option('--no-env', is_flag=True, default=False, help='Don\'t create the virtual enviroment')
+@click.option('--no-git', is_flag=True, default=False, help='Don\'t initialize the git repository')
+def generate(type, name, description, mantainer, email, package, dest, no_link, no_env, no_git):
+    type_ = type.strip()
+    type = _orig_type
+
+    # Process package name
+
+    package = _slugify(package or name)
+
+    # Make sure package name starts with "marvin"
+    if not package.startswith('marvin'):
+        package = 'marvin_{}'.format(package)
+
+    # Remove "lib" prefix from package name
+    if type_ == 'lib' and package.endswith('lib'):
+        package = package[:-3]
+    # Custom strip to remove underscores
+    package = package.strip('_')
+
+    # Append project type to services
+
+    if type_ == 'python-engine' and not package.endswith('engine'):
+        package = '{}_engine'.format(package)
+
+    # Process directory/virtualenv name
+
+    # Directory name should use '-' instead of '_'
+    dir_ = package.replace('_', '-')
+
+    # Remove "marvin" prefix from directory
+    if dir_.startswith('marvin'):
+        dir_ = dir_[6:]
+    dir_ = dir_.strip('-')
+
+    # Append "lib" to directory name if creating a lib
+    if type_ == 'lib' and not dir_.endswith('lib'):
+        dir_ = '{}-lib'.format(dir_)
+
+    dest = os.path.join(dest, dir_)
+
+    if type_ not in TEMPLATE_BASES:
+        print('[ERROR] Could not found template files for "{type}".'.format(type=type_))
+        sys.exit(1)
+
+    project = {
+        'name': name,
+        'description': description,
+        'package': package,
+        'type': type_,
+    }
+
+    mantainer = {
+        'name': mantainer,
+        'email': email,
+    }
+
+    context = {
+        'project': project,
+        'mantainer': mantainer,
+    }
+
+    _copy_scaffold_structure(TEMPLATE_BASES[type_], dest)
+    _copy_processed_files(TEMPLATE_BASES[type_], dest, context)
+    _rename_dirs(dest, RENAME_DIRS, context)
+
+    if not no_link:
+        symlink_dest = os.path.join(os.path.expanduser('~'), package.replace('_', '-'))
+        _create_symlinks(dest, symlink_dest)
+    else:
+        symlink_dest = dest
+
+    venv_name = None
+    if not no_env:
+        venv_name = _create_virtual_env(dir_, symlink_dest)
+
+    if not no_git:
+        _call_git_init(dest)
+
+    print('\nDone!!!!')
+
+    if not no_env:
+        print('Now to workon in the new engine project use: workon {}'.format(venv_name))
+
+
+_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+
+
+def _slugify(text, delim='_'):
+    result = []
+    for word in _punct_re.split(text.lower()):
+        result.extend(unidecode(word).split())
+    return six.u(delim.join(result))
+
+
+def _copy_scaffold_structure(src, dest):
+    os.mkdir(dest)
+
+    for root, dirs, files in os.walk(src):
+        for dir_ in dirs:
+            dirname = os.path.join(root, dir_)
+            dirname = '{dest}{dirname}'.format(dest=dest, dirname=dirname.replace(src, ''))  # get dirname without source path
+
+            os.mkdir(dirname)
+
+
+def _copy_processed_files(src, dest, context):
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(src))
+
+    print('Processing template files...')
+
+    for root, dirs, files in os.walk(src):
+
+        dirname = root.replace(src, '')[1:]  # get dirname without source path
+        to_dirname = os.path.join(dest, dirname)
+
+        should_process = not any(root.startswith(dir_) for dir_ in IGNORE_DIRS)
+
+        for file in files:
+
+            # Ignore trash
+            if file == '.DS_Store':
+                continue
+
+            from_ = os.path.join(dirname, file)
+            to_ = os.path.join(to_dirname, file)
+
+            print('Copying "{0}" to "{1}"...'.format(from_, to_))
+
+            if not should_process:
+                shutil.copy(os.path.join(src, from_), to_)
+            else:
+                template = env.get_template(from_)
+                output = template.render(**context)
+
+                with open(to_, 'w') as file:
+                    file.write(output)
+
+
+def _rename_dirs(base, dirs, context):
+    for dir_ in dirs:
+        dirname, template = dir_
+        oldname = os.path.join(base, dirname)
+
+        processed = jinja2.Template(template).render(**context)
+        newname = os.path.join(base, processed)
+
+        shutil.move(oldname, newname)
+
+        print('Renaming {0} as {1}'.format(oldname, newname))
+
+
+def _create_virtual_env(name, symlink_dest):
+    venv_name = '{}-env'.format(name).replace('_', '-')
+    print('Creating virtualenv: {0}...'.format(venv_name))
+    command = ['bash', '-c', '. /usr/local/bin/virtualenvwrapper.sh; mkvirtualenv -a {1} -r {1}/requirements.txt {0}'.format(venv_name, symlink_dest)]
+
+    try:
+        subprocess.Popen(command, env=os.environ).wait()
+    except OSError:
+        print('WARNING: Could not create the virtualenv!')
+
+    return venv_name
+
+
+def _create_symlinks(dest, symlink_dest):
+    print('Creating symlink: {0} {1}...'.format(dest, symlink_dest))
+    try:
+        os.symlink(dest, symlink_dest)
+    except OSError:
+        print('WARNING: Could not create the symlink!')
+
+
+def _call_git_init(dest):
+    command = ['bash', '-c', '/usr/bin/git init {0}'.format(dest)]
+    print('Initializing git repository...')
+    try:
+        subprocess.Popen(command, env=os.environ).wait()
+    except OSError:
+        print('WARNING: Could not initialize repository!')

@@ -1,0 +1,8 @@
+_marvin_completion() {
+    COMPREPLY=( $( env COMP_WORDS="${COMP_WORDS[*]}" \
+                   COMP_CWORD=$COMP_CWORD \
+                   _MARVIN_COMPLETE=complete $1 ) )
+    return 0
+}
+
+complete -F _marvin_completion -o default marvin;

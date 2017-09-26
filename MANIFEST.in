@@ -1,0 +1,12 @@
+include CHANGES.md
+include INSTALL
+include LICENSE
+include MANIFEST.in
+include README.md
+include marvin_python_toolbox/VERSION
+recursive-include marvin_python_toolbox/extras *
+recursive-include notebooks *
+recursive-include tests *
+global-exclude __pycache__
+global-exclude *.py[co]
+prune notebooks/build

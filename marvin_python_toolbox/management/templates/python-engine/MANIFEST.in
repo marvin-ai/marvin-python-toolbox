@@ -1,0 +1,9 @@
+include CHANGES.md
+include INSTALL
+include LICENSE
+include MANIFEST.in
+include README.md
+include {{project.package}}/VERSION
+recursive-include notebooks *
+prune notebooks/build
+recursive-include tests *

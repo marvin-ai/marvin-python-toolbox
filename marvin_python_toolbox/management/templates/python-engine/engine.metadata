@@ -1,0 +1,46 @@
+{
+	"name": "{{project.name}}",
+	"version": "v0.0.1",
+	"engineType": "python",
+	"artifactsLocalPath": "/vagrant/projects/.marvin",
+	"artifactsRemotePath": "/tmp/marvin",
+	"onlineActionTimeout": 1,
+	"reloadTimeout": 120,
+	"hdfsHost": "hdfs://marvin-hadoop:8020",
+	"actions": [{
+		"name": "acquisitor",
+		"actionType": "batch",
+		"port": 50051,
+		"host": "localhost",
+		"artifactsToPersist": ["initialdataset"],
+		"artifactsToLoad": []
+	}, {
+		"name": "tpreparator",
+		"actionType": "batch",
+		"port": 50052,
+		"host": "localhost",
+		"artifactsToPersist": ["dataset"],
+		"artifactsToLoad": ["initialdataset"]
+	}, {
+		"name": "trainer",
+		"actionType": "batch",
+		"port": 50053,
+		"host": "localhost",
+		"artifactsToPersist": ["model"],
+		"artifactsToLoad": ["dataset"]
+	}, {
+		"name": "evaluator",
+		"actionType": "batch",
+		"port": 50054,
+		"host": "localhost",
+		"artifactsToPersist": ["metrics"],
+		"artifactsToLoad": ["dataset", "model"]
+	}, {
+		"name": "predictor",
+		"actionType": "online",
+		"port": 50055,
+		"host": "localhost",
+		"artifactsToPersist": [],
+		"artifactsToLoad": ["model", "metrics"]
+	}]
+}

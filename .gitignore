@@ -1,0 +1,16 @@
+.cache
+.eggs
+.tox
+.testmondata
+.coverage
+.coverage.*
+coverage.xml
+coverage_report
+*.egg
+*.egg-info
+*.pyc
+tests/__pycache__
+.DS_Store
+build
+.idea
+python-toolbox
