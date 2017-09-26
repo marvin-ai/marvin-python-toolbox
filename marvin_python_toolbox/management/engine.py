@@ -410,6 +410,7 @@ def generate(type, name, description, mantainer, email, package, dest, no_link, 
     venv_name = None
     if not no_env:
         venv_name = _create_virtual_env(dir_, symlink_dest)
+        _call_make_env(venv_name)
 
     if not no_git:
         _call_git_init(dest)
@@ -490,7 +491,7 @@ def _rename_dirs(base, dirs, context):
 def _create_virtual_env(name, symlink_dest):
     venv_name = '{}-env'.format(name).replace('_', '-')
     print('Creating virtualenv: {0}...'.format(venv_name))
-    command = ['bash', '-c', '. /usr/local/bin/virtualenvwrapper.sh; mkvirtualenv -a {1} -r {1}/requirements.txt {0}'.format(venv_name, symlink_dest)]
+    command = ['bash', '-c', '. /usr/local/bin/virtualenvwrapper.sh; mkvirtualenv -a {1} {0}; '.format(venv_name, symlink_dest)]
 
     try:
         subprocess.Popen(command, env=os.environ).wait()
@@ -498,6 +499,15 @@ def _create_virtual_env(name, symlink_dest):
         print('WARNING: Could not create the virtualenv!')
 
     return venv_name
+
+
+def _call_make_env(venv_name):
+    command = ['bash', '-c', '. /usr/local/bin/virtualenvwrapper.sh; workon {}; make marvin'.format(venv_name)]
+
+    try:
+        subprocess.Popen(command, env=os.environ).wait()
+    except OSError:
+        print('WARNING: Could not call make marvin!')
 
 
 def _create_symlinks(dest, symlink_dest):

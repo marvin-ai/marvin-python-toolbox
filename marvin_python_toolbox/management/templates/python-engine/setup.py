@@ -88,9 +88,9 @@ setup(
         'numpy==1.13.1',
         'pandas==0.20.3',
         'matplotlib==2.0.2',
-        'git+https://github.com/marvin-ai/marvin-python-toolbox@master#egg=marvin_python_toolbox',
-        'git+https://github.com/marvin-ai//marvin-python-common-lib@master#egg=marvin_python_common'
+        'marvin-python-common-lib==0',
     ],
+    dependency_links=['git+https://github.com/marvin-ai/marvin-python-common-lib.git/@master#egg=marvin_python_common_lib-0'],
     tests_require=[
         'pytest>=2.6.4',
         'pytest-cov>=1.8.1',
