@@ -47,6 +47,8 @@ marvin:
 		marvin --help; \
 	)
 
+	mkdir -p $(HOME)/marvin
+
 	@egrep "^source $(HOME)/.profile" $(WORKON_HOME)/marvin-toolbox-env/bin/postactivate -q || echo "source $(HOME)/.profile" >> $(WORKON_HOME)/marvin-toolbox-env/bin/postactivate
 	
 	@printf "\n\n"
