@@ -30,7 +30,12 @@ import jinja2
 import six
 from unidecode import unidecode
 
-from marvin_python_toolbox import MARVIN_HOME
+
+import MARVIN_HOME
+from .._logging import get_logger
+
+
+logger = get_logger('management.engine')
 
 
 @click.group('engine')
@@ -230,7 +235,7 @@ class MarvinEngineServer(object):
         return server
 
 
-@cli.command('engine-server', help='Marvin gRPC engine action server Start thats run an marvin engines in a server way')
+@cli.command('engine-grpcserver', help='Marvin gRPC engine action server starts')
 @click.option(
     '--action',
     '-a',
@@ -242,9 +247,10 @@ class MarvinEngineServer(object):
 @click.option('--model', '-m', help='Engine model file path', type=click.Path(exists=True))
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
+@click.option('--metadata-file', '-mf', default='engine.metadata', help='Marvin engine metadata file path', type=click.Path(exists=True))
 @click.option('--spark-conf', '-c', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.pass_context
-def engine_server(ctx, action, params_file, initial_dataset, dataset, model, metrics, spark_conf):
+def engine_server(ctx, action, params_file, metadata_file, initial_dataset, dataset, model, metrics, spark_conf):
 
     print("Starting server ...")
 
@@ -253,14 +259,8 @@ def engine_server(ctx, action, params_file, initial_dataset, dataset, model, met
     os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
 
     params = read_file(params_file)
-
-    default_actions = {
-        'acquisitor': {'pipeline': [], 'port': 50051},
-        'tpreparator': {'pipeline': [], 'port': 50052},
-        'trainer': {'pipeline': [], 'port': 50053},
-        'evaluator': {'pipeline': ['tpreparator', 'trainer'], 'port': 50054},
-        'predictor': {'pipeline': ['ppreparator'], 'port': 50055}
-    }
+    metadata = read_file(metadata_file)
+    default_actions = {action['name']: action for action in metadata['actions']}
 
     if action == 'all':
         action = default_actions
@@ -505,3 +505,61 @@ def _call_git_init(dest):
         subprocess.Popen(command, env=os.environ).wait()
     except OSError:
         print('WARNING: Could not initialize repository!')
+
+
+@cli.command('engine-httpserver', help='Marvin http api server starts')
+@click.option(
+    '--action',
+    '-a',
+    default='all',
+    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor']),
+    help='Marvin engine action name')
+@click.option('--initial-dataset', '-id', help='Initial dataset file path', type=click.Path(exists=True))
+@click.option('--dataset', '-d', help='Dataset file path', type=click.Path(exists=True))
+@click.option('--model', '-m', help='Engine model file path', type=click.Path(exists=True))
+@click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
+@click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
+@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--http_host', '-h', default='localhost', help='Engine executor http bind host')
+@click.option('--http_port', '-p', default=8000, help='Engine executor http port')
+@click.option(
+    '--executor-path', '-e',
+    default='/vagrant/projects/marvin/engine-executor/target/scala-2.12/marvin-engine-executor-assembly-0.0.1.jar',
+    help='Marvin engine executor jar path', type=click.Path(exists=True))
+@click.pass_context
+def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, spark_conf, http_host, http_port, executor_path):
+    logger.info("Starting http and grpc servers ...")
+
+    grpcserver = None
+    httpserver = None
+
+    try:
+        grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver'])
+
+    except:
+        logger.exception("Could not start grpc server!")
+        sys.exit(1)
+
+    try:
+        httpserver = subprocess.Popen([
+            'java',
+            '-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']),
+            '-DmarvinConfig.ipAddress={}'.format(http_host),
+            '-DmarvinConfig.port=8080={}'.format(http_port),
+            '-jar',
+            executor_path])
+
+    except:
+        logger.exception("Could not start http server!")
+        grpcserver.terminate() if grpcserver else None
+        sys.exit(1)
+
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        logger.info("Terminating http and grpc servers...")
+        grpcserver.terminate() if grpcserver else None
+        httpserver.terminate() if httpserver else None
+        logger.info("Http and grpc servers terminated!")
+        sys.exit(0)
