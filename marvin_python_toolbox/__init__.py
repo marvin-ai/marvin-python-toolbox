@@ -15,10 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os.path
+import os
+
+MARVIN_HOME = os.getenv('MARVIN_HOME', '/vagrant/projects/.marvin')
 
 from .manage import *
-
 
 # Get package version number from "VERSION" file
 with open(os.path.join(os.path.dirname(__file__), 'VERSION'), 'rb') as f:

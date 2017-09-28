@@ -29,6 +29,9 @@ help:
 	@echo "        Remove coverage reports."
 
 marvin:
+	pip install virtualenvwrapper
+	bash -c /usr/local/bin/virtualenvwrapper.sh
+	mkvirtualenv -a . marvin-python-toolbox-env2
 	pip install -e .
 
 update:
