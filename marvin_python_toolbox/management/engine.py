@@ -477,7 +477,7 @@ def _rename_dirs(base, dirs, context):
 def _create_virtual_env(name, dest):
     venv_name = '{}-env'.format(name).replace('_', '-')
     print('Creating virtualenv: {0}...'.format(venv_name))
-    import ipdb; ipdb.set_trace()
+
     command = ['bash', '-c', '. virtualenvwrapper.sh; mkvirtualenv -a {1} {0}; '.format(venv_name, dest)]
 
     try:

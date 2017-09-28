@@ -134,14 +134,17 @@ def _set_autocomplete(dir):
             for line in lines:
                 if 'marvin_bash_completion' in line:
                     # Replacing old autocomplete configuration
-                    fp.write(command + '\n')
+                    fp.write(command)
                     configured = True
                 else:
                     fp.write(line)
+            
             if not configured:
                 fp.write(command)
                 # 'Autocomplete was successfully configured'
+            fp.write('\n')
             fp.truncate()
+
 
 
 class develop(_develop):

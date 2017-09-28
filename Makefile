@@ -34,18 +34,22 @@ marvin:
 	pip install --upgrade pip
 	pip install virtualenvwrapper
 
-	@echo "export WORKON_HOME=$(HOME)/.virtualenvs" >> $(HOME)/.profile	
-	@echo "source $(VIRTUALENVWRAPPER_SCRIPT)" >> $(HOME)/.profile
-	@echo "export MARVIN_HOME=$(HOME)/development/marvin" >> $(HOME)/.profile
+	@egrep "^export WORKON_HOME="  $(HOME)/.profile -q || echo "export WORKON_HOME=$(HOME)/.virtualenvs" >> $(HOME)/.profile
+	@egrep "^source $(VIRTUALENVWRAPPER_SCRIPT)"  $(HOME)/.profile -q || echo "source $(VIRTUALENVWRAPPER_SCRIPT)" >> $(HOME)/.profile
+	@egrep "^export MARVIN_HOME="  $(HOME)/.profile -q || echo "export MARVIN_HOME=$(HOME)/marvin" >> $(HOME)/.profile
+	@egrep "^export MARVIN_HOME="  $(HOME)/.profile -q || echo "export MARVIN_HOME=$(HOME)/marvin" >> $(HOME)/.profile
 
-	( \
+	@( \
 		source $(VIRTUALENVWRAPPER_SCRIPT); \
+		source $(HOME)/.profile; \
 		mkvirtualenv -a . marvin-toolbox-env; \
 		pip install -e .; \
 		marvin --help; \
 	)
-	@echo ""
-	@echo ""
+
+	@egrep "^source $(HOME)/.profile" $(WORKON_HOME)/marvin-toolbox-env/bin/postactivate -q || echo "source $(HOME)/.profile" >> $(WORKON_HOME)/marvin-toolbox-env/bin/postactivate
+	
+	@printf "\n\n"
 	@echo "Marvin created with success!!!"
 	@echo "To use type 'workon marvin-toolbox-env' and have fun!"
 
@@ -66,4 +70,4 @@ clean-reports:
 	rm --force coverage_report.xml
 	rm --force .coverage
 
-clean-all: clean-build clean-pyc clean-reports
+clean: clean-build clean-pyc clean-reports
