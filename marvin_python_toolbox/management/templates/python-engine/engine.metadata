@@ -2,7 +2,7 @@
 	"name": "{{project.name}}",
 	"version": "v0.0.1",
 	"engineType": "python",
-	"artifactsLocalPath": "/vagrant/projects/.marvin",
+	"artifactsLocalPath": "~/marvin/artifacts",
 	"artifactsRemotePath": "/tmp/marvin",
 	"onlineActionTimeout": 1,
 	"reloadTimeout": 120,

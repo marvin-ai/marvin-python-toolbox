@@ -201,7 +201,7 @@ def generate_kwargs(clazz, params=None, initial_dataset=None, dataset=None, mode
         kwargs["metrics"] = clazz.retrieve_obj(metrics)
 
     kwargs["persistence_mode"] = 'local'
-    kwargs["default_root_path"] = MARVIN_HOME
+    kwargs["default_root_path"] = os.path.join(MARVIN_HOME, 'artifacts')
     kwargs["is_remote_calling"] = True
 
     return kwargs
