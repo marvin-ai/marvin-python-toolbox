@@ -17,8 +17,6 @@
 
 import os
 
-MARVIN_HOME = os.getenv('MARVIN_HOME', '/vagrant/projects/.marvin')
-
 from .manage import *
 
 # Get package version number from "VERSION" file

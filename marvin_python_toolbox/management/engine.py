@@ -30,13 +30,12 @@ import jinja2
 import six
 from unidecode import unidecode
 
-
-import MARVIN_HOME
 from .._logging import get_logger
 
 
 logger = get_logger('management.engine')
 
+MARVIN_HOME = os.getenv('MARVIN_HOME')
 
 @click.group('engine')
 def cli():
@@ -322,17 +321,16 @@ def generate_env(engine_path):
 
 
 @cli.command('engine-generate', help='Generate a new marvin engine project and install default requirements.')
-@click.option('--type', '-t', prompt='Project type', default='python-engine', help='Lib type')
 @click.option('--name', '-n', prompt='Project name', help='Project name')
 @click.option('--description', '-d', prompt='Short description', default='Marvin engine', help='Library short description')
 @click.option('--mantainer', '-m', prompt='Mantainer name', default='B2W Labs Team', help='Mantainer name')
 @click.option('--email', '-e', prompt='Mantainer email', default='@b2wdigital.com', help='Mantainer email')
 @click.option('--package', '-p', default='', help='Package name')
-@click.option('--dest', '-d', default='/vagrant/projects', type=click.Path(exists=True), help='Root folder path for the creation')
+@click.option('--dest', '-d', envvar='MARVIN_HOME', type=click.Path(exists=True), help='Root folder path for the creation')
 @click.option('--no-env', is_flag=True, default=False, help='Don\'t create the virtual enviroment')
 @click.option('--no-git', is_flag=True, default=False, help='Don\'t initialize the git repository')
-def generate(type, name, description, mantainer, email, package, dest, no_env, no_git):
-    type_ = type.strip()
+def generate(name, description, mantainer, email, package, dest, no_env, no_git):
+    type_ = 'python-engine'
     type = _orig_type
 
     # Process package name
@@ -476,26 +474,29 @@ def _rename_dirs(base, dirs, context):
         print('Renaming {0} as {1}'.format(oldname, newname))
 
 
-def _create_virtual_env(name, symlink_dest):
+def _create_virtual_env(name, dest):
     venv_name = '{}-env'.format(name).replace('_', '-')
     print('Creating virtualenv: {0}...'.format(venv_name))
-    command = ['bash', '-c', '. /usr/local/bin/virtualenvwrapper.sh; mkvirtualenv -a {1} {0}; '.format(venv_name, symlink_dest)]
+    import ipdb; ipdb.set_trace()
+    command = ['bash', '-c', '. virtualenvwrapper.sh; mkvirtualenv -a {1} {0}; '.format(venv_name, dest)]
 
     try:
         subprocess.Popen(command, env=os.environ).wait()
-    except OSError:
-        print('WARNING: Could not create the virtualenv!')
+    except:
+       logger.exception('Could not create the virtualenv!')
+       sys.exit(1)
 
     return venv_name
 
 
 def _call_make_env(venv_name):
-    command = ['bash', '-c', '. /usr/local/bin/virtualenvwrapper.sh; workon {}; make marvin'.format(venv_name)]
+    command = ['bash', '-c', '. virtualenvwrapper.sh; workon {}; make marvin'.format(venv_name)]
 
     try:
         subprocess.Popen(command, env=os.environ).wait()
-    except OSError:
-        print('WARNING: Could not call make marvin!')
+    except:
+        logger.exception('Could not call make marvin!')
+        sys.exit(1)
 
 
 def _call_git_init(dest):
@@ -524,7 +525,7 @@ def _call_git_init(dest):
 @click.option('--http_port', '-p', default=8000, help='Engine executor http port')
 @click.option(
     '--executor-path', '-e',
-    default='/vagrant/projects/marvin/engine-executor/target/scala-2.12/marvin-engine-executor-assembly-0.0.1.jar',
+    default='$MARVIN_HOME   /engine-executor/target/scala-2.12/marvin-engine-executor-assembly-0.0.1.jar',
     help='Marvin engine executor jar path', type=click.Path(exists=True))
 @click.pass_context
 def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, spark_conf, http_host, http_port, executor_path):

@@ -28,8 +28,26 @@ help:
 	@echo "    clean-reports"
 	@echo "        Remove coverage reports."
 
+marvin: SHELL:=/bin/bash
 marvin:
-	pip install -e .
+	sudo apt-get install libsasl2-dev -y
+	pip install --upgrade pip
+	pip install virtualenvwrapper
+
+	@echo "export WORKON_HOME=$(HOME)/.virtualenvs" >> $(HOME)/.profile	
+	@echo "source $(VIRTUALENVWRAPPER_SCRIPT)" >> $(HOME)/.profile
+	@echo "export MARVIN_HOME=$(HOME)/development/marvin" >> $(HOME)/.profile
+
+	( \
+		source $(VIRTUALENVWRAPPER_SCRIPT); \
+		mkvirtualenv -a . marvin-toolbox-env; \
+		pip install -e .; \
+		marvin --help; \
+	)
+	@echo ""
+	@echo ""
+	@echo "Marvin created with success!!!"
+	@echo "To use type 'workon marvin-toolbox-env' and have fun!"
 
 update:
 	pip install -e . -U 
