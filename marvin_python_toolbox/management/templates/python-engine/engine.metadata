@@ -13,34 +13,39 @@
 		"port": 50051,
 		"host": "localhost",
 		"artifactsToPersist": ["initialdataset"],
-		"artifactsToLoad": []
+		"artifactsToLoad": [],
+		"pipeline": ["ppreparator"]
 	}, {
 		"name": "tpreparator",
 		"actionType": "batch",
 		"port": 50052,
 		"host": "localhost",
 		"artifactsToPersist": ["dataset"],
-		"artifactsToLoad": ["initialdataset"]
+		"artifactsToLoad": ["initialdataset"],
+		"pipeline": []
 	}, {
 		"name": "trainer",
 		"actionType": "batch",
 		"port": 50053,
 		"host": "localhost",
 		"artifactsToPersist": ["model"],
-		"artifactsToLoad": ["dataset"]
+		"artifactsToLoad": ["dataset"],
+		"pipeline": []
 	}, {
 		"name": "evaluator",
 		"actionType": "batch",
 		"port": 50054,
 		"host": "localhost",
 		"artifactsToPersist": ["metrics"],
-		"artifactsToLoad": ["dataset", "model"]
+		"artifactsToLoad": ["dataset", "model"],
+		"pipeline": []
 	}, {
 		"name": "predictor",
 		"actionType": "online",
 		"port": 50055,
 		"host": "localhost",
 		"artifactsToPersist": [],
-		"artifactsToLoad": ["model", "metrics"]
+		"artifactsToLoad": ["model", "metrics"],
+		"pipeline": []
 	}]
 }
