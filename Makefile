@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.PHONY: help marvin update clean-pyc clean-build clean-reports clean-all
+.PHONY: help marvin update clean-pyc clean-build clean-reports clean
 
 help:
 	@echo "    marvin"
 	@echo "        Prepare project to be used as a marvin package."
 	@echo "    update"
 	@echo "        Reinstall requirements and setup.py dependencies."
-	@echo "    clean-all"
+	@echo "    clean"
 	@echo "        Remove all generated artifacts."
 	@echo "    clean-pyc"
 	@echo "        Remove python artifacts."
