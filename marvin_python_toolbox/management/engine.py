@@ -35,6 +35,8 @@ from .._logging import get_logger
 
 logger = get_logger('management.engine')
 
+MARVIN_HOME = os.getenv('MARVIN_HOME')
+
 
 @click.group('engine')
 def cli():
@@ -55,7 +57,7 @@ def cli():
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--messages-file', '-mf', default='engine.messages', help='Marvin engine predictor input messages file path', type=click.Path(exists=True))
 @click.option('--response', '-r', default=False, is_flag=True, help='If enable, print responses from engine online actions (ppreparator and predictor)')
-@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.pass_context
 def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, model, metrics, response, spark_conf):
 
@@ -64,6 +66,7 @@ def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, mo
     initial_start_time = time.time()
 
     # setting spark configuration directory
+    spark_conf = '/usr/opt/spark' if not spark_conf else None
     os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
 
     params = read_file(params_file)
@@ -199,7 +202,7 @@ def generate_kwargs(clazz, params=None, initial_dataset=None, dataset=None, mode
         kwargs["metrics"] = clazz.retrieve_obj(metrics)
 
     kwargs["persistence_mode"] = 'local'
-    kwargs["default_root_path"] = '/vagrant/projects/.marvin'
+    kwargs["default_root_path"] = os.path.join(MARVIN_HOME, 'artifacts')
     kwargs["is_remote_calling"] = True
 
     return kwargs
@@ -245,13 +248,14 @@ class MarvinEngineServer(object):
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--metadata-file', '-mf', default='engine.metadata', help='Marvin engine metadata file path', type=click.Path(exists=True))
-@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.pass_context
 def engine_server(ctx, action, params_file, metadata_file, initial_dataset, dataset, model, metrics, spark_conf):
 
     print("Starting server ...")
 
     # setting spark configuration directory
+    spark_conf = '/usr/opt/spark' if not spark_conf else None
     os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
 
     params = read_file(params_file)
@@ -308,37 +312,27 @@ _orig_type = type
 
 
 @cli.command('engine-generateenv', help='Generate a new marvin engine environment and install default requirements.')
-@click.option('--no-link', is_flag=True, default=False, help='Don\'t create symlink')
 @click.argument('engine-path', type=click.Path(exists=True))
-def generate_env(no_link, engine_path):
-    dest = engine_path
+def generate_env(engine_path):
     dir_ = os.path.basename(os.path.abspath(engine_path))
-
-    if not no_link:
-        symlink_dest = os.path.join(os.path.expanduser('~'), dir_)
-        _create_symlinks(dest, symlink_dest)
-    else:
-        symlink_dest = dest
-
-    venv_name = _create_virtual_env(dir_, symlink_dest)
+    venv_name = _create_virtual_env(dir_, engine_path)
+    _call_make_env(venv_name)
 
     print('\nDone!!!!')
     print('Now to workon in the new engine project use: workon {}'.format(venv_name))
 
 
 @cli.command('engine-generate', help='Generate a new marvin engine project and install default requirements.')
-@click.option('--type', '-t', prompt='Project type', default='python-engine', help='Lib type')
 @click.option('--name', '-n', prompt='Project name', help='Project name')
 @click.option('--description', '-d', prompt='Short description', default='Marvin engine', help='Library short description')
 @click.option('--mantainer', '-m', prompt='Mantainer name', default='B2W Labs Team', help='Mantainer name')
 @click.option('--email', '-e', prompt='Mantainer email', default='@b2wdigital.com', help='Mantainer email')
 @click.option('--package', '-p', default='', help='Package name')
-@click.option('--dest', '-d', default='/vagrant/projects', type=click.Path(exists=True), help='Root folder path for the creation')
-@click.option('--no-link', is_flag=True, default=False, help='Don\'t create symlink')
+@click.option('--dest', '-d', envvar='MARVIN_HOME', type=click.Path(exists=True), help='Root folder path for the creation')
 @click.option('--no-env', is_flag=True, default=False, help='Don\'t create the virtual enviroment')
 @click.option('--no-git', is_flag=True, default=False, help='Don\'t initialize the git repository')
-def generate(type, name, description, mantainer, email, package, dest, no_link, no_env, no_git):
-    type_ = type.strip()
+def generate(name, description, mantainer, email, package, dest, no_env, no_git):
+    type_ = 'python-engine'
     type = _orig_type
 
     # Process package name
@@ -385,6 +379,7 @@ def generate(type, name, description, mantainer, email, package, dest, no_link, 
         'description': description,
         'package': package,
         'type': type_,
+        'home': MARVIN_HOME,
     }
 
     mantainer = {
@@ -401,15 +396,9 @@ def generate(type, name, description, mantainer, email, package, dest, no_link, 
     _copy_processed_files(TEMPLATE_BASES[type_], dest, context)
     _rename_dirs(dest, RENAME_DIRS, context)
 
-    if not no_link:
-        symlink_dest = os.path.join(os.path.expanduser('~'), package.replace('_', '-'))
-        _create_symlinks(dest, symlink_dest)
-    else:
-        symlink_dest = dest
-
     venv_name = None
     if not no_env:
-        venv_name = _create_virtual_env(dir_, symlink_dest)
+        venv_name = _create_virtual_env(dir_, dest)
         _call_make_env(venv_name)
 
     if not no_git:
@@ -488,34 +477,29 @@ def _rename_dirs(base, dirs, context):
         print('Renaming {0} as {1}'.format(oldname, newname))
 
 
-def _create_virtual_env(name, symlink_dest):
+def _create_virtual_env(name, dest):
     venv_name = '{}-env'.format(name).replace('_', '-')
     print('Creating virtualenv: {0}...'.format(venv_name))
-    command = ['bash', '-c', '. /usr/local/bin/virtualenvwrapper.sh; mkvirtualenv -a {1} {0}; '.format(venv_name, symlink_dest)]
+
+    command = ['bash', '-c', '. virtualenvwrapper.sh; mkvirtualenv -a {1} {0}; '.format(venv_name, dest)]
 
     try:
         subprocess.Popen(command, env=os.environ).wait()
-    except OSError:
-        print('WARNING: Could not create the virtualenv!')
+    except:
+        logger.exception('Could not create the virtualenv!')
+        sys.exit(1)
 
     return venv_name
 
 
 def _call_make_env(venv_name):
-    command = ['bash', '-c', '. /usr/local/bin/virtualenvwrapper.sh; workon {}; make marvin'.format(venv_name)]
+    command = ['bash', '-c', '. virtualenvwrapper.sh; workon {}; make marvin'.format(venv_name)]
 
     try:
         subprocess.Popen(command, env=os.environ).wait()
-    except OSError:
-        print('WARNING: Could not call make marvin!')
-
-
-def _create_symlinks(dest, symlink_dest):
-    print('Creating symlink: {0} {1}...'.format(dest, symlink_dest))
-    try:
-        os.symlink(dest, symlink_dest)
-    except OSError:
-        print('WARNING: Could not create the symlink!')
+    except:
+        logger.exception('Could not call make marvin!')
+        sys.exit(1)
 
 
 def _call_git_init(dest):
@@ -565,7 +549,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
             'java',
             '-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']),
             '-DmarvinConfig.ipAddress={}'.format(http_host),
-            '-DmarvinConfig.port=8080={}'.format(http_port),
+            '-DmarvinConfig.port={}'.format(http_port),
             '-jar',
             executor_path])
 

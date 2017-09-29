@@ -2,7 +2,7 @@
 	"name": "{{project.name}}",
 	"version": "v0.0.1",
 	"engineType": "python",
-	"artifactsLocalPath": "/vagrant/projects/.marvin",
+	"artifactsLocalPath": "{{project.home}}",
 	"artifactsRemotePath": "/tmp/marvin",
 	"onlineActionTimeout": 1000,
         "healthCheckTimeout": 2000,
@@ -15,7 +15,7 @@
 		"host": "localhost",
 		"artifactsToPersist": ["initialdataset"],
 		"artifactsToLoad": [],
-		"pipeline": ["ppreparator"]
+		"pipeline": []
 	}, {
 		"name": "tpreparator",
 		"actionType": "batch",
@@ -47,6 +47,6 @@
 		"host": "localhost",
 		"artifactsToPersist": [],
 		"artifactsToLoad": ["model", "metrics"],
-		"pipeline": []
+		"pipeline": ["ppreparator"]
 	}]
 }

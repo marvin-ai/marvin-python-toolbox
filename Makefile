@@ -28,8 +28,10 @@ help:
 	@echo "    clean-reports"
 	@echo "        Remove coverage reports."
 
+marvin: SHELL:=/bin/bash
 marvin:
 	pip install -e .
+	marvin --help
 
 update:
 	pip install -e . -U 
@@ -48,4 +50,4 @@ clean-reports:
 	rm --force coverage_report.xml
 	rm --force .coverage
 
-clean-all: clean-build clean-pyc clean-reports
+clean: clean-build clean-pyc clean-reports
