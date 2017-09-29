@@ -315,6 +315,7 @@ _orig_type = type
 def generate_env(engine_path):
     dir_ = os.path.basename(os.path.abspath(engine_path))
     venv_name = _create_virtual_env(dir_, engine_path)
+    _call_make_env(venv_name)
 
     print('\nDone!!!!')
     print('Now to workon in the new engine project use: workon {}'.format(venv_name))
