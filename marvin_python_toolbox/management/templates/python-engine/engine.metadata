@@ -14,7 +14,7 @@
 		"host": "localhost",
 		"artifactsToPersist": ["initialdataset"],
 		"artifactsToLoad": [],
-		"pipeline": ["ppreparator"]
+		"pipeline": []
 	}, {
 		"name": "tpreparator",
 		"actionType": "batch",
@@ -46,6 +46,6 @@
 		"host": "localhost",
 		"artifactsToPersist": [],
 		"artifactsToLoad": ["model", "metrics"],
-		"pipeline": []
+		"pipeline": ["ppreparator"]
 	}]
 }

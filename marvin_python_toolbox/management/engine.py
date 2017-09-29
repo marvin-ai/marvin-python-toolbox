@@ -37,6 +37,7 @@ logger = get_logger('management.engine')
 
 MARVIN_HOME = os.getenv('MARVIN_HOME')
 
+
 @click.group('engine')
 def cli():
     pass
@@ -485,8 +486,8 @@ def _create_virtual_env(name, dest):
     try:
         subprocess.Popen(command, env=os.environ).wait()
     except:
-       logger.exception('Could not create the virtualenv!')
-       sys.exit(1)
+        logger.exception('Could not create the virtualenv!')
+        sys.exit(1)
 
     return venv_name
 
