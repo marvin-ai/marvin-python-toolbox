@@ -30,30 +30,6 @@ help:
 
 marvin: SHELL:=/bin/bash
 marvin:
-	# sudo apt-get install libsasl2-dev -y
-	# pip install --upgrade pip
-	# pip install virtualenvwrapper
-
-	# @egrep "^export WORKON_HOME="  $(HOME)/.profile -q || echo "export WORKON_HOME=$(HOME)/.virtualenvs" >> $(HOME)/.profile
-	# @egrep "^source $(VIRTUALENVWRAPPER_SCRIPT)"  $(HOME)/.profile -q || echo "source $(VIRTUALENVWRAPPER_SCRIPT)" >> $(HOME)/.profile
-	# @egrep "^export MARVIN_HOME="  $(HOME)/.profile -q || echo "export MARVIN_HOME=$(HOME)/marvin" >> $(HOME)/.profile
-	# @egrep "^export MARVIN_HOME="  $(HOME)/.profile -q || echo "export MARVIN_HOME=$(HOME)/marvin" >> $(HOME)/.profile
-
-	# @( \
-	#	source $(VIRTUALENVWRAPPER_SCRIPT); \
-	#	source $(HOME)/.profile; \
-	#	mkvirtualenv -a . marvin-toolbox-env; \
-	#	pip install -e .; \
-	#	marvin --help; \
-	#)
-
-	#mkdir -p $(HOME)/marvin
-
-	#@egrep "^source $(HOME)/.profile" $(WORKON_HOME)/marvin-toolbox-env/bin/postactivate -q || echo "source $(HOME)/.profile" >> $(WORKON_HOME)/marvin-toolbox-env/bin/postactivate
-	
-	#@printf "\n\n"
-	#@echo "Marvin created with success!!!"
-	#@echo "To use type 'workon marvin-toolbox-env' and have fun!"
 	pip install -e .
 	marvin --help
 
