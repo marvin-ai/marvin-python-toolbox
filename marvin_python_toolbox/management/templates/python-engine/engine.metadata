@@ -4,7 +4,8 @@
 	"engineType": "python",
 	"artifactsLocalPath": "/vagrant/projects/.marvin",
 	"artifactsRemotePath": "/tmp/marvin",
-	"onlineActionTimeout": 1,
+	"onlineActionTimeout": 1000,
+        "healthCheckTimeout": 2000,
 	"reloadTimeout": 120,
 	"hdfsHost": "hdfs://marvin-hadoop:8020",
 	"actions": [{
