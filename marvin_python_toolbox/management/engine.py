@@ -377,6 +377,7 @@ def generate(name, description, mantainer, email, package, dest, no_env, no_git)
         'description': description,
         'package': package,
         'type': type_,
+        'home': MARVIN_HOME,
     }
 
     mantainer = {
@@ -525,7 +526,7 @@ def _call_git_init(dest):
 @click.option('--http_port', '-p', default=8000, help='Engine executor http port')
 @click.option(
     '--executor-path', '-e',
-    default='$MARVIN_HOME   /engine-executor/target/scala-2.12/marvin-engine-executor-assembly-0.0.1.jar',
+    default='/vagrant/projects/marvin/engine-executor/target/scala-2.12/marvin-engine-executor-assembly-0.0.1.jar',
     help='Marvin engine executor jar path', type=click.Path(exists=True))
 @click.pass_context
 def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, spark_conf, http_host, http_port, executor_path):
@@ -546,7 +547,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
             'java',
             '-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']),
             '-DmarvinConfig.ipAddress={}'.format(http_host),
-            '-DmarvinConfig.port=8080={}'.format(http_port),
+            '-DmarvinConfig.port={}'.format(http_port),
             '-jar',
             executor_path])
 
