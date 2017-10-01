@@ -19,4 +19,4 @@ exclude_lines =
 directory = coverage_report
 
 [xml]
-output = coverage.xml
+output = coverage_report.xml

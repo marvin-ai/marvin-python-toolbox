@@ -58,4 +58,4 @@ clean: clean-build clean-pyc clean-reports
 
 grpc:
 	python -m grpc_tools.protoc --proto_path=marvin_python_toolbox/engine_base/protos --python_out=marvin_python_toolbox/engine_base/stubs --grpc_python_out=marvin_python_toolbox/engine_base/stubs marvin_python_toolbox/engine_base/protos/actions.proto
-	ls -la marvin_python_toolbox/engine_base/stubs 
+	ls -la marvin_python_toolbox/engine_base/stubs/*.py
