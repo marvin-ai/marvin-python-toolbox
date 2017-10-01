@@ -15,26 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""TrainingPreparator engine action.
-
-Use this module to add the project main code.
-"""
-
-from .._compatibility import six
-from .._logging import get_logger
-
-from marvin_python_toolbox.common.engine_base import EngineBaseDataHandler
-
-__all__ = ['TrainingPreparator']
+import pytest
 
 
-logger = get_logger('training_preparator')
-
-
-class TrainingPreparator(EngineBaseDataHandler):
-
-    def __init__(self, **kwargs):
-        super(TrainingPreparator, self).__init__(**kwargs)
-
-    def execute(self, **kwargs):
-        pass
+@pytest.fixture
+def config_fixture():
+    return {
+        'key': 'value',
+        'section': {
+            'section_key': 'section_value'
+        }
+    }

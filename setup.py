@@ -77,6 +77,19 @@ REQUIREMENTS_EXTERNAL = [
     'thrift==0.10.0',
     'thrift-sasl==0.2.1',
     'virtualenvwrapper>=4.7.1'
+    'requests==2.5.1',
+    'python-dateutil==2.4.2',
+    'python-slugify==0.1.0',
+    'path.py==7.2',
+    'httpretty==0.8.4',
+    'jsonschema>=2.5.1',
+    'gprof2dot',
+    'ujsonpath==0.0.2',
+    'simplejson>=3.10.0',
+    'configobj>=5.0.6',
+    'findspark==1.1.0',
+    'grpcio==1.6.0',
+    'grpcio-tools==1.6.0',
 ]
 
 # Test dependencies

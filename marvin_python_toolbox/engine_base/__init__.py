@@ -15,26 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""TrainingPreparator engine action.
-
-Use this module to add the project main code.
-"""
-
-from .._compatibility import six
-from .._logging import get_logger
-
-from marvin_python_toolbox.common.engine_base import EngineBaseDataHandler
-
-__all__ = ['TrainingPreparator']
-
-
-logger = get_logger('training_preparator')
-
-
-class TrainingPreparator(EngineBaseDataHandler):
-
-    def __init__(self, **kwargs):
-        super(TrainingPreparator, self).__init__(**kwargs)
-
-    def execute(self, **kwargs):
-        pass
+from engine_base_action import EngineBaseAction, EngineBaseOnlineAction, EngineBaseBatchAction
+from engine_base_prediction import EngineBasePrediction
+from engine_base_data_handler import EngineBaseDataHandler
+from engine_base_training import EngineBaseTraining
+from stubs import actions_pb2, actions_pb2_grpc

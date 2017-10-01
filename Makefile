@@ -29,7 +29,7 @@ help:
 	@echo "        Remove coverage reports."
 
 marvin: SHELL:=/bin/bash
-marvin:
+marvin: clean
 	pip install -e .
 	marvin --help
 
@@ -44,6 +44,8 @@ clean-pyc:
 clean-build:
 	rm --force --recursive *.egg-info
 	rm --force --recursive .cache
+	rm --force --recursive .eggs
+	rm --force --recursive dist
 
 clean-reports:
 	rm --force --recursive coverage_report/
@@ -51,3 +53,7 @@ clean-reports:
 	rm --force .coverage
 
 clean: clean-build clean-pyc clean-reports
+
+grpc:
+	python -m grpc_tools.protoc --proto_path=marvin_python_toolbox/engine_base/protos --python_out=marvin_python_toolbox/engine_base/stubs --grpc_python_out=marvin_python_toolbox/engine_base/stubs marvin_python_toolbox/engine_base/protos/actions.proto
+	ls -la marvin_python_toolbox/engine_base/stubs 

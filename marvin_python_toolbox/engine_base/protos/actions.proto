@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+service OnlineActionHandler {
+	rpc _remote_execute (OnlineActionRequest) returns (OnlineActionResponse) {}
+	rpc _remote_reload (ReloadRequest) returns (ReloadResponse) {}
+	rpc _health_check (HealthCheckRequest) returns (HealthCheckResponse) {}
+}
+
+service BatchActionHandler {
+	rpc _remote_execute (BatchActionRequest) returns (BatchActionResponse) {}
+	rpc _remote_reload (ReloadRequest) returns (ReloadResponse) {}
+	rpc _health_check (HealthCheckRequest) returns (HealthCheckResponse) {}
+}
+
+message OnlineActionRequest {
+	string message = 1;
+	string params = 2;
+}
+
+message OnlineActionResponse {
+	string message = 1;
+}
+
+message BatchActionRequest {
+	string params = 1;
+}
+
+message BatchActionResponse {
+	string message = 1;
+}
+
+message ReloadRequest {
+	string protocol = 1;
+	string artifacts = 2;
+}
+
+message ReloadResponse {
+	string message = 1;
+}
+
+message HealthCheckRequest {
+	string artifacts = 2;
+}
+
+message HealthCheckResponse {
+	enum Status {
+		OK = 0;
+		NOK = 1;
+	}
+	Status status = 1;
+}
