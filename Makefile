@@ -51,7 +51,7 @@ clean-build:
 
 clean-reports:
 	rm --force --recursive coverage_report/
-	rm --force coverage_report.xml
+	rm --force coverage.xml
 	rm --force .coverage
 
 clean: clean-build clean-pyc clean-reports
