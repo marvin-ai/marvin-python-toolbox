@@ -82,7 +82,6 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     install_requires=[
-        'six>=1.10.0',
         'scikit-learn==0.18.2',
         'scipy==0.19.1',
         'numpy==1.13.1',
