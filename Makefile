@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.PHONY: help marvin update clean-pyc clean-build clean-reports clean-all
+.PHONY: help marvin update clean-pyc clean-build clean-reports clean grpc
 
 help:
 	@echo "    marvin"
@@ -27,6 +27,8 @@ help:
 	@echo "        Remove build artifacts."
 	@echo "    clean-reports"
 	@echo "        Remove coverage reports."
+	@echo "    grpc"
+	@echo "        Build grpc stubs."
 
 marvin: SHELL:=/bin/bash
 marvin: clean
