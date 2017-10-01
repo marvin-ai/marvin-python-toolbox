@@ -151,13 +151,12 @@ def _set_autocomplete(dir):
                     configured = True
                 else:
                     fp.write(line)
-            
+
             if not configured:
                 fp.write(command)
                 # 'Autocomplete was successfully configured'
             fp.write('\n')
             fp.truncate()
-
 
 
 class develop(_develop):

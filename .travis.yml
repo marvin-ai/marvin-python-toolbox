@@ -22,8 +22,8 @@ before_install:
   - export MARVIN_DATA_PATH=./marvin_data
   - export MARVIN_HOME=./marvin_home
 
-install: 
-  - make marvin
+install:
+  - pip install .
   - pip install codecov
 
 script: 
