@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
 import os.path
 import sys
 
@@ -42,17 +41,6 @@ STATUS = 'alpha'
 # Project topic
 # See https://pypi.python.org/pypi?%3Aaction=list_classifiers for a list
 TOPIC = 'Topic :: Software Development :: Libraries :: Python Modules',
-
-# Marvin internal dependencies
-# (libs should include the suffix "-lib", following the repository name)
-#
-# Format: "complete-package-name==version" (should use ==)
-#
-# Example:
-#       'marvin-common-lib==0.2.0',
-#       'marvin-categorization-by-similarity-core==0.0.3',
-REQUIREMENTS_MARVIN = [
-]
 
 # External dependencies
 # More info https://pythonhosted.org/setuptools/setuptools.html#declaring-dependencies
@@ -98,24 +86,7 @@ REQUIREMENTS_TESTS = []
 # This is normally an empty list
 DEPENDENCY_LINKS_EXTERNAL = []
 
-# Creates the dependency links for each Marvin project.
-#
-# If you're having troubles to install marvin packages, check if you have a
-# ssh key configured to access your bitbucket account.
-#
-# NOTE: Don't worry about the following deprecation message when using pip with --process-dependency-links option
-#
-# "DEPRECATION: Dependency Links processing has been deprecated and will be removed in a future release."
-#
-# This feature will not be removed until a new option to install private
-# dependencies be available. (see: https://github.com/pypa/pip/pull/1955)
-pkg_re = re.compile('(?<!^)[=|<|>|~]=?(?!.\s)')
-pkgs = [tuple(pkg_re.split(pkg_full)) for pkg_full in REQUIREMENTS_MARVIN]
-DEPENDENCY_LINKS_MARVIN = [
-    'git+ssh://git@stash.b2w/marvin/{pkg}@v{ver}#egg={pkg}-v{ver}'.format(
-        pkg=pkg, ver=ver) for pkg, ver in pkgs
-]
-
+# script to be used
 SCRIPTS = ['bin/marvin']
 
 
@@ -227,9 +198,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     classifiers=CLASSIFIERS,
-    install_requires=REQUIREMENTS_EXTERNAL + REQUIREMENTS_MARVIN,
+    install_requires=REQUIREMENTS_EXTERNAL,
     tests_require=REQUIREMENTS_TESTS,
-    dependency_links=DEPENDENCY_LINKS_EXTERNAL + DEPENDENCY_LINKS_MARVIN,
+    dependency_links=DEPENDENCY_LINKS_EXTERNAL,
     scripts=SCRIPTS,
-    cmdclass={'test': Tox, 'develop': develop},
+    cmdclass={'test': Tox},
 )
