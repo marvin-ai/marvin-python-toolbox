@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.PHONY: help marvin update clean-pyc clean-build clean-reports clean-all
+.PHONY: help marvin update clean-pyc clean-build clean-reports clean grpc
 
 help:
 	@echo "    marvin"
@@ -27,9 +27,11 @@ help:
 	@echo "        Remove build artifacts."
 	@echo "    clean-reports"
 	@echo "        Remove coverage reports."
+	@echo "    grpc"
+	@echo "        Build grpc stubs."
 
 marvin: SHELL:=/bin/bash
-marvin:
+marvin: clean
 	pip install -e .
 	marvin --help
 
@@ -44,10 +46,16 @@ clean-pyc:
 clean-build:
 	rm --force --recursive *.egg-info
 	rm --force --recursive .cache
+	rm --force --recursive .eggs
+	rm --force --recursive dist
 
 clean-reports:
 	rm --force --recursive coverage_report/
-	rm --force coverage_report.xml
+	rm --force coverage.xml
 	rm --force .coverage
 
 clean: clean-build clean-pyc clean-reports
+
+grpc:
+	python -m grpc_tools.protoc --proto_path=marvin_python_toolbox/engine_base/protos --python_out=marvin_python_toolbox/engine_base/stubs --grpc_python_out=marvin_python_toolbox/engine_base/stubs marvin_python_toolbox/engine_base/protos/actions.proto
+	ls -la marvin_python_toolbox/engine_base/stubs/*.py

@@ -31,7 +31,7 @@ mkvirtualenv {{project.package}}_env
 Now install the development dependencies
 
 ```
-pip install -r requirements.txt
+make marvin
 ```
 
 You are now ready to code.

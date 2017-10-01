@@ -1,0 +1,66 @@
+/** Copyright [2017] [B2W Digital]
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+**/
+
+syntax = "proto3";
+
+service OnlineActionHandler {
+	rpc _remote_execute (OnlineActionRequest) returns (OnlineActionResponse) {}
+	rpc _remote_reload (ReloadRequest) returns (ReloadResponse) {}
+	rpc _health_check (HealthCheckRequest) returns (HealthCheckResponse) {}
+}
+
+service BatchActionHandler {
+	rpc _remote_execute (BatchActionRequest) returns (BatchActionResponse) {}
+	rpc _remote_reload (ReloadRequest) returns (ReloadResponse) {}
+	rpc _health_check (HealthCheckRequest) returns (HealthCheckResponse) {}
+}
+
+message OnlineActionRequest {
+	string message = 1;
+	string params = 2;
+}
+
+message OnlineActionResponse {
+	string message = 1;
+}
+
+message BatchActionRequest {
+	string params = 1;
+}
+
+message BatchActionResponse {
+	string message = 1;
+}
+
+message ReloadRequest {
+	string protocol = 1;
+	string artifacts = 2;
+}
+
+message ReloadResponse {
+	string message = 1;
+}
+
+message HealthCheckRequest {
+	string artifacts = 2;
+}
+
+message HealthCheckResponse {
+	enum Status {
+		OK = 0;
+		NOK = 1;
+	}
+	Status status = 1;
+}
