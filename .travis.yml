@@ -1,0 +1,31 @@
+sudo: true
+
+dist: trusty
+
+language: python
+
+python:
+  - "2.7"
+
+before_install:
+  # General Installation
+  - sudo apt-get -qq update
+  - sudo apt-get install -y graphviz
+
+  # Install Spark
+  - wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz && tar -xf spark-2.1.1-bin-hadoop2.6.tgz
+  - export SPARK_HOME=./spark-2.1.1-bin-hadoop2.6
+
+  # Configure General Environment
+  - mkdir -p marvin_data
+  - mkdir -p marvin_projects
+  - export MARVIN_DATA_PATH=./marvin_data
+  - export MARVIN_HOME=./marvin_home
+
+install: 
+  - make marvin
+  - pip install codecov
+
+script: 
+  - marvin test
+  - codecov
