@@ -24,7 +24,7 @@ echo "export MARVIN_HOME=$HOME/marvin" >> $HOME/.bashrc
 echo "export MARVIN_DATA_PATH=$HOME/marvin/data" >> $HOME/.bashrc
 echo "source virtualenvwrapper.sh" >> $HOME/.bashrc
 
-source ~/.profile
+source ~/.bashrc
 
 mkdir $MARVIN_HOME
 cd $MARVIN_HOME
