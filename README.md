@@ -8,7 +8,39 @@ The toolbox is a set of utilities and CLI commands intended to help the data sci
 
 ## Installation
 
-Currently, there is no direct installation of the toolbox. It is being installed as part of the marvin-vagrant-dev installation.
+```
+sudo apt-get install libsasl2-dev python-pip graphviz -y
+
+sudo pip install --upgrade pip
+sudo pip install virtualenvwrapper
+
+cd /tmp
+wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz && tar -xf spark-2.1.1-bin-hadoop2.6.tgz
+sudo mv spark-2.1.1-bin-hadoop2.6 /opt/spark
+
+echo "export SPARK_HOME=/opt/spark" >> $HOME/.bashrc
+echo "export WORKON_HOME=$HOME/.virtualenvs" >> $HOME/.bashrc
+echo "export MARVIN_HOME=$HOME/marvin" >> $HOME/.bashrc
+echo "export MARVIN_DATA_PATH=$HOME/marvin/data" >> $HOME/.bashrc
+echo "source virtualenvwrapper.sh" >> $HOME/.bashrc
+
+source ~/.profile
+
+mkdir $MARVIN_HOME
+cd $MARVIN_HOME
+
+mkdir $MARVIN_DATA_PATH
+
+git clone https://github.com/marvin-ai/marvin-python-toolbox.git
+cd marvin-python-toolbox
+
+mkvirtualenv marvin-python-toolbox-env
+setvirtualenvproject
+
+make marvin
+marvin test
+```
+
 
 ## CLI
 
@@ -34,7 +66,7 @@ Some projects can define new commands and blacklist some unuseful ones, but in g
 
 #### configuration file - marvin.ini
 
-To use the `marvin-manage` command your project should have a `marvin.ini` file.
+To use the `marvin` command your project should have a `marvin.ini` file.
 
 ```
 [marvin]
