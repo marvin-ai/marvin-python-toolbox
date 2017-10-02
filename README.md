@@ -15,7 +15,8 @@ sudo pip install --upgrade pip
 sudo pip install virtualenvwrapper
 
 cd /tmp
-wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz && tar -xf spark-2.1.1-bin-hadoop2.6.tgz
+wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz
+tar -xf spark-2.1.1-bin-hadoop2.6.tgz
 sudo mv spark-2.1.1-bin-hadoop2.6 /opt/spark
 
 echo "export SPARK_HOME=/opt/spark" >> $HOME/.bashrc
