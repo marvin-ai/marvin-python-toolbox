@@ -4,11 +4,11 @@
 
 ## Overview
 
-//TODO
+The toolbox is a set of utilities and CLI commands intended to help the data scientist on the mission of building production-ready models.
 
 ## Installation
 
-//TODO
+Currently, there is no direct installation of the toolbox. It is being installed as part of the marvin-vagrant-dev installation.
 
 ## CLI
 
