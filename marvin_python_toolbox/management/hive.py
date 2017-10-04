@@ -85,7 +85,8 @@ def hive_resetremote(ctx, host, engine, queue):
 @click.option('--destination-hdfs-root-path', '-hdfs', default='/user/hive/warehouse/')
 @click.option('--destination-host-password', '-p', default='vagrant')
 @click.option('--destination-host-username', '-u', default='vagrant')
-@click.option('--destination-host', '-h', default='marvin-hadoop')
+@click.option('--destination-host', '-dh', default='marvin-hadoop')
+@click.option('--destination-port', '-dp', default=22)
 @click.option('--max-query-size', '-s', default=(50 * 1024 * 1024), help='Max query size in bytes')
 @click.option('--force', is_flag=True, help='Force table creation even table already exists in destination')
 @click.option('--force-remote', is_flag=True, help='Force remote temp table creation even table already exists in origin')
@@ -98,7 +99,7 @@ def hive_resetremote(ctx, host, engine, queue):
 @click.pass_context
 def hive_dataimport(
     ctx, conf, sql_id, engine, skip_remote_preparation, force_copy_files, validate, force,
-    force_remote, max_query_size, destination_host, destination_host_username, destination_host_password,
+    force_remote, max_query_size, destination_host, destination_port, destination_host_username, destination_host_password,
     destination_hdfs_root_path
 ):
 
@@ -116,6 +117,7 @@ def hive_dataimport(
             hdi = HiveDataImporter(
                 max_query_size=max_query_size,
                 destination_host=destination_host,
+                destination_port=destination_port,
                 destination_host_username=destination_host_username,
                 destination_host_password=destination_host_password,
                 destination_hdfs_root_path=destination_hdfs_root_path,
@@ -157,7 +159,7 @@ def read_config(filename):
 class HiveDataImporter(object):
     def __init__(
         self, origin_host, origin_db, origin_queue, target_table_name, sample_sql, engine,
-        max_query_size, destination_host, destination_host_username, destination_host_password,
+        max_query_size, destination_host, destination_port, destination_host_username, destination_host_password,
         destination_hdfs_root_path, sql_id
     ):
 
@@ -169,6 +171,7 @@ class HiveDataImporter(object):
         self.sample_sql = sample_sql
         self.engine = engine
         self.destination_host = destination_host
+        self.destination_port = destination_port
         self.destination_host_username = destination_host_username
         self.destination_host_password = destination_host_password
         self.destination_hdfs_root_path = destination_hdfs_root_path
@@ -394,6 +397,7 @@ class HiveDataImporter(object):
         print("Copying files from [{}] to [{}]".format(temp_table_location, external_table_location))
         self.hdfs_dist_copy(force=copy_files,
                             hdfs_host=self.destination_host,
+                            hdfs_port=self.destination_port,
                             origin=temp_table_location,
                             dest=external_table_location,
                             password=self.destination_host_password,
@@ -631,15 +635,15 @@ class HiveDataImporter(object):
         logger.debug(errors)
         return output, errors
 
-    def _get_ssh_client(self, hdfs_host, username, password):
+    def _get_ssh_client(self, hdfs_host, hdfs_port, username, password):
         ssh = SSHClient()
         ssh.set_missing_host_key_policy(AutoAddPolicy())
-        ssh.connect(hostname=hdfs_host, username=username, password=password, )
+        ssh.connect(hostname=hdfs_host, port=hdfs_port, username=username, password=password, )
         return ssh
 
-    def hdfs_dist_copy(self, force, hdfs_host, origin, dest, username=None, password=None):
+    def hdfs_dist_copy(self, force, hdfs_host, hdfs_port, origin, dest, username=None, password=None):
         # connecting with hdfs host
-        ssh = self._get_ssh_client(hdfs_host, username, password)
+        ssh = self._get_ssh_client(hdfs_host, hdfs_port, username, password)
 
         if force:
             print("Removing old hdfs files if necessary. To force copy remote files use --force-copy-files flag.")

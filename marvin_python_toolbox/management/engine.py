@@ -528,7 +528,7 @@ def _call_git_init(dest):
 @click.option('--http_port', '-p', default=8000, help='Engine executor http port')
 @click.option(
     '--executor-path', '-e',
-    default='/vagrant/projects/marvin/engine-executor/target/scala-2.12/marvin-engine-executor-assembly-0.0.1.jar',
+    default='marvin-engine-executor.jar',
     help='Marvin engine executor jar path', type=click.Path(exists=True))
 @click.pass_context
 def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, spark_conf, http_host, http_port, executor_path):

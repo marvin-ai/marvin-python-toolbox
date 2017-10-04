@@ -39,7 +39,6 @@ __all__ = ['create_cli']
 logger = get_logger('management')
 
 EXCLUDE_BY_TYPE = {
-    'lib': ['engine-generate', 'engine-generateenv'],
     'python-engine': ['engine-generate', 'engine-generateenv'],
     'tool': ['engine-server', 'engine-dryrun']
 }
