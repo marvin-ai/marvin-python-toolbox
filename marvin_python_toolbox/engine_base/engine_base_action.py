@@ -74,14 +74,16 @@ class EngineBaseAction():
 
         if self._persistence_mode == 'local':
             object_file_path = self._get_object_file_path(object_reference)
-            logger.info("Save object to {}".format(object_file_path))
+            logger.info("Saving object to {}".format(object_file_path))
             serializer.dump(obj, object_file_path, protocol=2, compress=3)
+            logger.info("Object {} saved!".format(object_reference))
 
     def _load_obj(self, object_reference):
         if getattr(self, object_reference, None) is None and self._persistence_mode == 'local':
             object_file_path = self._get_object_file_path(object_reference)
-            logger.info("Load object from {}".format(object_file_path))
+            logger.info("Loading object from {}".format(object_file_path))
             setattr(self, object_reference, serializer.load(object_file_path))
+            logger.info("Object {} loaded!".format(object_reference))
 
         return getattr(self, object_reference)
 

@@ -29,6 +29,7 @@ import subprocess
 import jinja2
 import six
 from unidecode import unidecode
+import multiprocessing
 
 from .._logging import get_logger
 
@@ -274,7 +275,7 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
             ctx=ctx,
             action=action_name,
             port=action[action_name]["port"],
-            workers=10,
+            workers=multiprocessing.cpu_count() * 3,
             params=params,
             initial_dataset=initial_dataset,
             dataset=dataset,
@@ -287,7 +288,7 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
 
     try:
         while True:
-            pass
+            time.sleep(10)
     except KeyboardInterrupt:
         print("Terminating server ...")
         for server in servers:
@@ -560,7 +561,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
 
     try:
         while True:
-            pass
+            time.sleep(10)
     except KeyboardInterrupt:
         logger.info("Terminating http and grpc servers...")
         grpcserver.terminate() if grpcserver else None
