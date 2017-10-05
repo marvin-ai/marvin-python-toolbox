@@ -19,7 +19,7 @@ import os
 from os.path import expanduser
 
 from abc import ABCMeta, abstractmethod
-import cPickle as serializer
+import joblib as serializer
 from concurrent import futures
 import grpc
 import json
@@ -64,12 +64,6 @@ class EngineBaseAction():
 
         return os.path.join(directory, "{}".format(object_reference.replace('_', '')))
 
-    def _get_obj(self, object_reference):
-        return serializer.dumps(getattr(self, object_reference))
-
-    def _set_obj(self, object_reference, obj):
-        setattr(self, object_reference, serializer.loads(obj))
-
     def _save_obj(self, object_reference, obj):
         if not self._is_remote_calling:
             if getattr(self, object_reference, None) is not None:
@@ -81,20 +75,20 @@ class EngineBaseAction():
         if self._persistence_mode == 'local':
             object_file_path = self._get_object_file_path(object_reference)
             logger.info("Save object to {}".format(object_file_path))
-            serializer.dump(obj, open(object_file_path, 'wb'))
+            serializer.dump(obj, object_file_path, protocol=2, compress=3)
 
     def _load_obj(self, object_reference):
         if getattr(self, object_reference, None) is None and self._persistence_mode == 'local':
             object_file_path = self._get_object_file_path(object_reference)
             logger.info("Load object from {}".format(object_file_path))
-            setattr(self, object_reference, serializer.load(open(object_file_path, 'rb')))
+            setattr(self, object_reference, serializer.load(object_file_path))
 
         return getattr(self, object_reference)
 
     @classmethod
     def retrieve_obj(self, object_file_path):
         logger.info("Retrieve object from {}".format(object_file_path))
-        return serializer.load(open(object_file_path, 'rb'))
+        return serializer.load(object_file_path)
 
     @property
     def params(self):
@@ -163,7 +157,7 @@ class EngineBaseBatchAction(EngineBaseAction):
         return response_message
 
     def _prepare_remote_server(self, port, workers):
-        server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers))
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers), maximum_concurrent_rpcs=workers)
         actions_pb2_grpc.add_BatchActionHandlerServicer_to_server(self, server)
         server.add_insecure_port('[::]:{}'.format(port))
         return server

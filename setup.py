@@ -78,6 +78,7 @@ REQUIREMENTS_EXTERNAL = [
     'findspark==1.1.0',
     'grpcio==1.6.0',
     'grpcio-tools==1.6.0',
+    'joblib==0.11',
 ]
 
 # Test dependencies

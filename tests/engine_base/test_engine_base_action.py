@@ -61,17 +61,6 @@ class TestEngineBaseAction:
     def test_get_object_file_path(self, engine_action):
         assert engine_action._get_object_file_path(object_reference="xpath") == "/tmp/.marvin/test_base_action/xpath"
 
-    def test_set_and_get_obj(self, engine_action):
-        engine_action._params = [1, 2]
-        _p1 = engine_action._get_obj("_params")
-        assert _p1
-
-        engine_action._params = [6]
-        assert engine_action.params == [6]
-
-        engine_action._set_obj("_params", _p1)
-        assert engine_action.params == [1, 2]
-
     def test_save_obj_memory_persistence(self, engine_action):
         obj = [6, 5, 4]
         object_reference = '_params'
