@@ -8,29 +8,47 @@ The toolbox is a set of utilities and CLI commands intended to help the data sci
 
 ## Installation
 
+### Ubuntu Linux
 ```
 sudo apt-get install libsasl2-dev python-pip graphviz -y
+```
 
+### MacOS
+```
+sudo easy_install pip graphviz
+brew install openssl
+```
+
+### Common installation procedures
+1. VirtualEnvWrapper Installation
+```
 sudo pip install --upgrade pip
 sudo pip install virtualenvwrapper
+```
+2. Spark installation (Only install if you dont have)
+```
+curl https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz -o /tmp/spark-2.1.1-bin-hadoop2.6.tgz
+sudo tar -xf /tmp/spark-2.1.1-bin-hadoop2.6.tgz -C /opt/
+sudo ln -s /opt/spark-2.1.1-bin-hadoop2.6 /opt/spark
 
-cd /tmp
-wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz
-tar -xf spark-2.1.1-bin-hadoop2.6.tgz
-sudo mv spark-2.1.1-bin-hadoop2.6 /opt/spark
+echo "export SPARK_HOME=/opt/spark" >> $HOME/.bash_profile
+```
+3. Required environment variables
+```
+echo "export WORKON_HOME=$HOME/.virtualenvs" >> $HOME/.bash_profile
+echo "export MARVIN_HOME=$HOME/marvin" >> $HOME/.bash_profile
+echo "export MARVIN_DATA_PATH=$HOME/marvin/data" >> $HOME/.bash_profile
+echo "source virtualenvwrapper.sh" >> $HOME/.bash_profile
 
-echo "export SPARK_HOME=/opt/spark" >> $HOME/.bashrc
-echo "export WORKON_HOME=$HOME/.virtualenvs" >> $HOME/.bashrc
-echo "export MARVIN_HOME=$HOME/marvin" >> $HOME/.bashrc
-echo "export MARVIN_DATA_PATH=$HOME/marvin/data" >> $HOME/.bashrc
-echo "source virtualenvwrapper.sh" >> $HOME/.bashrc
+source ~/.bash_profile
+````
 
-source ~/.bashrc
+4. Clone and install toolbox
 
+```
 mkdir $MARVIN_HOME
-cd $MARVIN_HOME
-
 mkdir $MARVIN_DATA_PATH
+cd $MARVIN_HOME
 
 git clone https://github.com/marvin-ai/marvin-python-toolbox.git
 cd marvin-python-toolbox
@@ -39,6 +57,10 @@ mkvirtualenv marvin-python-toolbox-env
 setvirtualenvproject
 
 make marvin
+````
+
+5. Test the installation
+```
 marvin test
 ```
 
