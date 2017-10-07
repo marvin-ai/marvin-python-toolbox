@@ -1,24 +1,39 @@
-sudo: true
-dist: trusty
 language: python
-python:
-- '2.7'
+sudo: required
+dist: trusty
+
+matrix:
+    include:
+        - os: linux
+          python: 2.7
+        - os: osx
+          language: generic
+
 before_install:
-- sudo apt-get -qq update
-- sudo apt-get install -y graphviz
-- wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz && tar
-  -xf spark-2.1.1-bin-hadoop2.6.tgz
-- export SPARK_HOME=./spark-2.1.1-bin-hadoop2.6
-- mkdir -p marvin_data
-- mkdir -p marvin_projects
-- export MARVIN_DATA_PATH=./marvin_data
-- export MARVIN_HOME=./marvin_home
+  - curl https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz -o ./spark-2.1.1-bin-hadoop2.6.tgz
+  - sudo tar -xf ./spark-2.1.1-bin-hadoop2.6.tgz
+  - mkdir -p marvin_data
+  - mkdir -p marvin_home
+  - export MARVIN_HOME=./marvin_home
+  - export MARVIN_DATA_PATH=./marvin_data
+  - export SPARK_HOME=./spark-2.1.1-bin-hadoop2.6
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo easy_install pip          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update                    ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install openssl graphviz  ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libsasl2-dev python-pip graphviz -y ; fi
+  - sudo pip install --upgrade pip
+  - sudo pip install virtualenvwrapper
+  - source virtualenvwrapper.sh
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkvirtualenv marvin-env         ; fi
+
 install:
-- make marvin
-- pip install codecov
+  - make marvin
+  - pip install codecov
+
 script:
-- marvin test
-- codecov
+  - marvin test
+  - codecov
+
 deploy:
   provider: pypi
   user: "takabayashi"

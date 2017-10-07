@@ -104,31 +104,32 @@ def _set_autocomplete(dir):
     if virtualenv:
         postactivate = os.path.join(virtualenv, 'bin', 'postactivate')
 
-        from pkg_resources import Requirement, resource_filename
+        if os.path.exists(postactivate):
+            from pkg_resources import Requirement, resource_filename
 
-        bash_completion = resource_filename(
-            Requirement.parse('marvin_python_toolbox'),
-            os.path.join('marvin_python_toolbox', 'extras', 'marvin_bash_completion'))
+            bash_completion = resource_filename(
+                Requirement.parse('marvin_python_toolbox'),
+                os.path.join('marvin_python_toolbox', 'extras', 'marvin_bash_completion'))
 
-        command = 'source "{}"'.format(bash_completion)
+            command = 'source "{}"'.format(bash_completion)
 
-        with open(postactivate, 'r+') as fp:
-            lines = fp.readlines()
-            fp.seek(0)
-            configured = False
-            for line in lines:
-                if 'marvin_bash_completion' in line:
-                    # Replacing old autocomplete configuration
+            with open(postactivate, 'r+') as fp:
+                lines = fp.readlines()
+                fp.seek(0)
+                configured = False
+                for line in lines:
+                    if 'marvin_bash_completion' in line:
+                        # Replacing old autocomplete configuration
+                        fp.write(command)
+                        configured = True
+                    else:
+                        fp.write(line)
+
+                if not configured:
                     fp.write(command)
-                    configured = True
-                else:
-                    fp.write(line)
-
-            if not configured:
-                fp.write(command)
-                # 'Autocomplete was successfully configured'
-            fp.write('\n')
-            fp.truncate()
+                    # 'Autocomplete was successfully configured'
+                fp.write('\n')
+                fp.truncate()
 
 
 class develop(_develop):
@@ -203,5 +204,5 @@ setup(
     tests_require=REQUIREMENTS_TESTS,
     dependency_links=DEPENDENCY_LINKS_EXTERNAL,
     scripts=SCRIPTS,
-    cmdclass={'test': Tox},
+    cmdclass={'test': Tox, 'develop': develop},
 )

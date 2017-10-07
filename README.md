@@ -15,8 +15,8 @@ sudo apt-get install libsasl2-dev python-pip graphviz -y
 
 ### MacOS
 ```
-sudo easy_install pip graphviz
-brew install openssl
+sudo easy_install pip
+brew install openssl graphviz
 ```
 
 ### Common installation procedures

@@ -29,7 +29,6 @@ import hashlib
 import jsonschema
 import warnings
 import urllib
-import socket
 from slugify import slugify
 
 # Use six to create code compatible with Python 2 and 3.
@@ -204,6 +203,7 @@ def is_valid_json(data, schema):
 def generate_key(string):
     return hashlib.sha256(string.encode('utf-8')).hexdigest()
 
+
 def to_slug(strvalue):
     """Wrapper to convert any string on slug"""
     return slugify(strvalue)
@@ -294,10 +294,3 @@ def url_encode(url):
     if isinstance(url, unicode):
         url = url.encode('utf8')
     return urllib.quote(url, ':/%?&=')
-
-
-def get_local_ip_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # connecting to a UDP address doesn't send packets
-    s.connect(('8.8.8.8', 0))
-    return s.getsockname()[0]
