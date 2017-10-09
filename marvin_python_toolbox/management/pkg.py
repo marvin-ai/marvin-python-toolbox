@@ -413,5 +413,5 @@ def is_git_clean(path=None):
     if path is None:
         path = os.path.curdir
     command = 'git diff --quiet HEAD'.split()
-    exit_code = subprocess.call(command)
-    return exit_code == 0
+    exit_code = subprocess.Popen(command, stdout=subprocess.PIPE, cwd=path).stdout.read()
+    return exit_code
