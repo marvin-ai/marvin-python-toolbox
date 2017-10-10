@@ -37,6 +37,7 @@ from .._logging import get_logger
 logger = get_logger('management.engine')
 
 MARVIN_HOME = os.getenv('MARVIN_HOME')
+MARVIN_DATA_PATH = os.getenv('MARVIN_DATA_PATH')
 
 
 @click.group('engine')
@@ -203,7 +204,7 @@ def generate_kwargs(clazz, params=None, initial_dataset=None, dataset=None, mode
         kwargs["metrics"] = clazz.retrieve_obj(metrics)
 
     kwargs["persistence_mode"] = 'local'
-    kwargs["default_root_path"] = os.path.join(MARVIN_HOME, 'artifacts')
+    kwargs["default_root_path"] = os.path.join(MARVIN_DATA_PATH, '.artifacts')
     kwargs["is_remote_calling"] = True
 
     return kwargs
@@ -379,8 +380,7 @@ def generate(name, description, mantainer, email, package, dest, no_env, no_git)
         'name': name,
         'description': description,
         'package': package,
-        'type': type_,
-        'home': MARVIN_HOME,
+        'type': type_
     }
 
     mantainer = {

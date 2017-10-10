@@ -117,6 +117,7 @@ class EngineBaseAction():
         return response_message
 
     def _health_check(self, request, context):
+        logger.info("Received message from client with protocol health check [{}] artifacts...".format(request.artifacts))
         try:
             if request.artifacts:
                 for artifact in request.artifacts.split(","):
