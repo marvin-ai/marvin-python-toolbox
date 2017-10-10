@@ -20,6 +20,7 @@
 """
 
 import os
+import requests
 
 # Use six to create code compatible with Python 2 and 3.
 # See http://pythonhosted.org/six/
@@ -78,3 +79,20 @@ class MarvinData(object):
             content = fp.read()
 
         return content
+
+    @classmethod
+    def download_file(cls, url, local_file_name=None):
+        """
+        Download file from a given url
+        """
+
+        local_file_name = local_file_name if local_file_name else url.split('/')[-1]
+        filepath = os.path.join(cls.data_path, local_file_name)
+
+        # NOTE the stream=True parameter
+        r = requests.get(url, stream=True)
+        with open(filepath, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+        return filepath
