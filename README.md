@@ -2,171 +2,178 @@
 
 # Marvin Toolbox v0.0.1
 
-## Overview
+![](https://images-americanas.b2w.io/img/_staging/marvin/marvin.png)
 
-The toolbox is a set of utilities and CLI commands intended to help the data scientist on the mission of building production-ready models.
+# Quick Start
 
-## Installation
+## Review
 
-### Ubuntu Linux
-```
-sudo apt-get install libsasl2-dev python-pip graphviz -y
-```
+**Marvin** is an open source Artificial Intelligence platform that focus on help data science team members, in an easy way, to deliver complex solutions supported by a high-scale, low-latency, language agnostic and standardized architecture while simplifying the process of exploitation and modeling.
 
-### MacOS
-```
-sudo easy_install pip
-brew install openssl graphviz
-```
+## Getting Started
+* [Installing Marvin (Ubuntu and MacOS user)](#installing-marvin-as-ubuntu-and-macos-user)
+* [Installing Marvin (Others SOs)](#installing-marvin-with-others-sos)
+* [Creating a new engine](#creating-a-new-engine)
+* [Working in an existing engine](#working-in-an-existing-engine)
+* [Command line interface](#command-line-interface)
+* [Running a example engine](#running-a-example-engine)
 
-### Common installation procedures
-1. VirtualEnvWrapper Installation
+### Installing Marvin as Ubuntu and MacOS user
+Take the following steps to install Marvin Toolbox:
+1. Libsasl2-dev, Python-pip and Graphviz installation
 ```
-sudo pip install --upgrade pip
-sudo pip install virtualenvwrapper
-```
-2. Spark installation (Only install if you dont have)
-```
-curl https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz -o /tmp/spark-2.1.1-bin-hadoop2.6.tgz
-sudo tar -xf /tmp/spark-2.1.1-bin-hadoop2.6.tgz -C /opt/
-sudo ln -s /opt/spark-2.1.1-bin-hadoop2.6 /opt/spark
+Ubuntu: 
+$ sudo apt-get install libsasl2-dev python-pip graphviz -y
 
-echo "export SPARK_HOME=/opt/spark" >> $HOME/.bash_profile
+MacOS: 
+$ sudo easy_install pip
+$ brew install openssl graphviz
 ```
-3. Required environment variables
+2. VirtualEnvWrapper Installation
 ```
-echo "export WORKON_HOME=$HOME/.virtualenvs" >> $HOME/.bash_profile
-echo "export MARVIN_HOME=$HOME/marvin" >> $HOME/.bash_profile
-echo "export MARVIN_DATA_PATH=$HOME/marvin/data" >> $HOME/.bash_profile
-echo "source virtualenvwrapper.sh" >> $HOME/.bash_profile
+$ sudo pip install --upgrade pip
+$ sudo pip install virtualenvwrapper
+```
+3. Spark installation
+```
+$ curl https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz -o /tmp/spark-2.1.1-bin-hadoop2.6.tgz
 
-source ~/.bash_profile
+$ sudo tar -xf /tmp/spark-2.1.1-bin-hadoop2.6.tgz -C /opt/
+$ sudo ln -s /opt/spark-2.1.1-bin-hadoop2.6 /opt/spark
+
+$ echo "export SPARK_HOME=/opt/spark" >> $HOME/.bash_profile
+```
+4. Set environment variables
+```
+$ echo "export WORKON_HOME=$HOME/.virtualenvs" >> $HOME/.bash_profile
+$ echo "export MARVIN_HOME=$HOME/marvin" >> $HOME/.bash_profile
+$ echo "export MARVIN_DATA_PATH=$HOME/marvin/data" >> $HOME/.bash_profile
+$ echo "source virtualenvwrapper.sh" >> $HOME/.bash_profile
+
+$ source ~/.bash_profile
 ````
 
-4. Clone and install toolbox
+5. Clone and install python-toolbox
 
 ```
-mkdir $MARVIN_HOME
-mkdir $MARVIN_DATA_PATH
-cd $MARVIN_HOME
+$ mkdir $MARVIN_HOME
+$ mkdir $MARVIN_DATA_PATH
+$ cd $MARVIN_HOME
 
-git clone https://github.com/marvin-ai/marvin-python-toolbox.git
-cd marvin-python-toolbox
+$ git clone https://github.com/marvin-ai/marvin-python-toolbox.git
+$ cd marvin-python-toolbox
 
-mkvirtualenv marvin-python-toolbox-env
-setvirtualenvproject
+$ mkvirtualenv python-toolbox-env
+$ setvirtualenvproject
 
-make marvin
+$ make marvin
 ````
 
-5. Test the installation
+6. Test the installation
 ```
-marvin test
+$ marvin test
 ```
+### Installing Marvin with Others SOs
+Take the following steps to install Marvin Toolbox using Vagrant:
+1. Install requirements
+- [Virtual box](http://www.virtualbox.org) (Version 5.1 +)
+- [Vagrant](http://www.vagrantup.com) (Version 1.9.2 or +)
 
 
-## CLI
-
-### marvin
-
-`marvin` is a command-line utility for development tasks.
-
-#### Usage
-
+2. Clone repository and start provision
 ```
- $ marvin [OPTIONS] [COMMAND] [ARGS]...
-```
-
-`COMMAND` should be one of the commands listed below.
-
-### Builtin Commands
-
-// TODO
- 
-Some projects can define new commands and blacklist some unuseful ones, but in general the above commands will be available most of the time.
-
-### Configuration
-
-#### configuration file - marvin.ini
-
-To use the `marvin` command your project should have a `marvin.ini` file.
-
-```
-[marvin]
-# The package name. Mandatory. 
-# (the same name used when importing in python)
-package = marvin_something              
-
-# The package path. Optional. (default: {inidir}/{package})
-packagedir = path                      
-
-# The type of your project. Mandatory.
-type = [lib|tool|python-engine] 
-
-# The list of commands to be disabled. Optional.
-exclude = list of commands, separated by commas             
-
-# The file containing the project custom commands. Optional.
-# (default: {inidir}/commands.py)
-commandsfile = path                   
+$ git clone https://github.com/marvin-ai/marvin-vagrant-dev.git
+$ cd marvin-vagrant-dev
 ```
 
-#### Globally available substitutions
- 
- - `{inidir}`: The directory where marvin.ini is located
- 
-#### Custom substitutions
-
-All options declared in the configuration file can be used as a substitution, following the schema `{section_option}`. For example:
-
- - `{marvin_package}`: The package name
- - `{marvin_type}`: The project type
-
-### Creating project specific commands
-
-// TODO
-
-
-## Module marvin\_toolbox.management
-
-### Creating manage.py using marvin\_toolbox
-
-If you don't want to use directly the `marvin-manage` utility, you can create a `manage.py` file in your project (following the template below), make it executable using `chmod +x manage.py`, and then use all available builtin commands. 
-
-Although it's possible to create new commands modifing the `manage.py` file, it's strongly recommended to use the `commands.py`. Otherwise the new commands will not be available to the `marvin-manage` utility.
-
-#### manage.py example
-
+3. Prepare dev (engine creation) box
 ```
-#!/usr/bin/env python
-# coding=utf-8
+$ vagrant up dev
+$ vagrant ssh dev
+```
+Wait for provision process and follow interactive configuration script after access the dev box using vagrant ssh command.
 
-import os.path
+4. The marvin source projects will be on your home folder, to compile and use the marvin toolbox
+```
+$ workon python-toolbox-env
+$ make marvin
+```
+### Creating a new engine
+1. To create a new engine
+```
+workon python-toolbox-env
+marvin engine-generate
+```
+Respond the interactive prompt and wait for the engine environment preparation, and don't forget to start dev box before if you are using vagrant.
 
-from marvin_python_toolbox.management import create_cli
+2. Test the new engine
+```
+$ workon <new_engine_name>-env
+$ marvin test
+```
+3. For more informations
+```
+$ marvin --help
+```
+### Working in an existing engine
+1. Set VirtualEnv and get to engine's path
+```
+$ workon <engine_name>-env
+```
+2. Test your engine
+```
+$ marvin test
+```
+3. Bring up the notebook and access it from your browser
+```
+$ marvin notebook
+```
+### Command line interface
+Usage: marvin [OPTIONS] COMMAND [ARGS]
 
-package_name = '[YOUR PACKAGE NAME]'  # Don't forget to replace *[YOUR PACKAGE NAME]* value.
-package_type = 'lib'
-package_path = os.path.join(os.path.dirname(__file__), package_name)
-
-exclude_commands = ['runserver', 'notebook', 'example']
-
-cli = create_cli(package_name, package_path, exclude=exclude_commands, type_=package_type)
-
-# Create new command 
-# (not recommended. use the commands.py file)
-@cli.command('ping', help='Display "pong".')
-def pong():
-    print 'pong'
-
-if __name__ == '__main__':
-    cli()
+Options:
+```
+  --debug       #Enable debug mode.
+  --version     #Show the version and exit.
+  --help        #Show this command line interface and exit.
 ```
 
-## Logging
+Commands:
+```
+  engine-generate     #Generate a new marvin engine project.
+  engine-generateenv  #Generate a new marvin engine environment.
+  engine-grpcserver   #Marvin gRPC engine action server starts.
+  engine-httpserver   #Marvin http api server starts.
+  hive-dataimport     #Import data samples from a hive databse to the hive running in this toolbox.
+  hive-generateconf   #Generate default configuration file.
+  hive-resetremote    #Drop all remote tables from informed engine on host.
+  notebook            #Start the Jupyter notebook server.
+  pkg-bumpversion     #Bump the package version.
+  pkg-createtag       #Create git tag using the package version.
+  pkg-showchanges     #Show the package changelog.
+  pkg-showinfo        #Show information about the package.
+  pkg-showversion     #Show the package version.
+  pkg-updatedeps      #Update requirements.txt.
+  test                #Run tests.
+  test-checkpep8      #Check python code style.
+  test-tdd            #Watch for changes to run tests automatically.
+  test-tox            #Run tests using a new virtualenv.
+```
 
-The default log level is set to _WARNING_. You can change the log level at runtime setting another value to one of the following environment variable: `MARVIN_TOOLBOX_LOG_LEVEL` or `LOG_LEVEL`. The available values are _CRITICAL_, _ERROR_, _WARNING_, _INFO_ and _DEBUG_.
-
-Be careful using `LOG_LEVEL`, it may affect another lib.
+### Running a example engine 
+1. Clone example engine from repository
+```
+$ git clone https://github.com/marvin-ai/engines.git
+```
+2. Generate a new marvin engine environment for Iris species engine
+```
+$ workon python-toolbox-env
+$ marvin engine-generateenv ../engines/iris-species-engine/
+```
+3. Run the Iris species engine
+```
+$ workon iris-species-engine-env
+$ marvin engine-dryrun 
+```
 
 > Marvin is a project started at B2W Digital offices and released open source on September 2017.
