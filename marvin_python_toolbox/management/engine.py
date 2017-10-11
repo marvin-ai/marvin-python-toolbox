@@ -59,7 +59,7 @@ def cli():
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--messages-file', '-mf', default='engine.messages', help='Marvin engine predictor input messages file path', type=click.Path(exists=True))
 @click.option('--response', '-r', default=False, is_flag=True, help='If enable, print responses from engine online actions (ppreparator and predictor)')
-@click.option('--spark-conf', '-c', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.pass_context
 def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, model, metrics, response, spark_conf):
 
@@ -68,7 +68,6 @@ def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, mo
     initial_start_time = time.time()
 
     # setting spark configuration directory
-    spark_conf = '/usr/opt/spark' if not spark_conf else None
     os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
 
     params = read_file(params_file)
@@ -250,14 +249,13 @@ class MarvinEngineServer(object):
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--metadata-file', '-mf', default='engine.metadata', help='Marvin engine metadata file path', type=click.Path(exists=True))
-@click.option('--spark-conf', '-c', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.pass_context
 def engine_server(ctx, action, params_file, metadata_file, initial_dataset, dataset, model, metrics, spark_conf):
 
     print("Starting server ...")
 
     # setting spark configuration directory
-    spark_conf = '/usr/opt/spark' if not spark_conf else None
     os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
 
     params = read_file(params_file)
