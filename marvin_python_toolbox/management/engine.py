@@ -250,8 +250,9 @@ class MarvinEngineServer(object):
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--metadata-file', '-mf', default='engine.metadata', help='Marvin engine metadata file path', type=click.Path(exists=True))
 @click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
 @click.pass_context
-def engine_server(ctx, action, params_file, metadata_file, initial_dataset, dataset, model, metrics, spark_conf):
+def engine_server(ctx, action, params_file, metadata_file, initial_dataset, dataset, model, metrics, spark_conf, max_workers):
 
     print("Starting server ...")
 
@@ -274,7 +275,7 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
             ctx=ctx,
             action=action_name,
             port=action[action_name]["port"],
-            workers=multiprocessing.cpu_count() * 3,
+            workers=max_workers,
             params=params,
             initial_dataset=initial_dataset,
             dataset=dataset,
@@ -529,15 +530,16 @@ def _call_git_init(dest):
     '--executor-path', '-e',
     default='marvin-engine-executor.jar',
     help='Marvin engine executor jar path', type=click.Path(exists=True))
+@click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
 @click.pass_context
-def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, spark_conf, http_host, http_port, executor_path):
+def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, spark_conf, http_host, http_port, executor_path, max_workers):
     logger.info("Starting http and grpc servers ...")
 
     grpcserver = None
     httpserver = None
 
     try:
-        grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver'])
+        grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver', '-a', action, '-w', str(max_workers)])
 
     except:
         logger.exception("Could not start grpc server!")
@@ -559,7 +561,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
 
     try:
         while True:
-            time.sleep(10)
+            time.sleep(100)
     except KeyboardInterrupt:
         logger.info("Terminating http and grpc servers...")
         grpcserver.terminate() if grpcserver else None

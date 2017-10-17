@@ -160,7 +160,7 @@ class EngineBaseBatchAction(EngineBaseAction):
         return response_message
 
     def _prepare_remote_server(self, port, workers):
-        server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers), maximum_concurrent_rpcs=workers)
+        server = grpc.server(thread_pool=futures.ThreadPoolExecutor(), maximum_concurrent_rpcs=workers)
         actions_pb2_grpc.add_BatchActionHandlerServicer_to_server(self, server)
         server.add_insecure_port('[::]:{}'.format(port))
         return server
@@ -198,7 +198,7 @@ class EngineBaseOnlineAction(EngineBaseAction):
         return response_message
 
     def _prepare_remote_server(self, port, workers):
-        server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers))
+        server = grpc.server(thread_pool=futures.ThreadPoolExecutor(), maximum_concurrent_rpcs=workers)
         actions_pb2_grpc.add_OnlineActionHandlerServicer_to_server(self, server)
         server.add_insecure_port('[::]:{}'.format(port))
         return server
