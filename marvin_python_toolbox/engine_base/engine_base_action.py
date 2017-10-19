@@ -65,6 +65,12 @@ class EngineBaseAction():
 
         return os.path.join(directory, "{}".format(object_reference.replace('_', '')))
 
+    def serializer_dump(self, obj, object_file_path):
+        serializer.dump(obj, object_file_path, protocol=2, compress=3)
+
+    def serializer_load(self, object_file_path):
+        return serializer.load(object_file_path)
+
     def _save_obj(self, object_reference, obj):
         if not self._is_remote_calling:
             if getattr(self, object_reference, None) is not None:
@@ -76,7 +82,7 @@ class EngineBaseAction():
         if self._persistence_mode == 'local':
             object_file_path = self._get_object_file_path(object_reference)
             logger.info("Saving object to {}".format(object_file_path))
-            serializer.dump(obj, object_file_path, protocol=2, compress=3)
+            self.serializer_dump(obj, object_file_path)
             logger.info("Object {} saved!".format(object_reference))
             self._local_saved_objects[object_reference] = object_file_path
 
@@ -84,7 +90,7 @@ class EngineBaseAction():
         if getattr(self, object_reference, None) is None and self._persistence_mode == 'local':
             object_file_path = self._get_object_file_path(object_reference)
             logger.info("Loading object from {}".format(object_file_path))
-            setattr(self, object_reference, serializer.load(object_file_path))
+            setattr(self, object_reference, self.serializer_load(object_file_path))
             logger.info("Object {} loaded!".format(object_reference))
 
         return getattr(self, object_reference)
