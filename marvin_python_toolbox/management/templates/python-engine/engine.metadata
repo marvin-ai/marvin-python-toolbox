@@ -5,7 +5,8 @@
 	"artifactsRemotePath": "/tmp/marvin",
 	"onlineActionTimeout": 1000,
     "healthCheckTimeout": 2000,
-	"reloadTimeout": 120,
+	"reloadTimeout": 600000,
+	"batchActionTimeout": 600000,
 	"hdfsHost": "hdfs://marvin-hadoop:8020",
 	"pipelineActions": ["acquisitor", "tpreparator", "trainer", "evaluator"],
 	"actions": [{

@@ -211,7 +211,7 @@ def generate_kwargs(clazz, params=None, initial_dataset=None, dataset=None, mode
 
 class MarvinEngineServer(object):
     @classmethod
-    def create(self, ctx, action, port, workers, params, initial_dataset, dataset, model, metrics, pipeline):
+    def create(self, ctx, action, port, workers, rpc_workers, params, initial_dataset, dataset, model, metrics, pipeline):
         package_name = ctx.obj['package_name']
 
         def create_object(act):
@@ -228,7 +228,7 @@ class MarvinEngineServer(object):
                 previous_object._previous_step = create_object(step)
                 previous_object = previous_object._previous_step
 
-        server = root_obj._prepare_remote_server(port=port, workers=workers)
+        server = root_obj._prepare_remote_server(port=port, workers=workers, rpc_workers=rpc_workers)
 
         print("Starting GRPC server [{}] for {} Action".format(port, action))
         server.start()
@@ -250,9 +250,10 @@ class MarvinEngineServer(object):
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--metadata-file', '-mf', default='engine.metadata', help='Marvin engine metadata file path', type=click.Path(exists=True))
 @click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
-@click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
+@click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
+@click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
 @click.pass_context
-def engine_server(ctx, action, params_file, metadata_file, initial_dataset, dataset, model, metrics, spark_conf, max_workers):
+def engine_server(ctx, action, params_file, metadata_file, initial_dataset, dataset, model, metrics, spark_conf, max_workers, max_rpc_workers):
 
     print("Starting server ...")
 
@@ -276,6 +277,7 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
             action=action_name,
             port=action[action_name]["port"],
             workers=max_workers,
+            rpc_workers=max_rpc_workers,
             params=params,
             initial_dataset=initial_dataset,
             dataset=dataset,
@@ -530,16 +532,20 @@ def _call_git_init(dest):
     '--executor-path', '-e',
     default='marvin-engine-executor.jar',
     help='Marvin engine executor jar path', type=click.Path(exists=True))
-@click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
+@click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
+@click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
 @click.pass_context
-def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, spark_conf, http_host, http_port, executor_path, max_workers):
+def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
+                      model, metrics, spark_conf, http_host, http_port,
+                      executor_path, max_workers, max_rpc_workers):
     logger.info("Starting http and grpc servers ...")
 
     grpcserver = None
     httpserver = None
 
     try:
-        grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver', '-a', action, '-w', str(max_workers)])
+        grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver', '-a', action, '-w', str(max_workers), '-rw', str(max_rpc_workers)])
+        time.sleep(5)
 
     except:
         logger.exception("Could not start grpc server!")

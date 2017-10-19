@@ -77,6 +77,17 @@ class TestEngineBaseAction:
 
         assert obj == engine_action.params
         assert os.path.exists("/tmp/.marvin/test_base_action/params")
+        assert engine_action._local_saved_objects.keys() == [object_reference]
+
+    def test_release_saved_objects(self, engine_action):
+        obj = [6, 5, 4]
+        object_reference = '_params'
+        engine_action._persistence_mode = 'local'
+        engine_action._save_obj(object_reference, obj)
+
+        assert engine_action._local_saved_objects.keys() == [object_reference]
+        engine_action._release_local_saved_objects()
+        assert engine_action.params is None
 
     def test_save_two_times(self, engine_action):
         obj = [6, 5, 4]

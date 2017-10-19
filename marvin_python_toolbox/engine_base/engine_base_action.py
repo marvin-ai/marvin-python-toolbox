@@ -43,6 +43,7 @@ class EngineBaseAction():
     _default_root_path = None
     _previous_step = None
     _is_remote_calling = False
+    _local_saved_objects = {}
 
     def __init__(self, **kwargs):
         self.action_name = self.__class__.__name__
@@ -77,6 +78,7 @@ class EngineBaseAction():
             logger.info("Saving object to {}".format(object_file_path))
             serializer.dump(obj, object_file_path, protocol=2, compress=3)
             logger.info("Object {} saved!".format(object_reference))
+            self._local_saved_objects[object_reference] = object_file_path
 
     def _load_obj(self, object_reference):
         if getattr(self, object_reference, None) is None and self._persistence_mode == 'local':
@@ -86,6 +88,13 @@ class EngineBaseAction():
             logger.info("Object {} loaded!".format(object_reference))
 
         return getattr(self, object_reference)
+
+    def _release_local_saved_objects(self):
+        for object_reference in self._local_saved_objects.keys():
+            logger.info("Removing object {} from memory..".format(object_reference))
+            setattr(self, object_reference, None)
+
+        self._local_saved_objects = {}
 
     @classmethod
     def retrieve_obj(self, object_file_path):
@@ -153,14 +162,16 @@ class EngineBaseBatchAction(EngineBaseAction):
 
         self._pipeline_execute(params=params)
 
+        self._release_local_saved_objects()
+
         logger.info("Handling returned message from engine action...")
         response_message = BatchActionResponse(message="Done")
 
         logger.info("Return final results to the client!")
         return response_message
 
-    def _prepare_remote_server(self, port, workers):
-        server = grpc.server(thread_pool=futures.ThreadPoolExecutor(), maximum_concurrent_rpcs=workers)
+    def _prepare_remote_server(self, port, workers, rpc_workers):
+        server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=workers), maximum_concurrent_rpcs=rpc_workers)
         actions_pb2_grpc.add_BatchActionHandlerServicer_to_server(self, server)
         server.add_insecure_port('[::]:{}'.format(port))
         return server
@@ -197,8 +208,8 @@ class EngineBaseOnlineAction(EngineBaseAction):
         logger.info("Return final results to the client!")
         return response_message
 
-    def _prepare_remote_server(self, port, workers):
-        server = grpc.server(thread_pool=futures.ThreadPoolExecutor(), maximum_concurrent_rpcs=workers)
+    def _prepare_remote_server(self, port, workers, rpc_workers):
+        server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=workers), maximum_concurrent_rpcs=rpc_workers)
         actions_pb2_grpc.add_OnlineActionHandlerServicer_to_server(self, server)
         server.add_insecure_port('[::]:{}'.format(port))
         return server

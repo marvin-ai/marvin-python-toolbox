@@ -79,7 +79,7 @@ class profiling(object):
                         self.output_path = output_path_(*args, **kwargs)
                     uid_ = self.uid
                     if callable(uid_):
-                        self.uid = uid_(*args, **kwargs)
+                        self.uid = uid_()
                     info_ = self.info
                     if callable(info_):
                         self.info = info_(response, *args, **kwargs)
