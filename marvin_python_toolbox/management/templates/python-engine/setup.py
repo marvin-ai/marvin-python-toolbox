@@ -73,6 +73,7 @@ setup(
         'pandas==0.20.3',
         'matplotlib==2.0.2',
         'marvin-python-toolbox==0',
+        'Fabric==1.14.0',
     ],
     dependency_links=['git+https://github.com/marvin-ai/marvin-python-toolbox.git/@master#egg=marvin_python_toolbox-0'],
     tests_require=[
