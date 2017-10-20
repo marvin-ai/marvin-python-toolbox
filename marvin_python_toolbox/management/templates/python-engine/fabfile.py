@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+"""
+Fabric file.
+
+This file defines provisioning and deployment tasks for a Marvin engine.
+"""
+
 from fabric.api import env
 from fabric.api import run
 from fabric.api import execute
@@ -7,15 +16,17 @@ from fabric.api import put
 from fabric.api import sudo
 from fabric.state import output
 from marvin_python_toolbox import __version__ as TOOLBOX_VERSION
+from marvin_python_toolbox.common.config import Config
 
-env.hosts = [
-    "user@host"
-]
+_port = Config.get("port", section="ssh_deployment")
+_user = Config.get("user", section="ssh_deployment")
+
+env.hosts = ["{}@{}:{}".format(_user, h, _port) for h in Config.get("hosts", section="ssh_deployment").split(",")]
 
 output["everything"] = False
 output["running"] = True
 
-env.package = {{project.package}}
+env.package = "{{project.package}}"
 env.margin_engine_executor_prefix = "/opt/marvin/engine-executor"
 env.margin_engine_executor_jar = "marvin-engine-executor-assembly-{version}.jar".format(version=TOOLBOX_VERSION)
 env.marvin_engine_executor_path = env.margin_engine_executor_prefix + "/" + env.margin_engine_executor_jar
@@ -28,7 +39,7 @@ def install_oracle_jdk():
     sudo("apt-get install -y oracle-java8-installer")
 
 def install_virtualenvwrapper():
-    run("pip install virtualenvwrapper")
+    sudo("pip install virtualenvwrapper")
     run("echo 'export WORKON_HOME=${HOME}/.virtualenvs' >> ${HOME}/.profile")
     run("echo 'source /usr/local/bin/virtualenvwrapper.sh' >> ${HOME}/.profile")
 
