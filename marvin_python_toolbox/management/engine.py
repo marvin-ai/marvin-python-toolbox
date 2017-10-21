@@ -30,6 +30,7 @@ import jinja2
 import six
 from unidecode import unidecode
 import multiprocessing
+from marvin_python_toolbox.common.profiling import profiling
 
 from .._logging import get_logger
 
@@ -58,14 +59,13 @@ def cli():
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--messages-file', '-mf', default='engine.messages', help='Marvin engine predictor input messages file path', type=click.Path(exists=True))
-@click.option('--response', '-r', default=False, is_flag=True, help='If enable, print responses from engine online actions (ppreparator and predictor)')
+@click.option('--response', '-r', default=True, is_flag=True, help='If enable, print responses from engine online actions (ppreparator and predictor)')
+@click.option('--profiling', default=False, is_flag=True, help='Enable execute method profiling')
 @click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.pass_context
-def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, model, metrics, response, spark_conf):
+def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, model, metrics, response, spark_conf, profiling):
 
     print(chr(27) + "[2J")
-
-    initial_start_time = time.time()
 
     # setting spark configuration directory
     os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
@@ -84,8 +84,10 @@ def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, mo
 
     dryrun = MarvinDryRun(ctx=ctx, messages=messages, print_response=response)
 
+    initial_start_time = time.time()
+
     for step in pipeline:
-        dryrun.execute(clazz=CLAZZES[step], params=params, initial_dataset=initial_dataset, dataset=dataset, model=model, metrics=metrics)
+        dryrun.execute(clazz=CLAZZES[step], params=params, initial_dataset=initial_dataset, dataset=dataset, model=model, metrics=metrics, profiling_enabled=profiling)
 
     print("Total Time : {:.2f}s".format(time.time() - initial_start_time))
 
@@ -110,7 +112,7 @@ class MarvinDryRun(object):
         self.kwargs = None
         self.print_response = print_response
 
-    def execute(self, clazz, params, initial_dataset, dataset, model, metrics):
+    def execute(self, clazz, params, initial_dataset, dataset, model, metrics, profiling_enabled=False):
         self.print_start_step(clazz)
 
         _Step = dynamic_import("{}.{}".format(self.package_name, clazz))
@@ -131,7 +133,15 @@ class MarvinDryRun(object):
                     print("\nMessage {} :\n".format(msg_idx))
                     print_message(msg)
 
-            result = step.execute(input_message=msg)
+            if profiling_enabled:
+                with profiling(output_path=".profiling", uid=clazz) as prof:
+                    result = step.execute(input_message=msg)
+
+                prof.disable
+                print("\nProfile images created in {}\n".format(prof.image_path))
+
+            else:
+                result = step.execute(input_message=msg)
 
             if self.print_response:
                 print("\nResult for Message {} :\n".format(msg_idx))
@@ -153,7 +163,16 @@ class MarvinDryRun(object):
                 call_online_actions(step, msg, idx)
 
         else:
-            step.execute()
+            if profiling_enabled:
+                with profiling(output_path=".profiling", uid=clazz) as prof:
+                    step.execute()
+
+                prof.disable
+
+                print("\nProfile images created in {}\n".format(prof.image_path))
+
+            else:
+                step.execute()
 
         self.print_finish_step()
 

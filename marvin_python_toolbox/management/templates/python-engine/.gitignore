@@ -12,3 +12,4 @@ coverage_report
 tests/__pycache__
 .DS_Store
 .packages
+.profiling
