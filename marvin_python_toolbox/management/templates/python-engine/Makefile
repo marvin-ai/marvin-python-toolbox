@@ -1,4 +1,4 @@
-.PHONY: help marvin update clean-pyc clean-build clean-reports clean
+.PHONY: help marvin update clean-pyc clean-build clean-reports clean-deps clean
 
 help:
 	@echo "    marvin"
@@ -13,29 +13,33 @@ help:
 	@echo "        Remove build artifacts."
 	@echo "    clean-reports"
 	@echo "        Remove coverage reports."
+	@echo "    clean-deps"
+	@echo "        Remove marvin setup.py dependencies."
 
-marvin: SHELL:=/bin/bash
-marvin: clean
+marvin:
 	pip install -e . --process-dependency-links
 	marvin --help
 
 update:
-	pip install -e . --process-dependency-links -U 
+	pip install -e . -U --process-dependency-links
 
 clean-pyc:
-	find . -name '*.pyc' -exec rm --force {} +
-	find . -name '*.pyo' -exec rm --force {} +
-	find . -name '*~' -exec rm --force  {} +
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
+	find . -name '*~' -exec rm -f  {} +
 
 clean-build:
-	rm --force --recursive *.egg-info
-	rm --force --recursive .cache
-	rm --force --recursive .eggs
-	rm --force --recursive dist
+	rm -rf *.egg-info
+	rm -rf .cache
+	rm -rf .eggs
+	rm -rf dist
 
 clean-reports:
-	rm --force --recursive coverage_report/
-	rm --force coverage_report.xml
-	rm --force .coverage
+	rm -rf coverage_report/
+	rm -f coverage.xml
+	rm -f .coverage
 
-clean: clean-build clean-pyc clean-reports
+clean-deps:
+	pip freeze | grep -v "^-e" | xargs pip uninstall -y
+
+clean: clean-build clean-pyc clean-reports clean-deps
