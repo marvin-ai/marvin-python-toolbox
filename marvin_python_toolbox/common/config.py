@@ -36,7 +36,7 @@ __all__ = ['Configuration', 'Config', 'load_conf_from_file', 'DEFAULT_CONFIG_PAT
 
 logger = get_logger('core')
 
-DEFAULT_CONFIG_PATH = os.path.join(os.environ.get('MARVIN_DATA_PATH', '$HOME'), 'marvin.ini.sample')
+DEFAULT_CONFIG_PATH = os.path.join('marvin.ini')
 
 
 def load_conf_from_file(path=None, section='config'):
