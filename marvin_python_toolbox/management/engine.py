@@ -40,6 +40,8 @@ logger = get_logger('management.engine')
 MARVIN_HOME = os.getenv('MARVIN_HOME')
 MARVIN_DATA_PATH = os.getenv('MARVIN_DATA_PATH')
 
+VERSION = "0.0.1"
+
 
 @click.group('engine')
 def cli():
@@ -593,3 +595,58 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
         httpserver.terminate() if httpserver else None
         logger.info("Http and grpc servers terminated!")
         sys.exit(0)
+
+
+@cli.command('engine-deploy', help='Engine provisioning and deployment command')
+@click.option('--provision', is_flag=True, default=False, help='Forces provisioning')
+@click.option('--package', is_flag=True, default=False, help='Creates engine package')
+@click.option('--skip-clean', is_flag=True, default=False, help='Skips make clean')
+def engine_deploy(provision, package, skip_clean):
+    if provision:
+        subprocess.Popen([
+            "fab",
+            "provision",
+        ], env=os.environ).wait()
+        subprocess.Popen([
+            "fab",
+            "deploy:version={version}".format(version=VERSION),
+        ], env=os.environ).wait()
+    elif package:
+        subprocess.Popen([
+            "fab",
+            "package:version={version}".format(version=VERSION),
+        ], env=os.environ).wait()
+    elif skip_clean:
+        subprocess.Popen([
+            "fab",
+            "deploy:version={version},skip_clean=True".format(version=VERSION),
+        ], env=os.environ).wait()
+    else:
+        subprocess.Popen([
+            "fab",
+            "deploy:version={version}".format(version=VERSION),
+        ], env=os.environ).wait()
+
+
+@cli.command('engine-httpserver-remote', help='Remote HTTP server control command')
+@click.option('--http_host', '-h', default='0.0.0.0', help='Engine executor http bind host')
+@click.option('--http_port', '-p', default=8000, help='Engine executor http port')
+@click.argument('command', type=click.Choice(['start', 'stop', 'status']))
+def engine_httpserver_remote(command, http_host, http_port):
+    if command == "start":
+        subprocess.Popen([
+            "fab",
+            "engine_start:{host},{port}".format(host=http_host, port=http_port)
+        ], env=os.environ).wait()
+    elif command == "stop":
+        subprocess.Popen([
+            "fab",
+            "engine_stop",
+        ], env=os.environ).wait()
+    elif command == "status":
+        subprocess.Popen([
+            "fab",
+            "engine_status",
+        ], env=os.environ).wait()
+    else:
+        print("Usage: marvin engine-httpserver-remote [ start | stop | status ]")
