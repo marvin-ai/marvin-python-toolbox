@@ -541,6 +541,7 @@ def _call_git_init(dest):
     default='all',
     type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor']),
     help='Marvin engine action name')
+@click.option('--model-protocol', '-mp', help='Model protocol to be loaded. Useful for loading a previous trained model.', type=click.Path(exists=True))
 @click.option('--initial-dataset', '-id', help='Initial dataset file path', type=click.Path(exists=True))
 @click.option('--dataset', '-d', help='Dataset file path', type=click.Path(exists=True))
 @click.option('--model', '-m', help='Engine model file path', type=click.Path(exists=True))
@@ -578,6 +579,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
             '-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']),
             '-DmarvinConfig.ipAddress={}'.format(http_host),
             '-DmarvinConfig.port={}'.format(http_port),
+            '-DmarvinConfig.modelProtocol={}'.format(model-protocol),
             '-jar',
             executor_path])
 
