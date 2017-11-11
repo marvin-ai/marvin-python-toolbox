@@ -81,7 +81,7 @@ class MarvinData(object):
         return content
 
     @classmethod
-    def download_file(cls, url, local_file_name=None):
+    def download_file(cls, url, local_file_name=None, force=False):
         """
         Download file from a given url
         """
@@ -89,10 +89,10 @@ class MarvinData(object):
         local_file_name = local_file_name if local_file_name else url.split('/')[-1]
         filepath = os.path.join(cls.data_path, local_file_name)
 
-        # NOTE the stream=True parameter
-        r = requests.get(url, stream=True)
-        with open(filepath, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
+        if not os.path.exists(filepath) or force:
+            r = requests.get(url, stream=True)
+            with open(filepath, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk:
+                        f.write(chunk)
         return filepath
