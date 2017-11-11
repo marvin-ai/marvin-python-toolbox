@@ -42,7 +42,7 @@ logger = get_logger('management.engine')
 MARVIN_HOME = os.getenv('MARVIN_HOME')
 MARVIN_DATA_PATH = os.getenv('MARVIN_DATA_PATH')
 
-VERSION = "0.0.1"
+TOOLBOX_VERSION = "0.0.1"
 
 
 @click.group('engine')
@@ -404,6 +404,7 @@ def generate(name, description, mantainer, email, package, dest, no_env, no_git)
         'name': name,
         'description': description,
         'package': package,
+        'toolbox_version': TOOLBOX_VERSION,
         'type': type_
     }
 
@@ -614,22 +615,22 @@ def engine_deploy(provision, package, skip_clean):
         ], env=os.environ).wait()
         subprocess.Popen([
             "fab",
-            "deploy:version={version}".format(version=VERSION),
+            "deploy:version={version}".format(version=TOOLBOX_VERSION),
         ], env=os.environ).wait()
     elif package:
         subprocess.Popen([
             "fab",
-            "package:version={version}".format(version=VERSION),
+            "package:version={version}".format(version=TOOLBOX_VERSION),
         ], env=os.environ).wait()
     elif skip_clean:
         subprocess.Popen([
             "fab",
-            "deploy:version={version},skip_clean=True".format(version=VERSION),
+            "deploy:version={version},skip_clean=True".format(version=TOOLBOX_VERSION),
         ], env=os.environ).wait()
     else:
         subprocess.Popen([
             "fab",
-            "deploy:version={version}".format(version=VERSION),
+            "deploy:version={version}".format(version=TOOLBOX_VERSION),
         ], env=os.environ).wait()
 
 
