@@ -28,7 +28,7 @@ class Trainer(EngineBaseTraining):
         Use the self.dataset prepared in the last action as source of data.
 
         Eg.
-        
+
             self.model = {...}
         """
         self.model = {}
