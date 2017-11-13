@@ -575,7 +575,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
     try:
 
         if not (executor_path and os.path.exists(executor_path)):
-            logger.info("Downloading executor binary to be used ...")
+            print("Downloading executor binary to be used ...")
             executor_url = Config.get("executor_url", section="marvin")
             executor_path = MarvinData.download_file(executor_url, force=False)
 
