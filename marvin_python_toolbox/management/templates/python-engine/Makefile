@@ -5,7 +5,7 @@ help:
 	@echo "        Prepare project to be used as a marvin package."
 	@echo "    update"
 	@echo "        Reinstall requirements and setup.py dependencies."
-	@echo "    clean-all"
+	@echo "    clean"
 	@echo "        Remove all generated artifacts."
 	@echo "    clean-pyc"
 	@echo "        Remove python artifacts."

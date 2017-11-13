@@ -1,5 +1,5 @@
 {
-	"name": "{{project.name}}",
+	"name": "{{project.name.lower()}}",
 	"version": "v0.0.1",
 	"engineType": "python",
 	"artifactsRemotePath": "/tmp/marvin",

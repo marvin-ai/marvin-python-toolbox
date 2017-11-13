@@ -31,6 +31,8 @@ import six
 from unidecode import unidecode
 import multiprocessing
 from marvin_python_toolbox.common.profiling import profiling
+from marvin_python_toolbox.common.data import MarvinData
+from marvin_python_toolbox.common.config import Config
 
 from .._logging import get_logger
 
@@ -40,7 +42,7 @@ logger = get_logger('management.engine')
 MARVIN_HOME = os.getenv('MARVIN_HOME')
 MARVIN_DATA_PATH = os.getenv('MARVIN_DATA_PATH')
 
-VERSION = "0.0.1"
+TOOLBOX_VERSION = "0.0.1"
 
 
 @click.group('engine')
@@ -349,8 +351,8 @@ def generate_env(engine_path):
 @cli.command('engine-generate', help='Generate a new marvin engine project and install default requirements.')
 @click.option('--name', '-n', prompt='Project name', help='Project name')
 @click.option('--description', '-d', prompt='Short description', default='Marvin engine', help='Library short description')
-@click.option('--mantainer', '-m', prompt='Mantainer name', default='B2W Labs Team', help='Mantainer name')
-@click.option('--email', '-e', prompt='Mantainer email', default='@b2wdigital.com', help='Mantainer email')
+@click.option('--mantainer', '-m', prompt='Mantainer name', default='', help='Mantainer name')
+@click.option('--email', '-e', prompt='Mantainer email', default='', help='Mantainer email')
 @click.option('--package', '-p', default='', help='Package name')
 @click.option('--dest', '-d', envvar='MARVIN_HOME', type=click.Path(exists=True), help='Root folder path for the creation')
 @click.option('--no-env', is_flag=True, default=False, help='Don\'t create the virtual enviroment')
@@ -402,6 +404,7 @@ def generate(name, description, mantainer, email, package, dest, no_env, no_git)
         'name': name,
         'description': description,
         'package': package,
+        'toolbox_version': TOOLBOX_VERSION,
         'type': type_
     }
 
@@ -549,10 +552,7 @@ def _call_git_init(dest):
 @click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.option('--http_host', '-h', default='localhost', help='Engine executor http bind host')
 @click.option('--http_port', '-p', default=8000, help='Engine executor http port')
-@click.option(
-    '--executor-path', '-e',
-    default='marvin-engine-executor.jar',
-    help='Marvin engine executor jar path', type=click.Path(exists=True))
+@click.option('--executor-path', '-e', help='Marvin engine executor jar path', type=click.Path(exists=True))
 @click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
 @click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
 @click.pass_context
@@ -573,6 +573,12 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
         sys.exit(1)
 
     try:
+
+        if not (executor_path and os.path.exists(executor_path)):
+            logger.info("Downloading executor binary to be used ...")
+            executor_url = Config.get("executor_url", section="marvin")
+            executor_path = MarvinData.download_file(executor_url, force=False)
+
         httpserver = subprocess.Popen([
             'java',
             '-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']),
@@ -609,22 +615,22 @@ def engine_deploy(provision, package, skip_clean):
         ], env=os.environ).wait()
         subprocess.Popen([
             "fab",
-            "deploy:version={version}".format(version=VERSION),
+            "deploy:version={version}".format(version=TOOLBOX_VERSION),
         ], env=os.environ).wait()
     elif package:
         subprocess.Popen([
             "fab",
-            "package:version={version}".format(version=VERSION),
+            "package:version={version}".format(version=TOOLBOX_VERSION),
         ], env=os.environ).wait()
     elif skip_clean:
         subprocess.Popen([
             "fab",
-            "deploy:version={version},skip_clean=True".format(version=VERSION),
+            "deploy:version={version},skip_clean=True".format(version=TOOLBOX_VERSION),
         ], env=os.environ).wait()
     else:
         subprocess.Popen([
             "fab",
-            "deploy:version={version}".format(version=VERSION),
+            "deploy:version={version}".format(version=TOOLBOX_VERSION),
         ], env=os.environ).wait()
 
 
