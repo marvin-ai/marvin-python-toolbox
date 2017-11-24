@@ -63,7 +63,7 @@ def marvin_code_export(model, **kwargs):
             for new_line in new_source.split("\n"):
                 fnew_line = "        " + new_line + "\n" if new_line.strip() else "\n"
 
-                if not new_line.startswith("import") and not new_line.startswith("from"):
+                if not new_line.startswith("import") and not new_line.startswith("from") and not new_line.startswith("print"):
                     for artifact in artifacts.keys():
                         fnew_line = re.sub(artifacts[artifact], 'self.' + artifact, fnew_line)
 
