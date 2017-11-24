@@ -41,6 +41,7 @@ def notebook(ctx, port, enable_security, spark_conf):
         '--ip', '0.0.0.0',
         '--port', str(port),
         '--no-browser',
+        '--config', os.path.join(os.environ["MARVIN_TOOLBOX_PATH"], 'extras', 'notebook_extensions', 'jupyter_notebook_config.py')
     ]
 
     command.append("--NotebookApp.token=") if not enable_security else None

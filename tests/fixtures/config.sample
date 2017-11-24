@@ -1,4 +1,4 @@
-[main]
+[marvin]
 
 models.default_context_name = pdl
 models.default_type_name = pdl
