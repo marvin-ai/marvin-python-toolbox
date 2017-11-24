@@ -16,6 +16,7 @@
 # limitations under the License.
 
 import os.path
+import os
 import sys
 
 from setuptools import setup, find_packages
@@ -79,6 +80,7 @@ REQUIREMENTS_EXTERNAL = [
     'grpcio==1.6.0',
     'grpcio-tools==1.6.0',
     'joblib==0.11',
+    'autopep8==1.3.3',
 ]
 
 # Test dependencies
@@ -98,7 +100,12 @@ def _get_version():
     return version
 
 
-def _set_autocomplete(dir):
+def _develop_hook(dir):
+    _set_autocomplete()
+    _install_notebook_extension()
+
+
+def _set_autocomplete():
     virtualenv = os.environ.get('VIRTUAL_ENV', None)
 
     if virtualenv:
@@ -132,10 +139,38 @@ def _set_autocomplete(dir):
                 fp.truncate()
 
 
+def _install_notebook_extension():
+    import marvin_python_toolbox as toolbox
+
+    install_command = [
+        "jupyter",
+        "nbextension",
+        "install",
+        os.path.join(toolbox.__path__[0], 'extras', 'notebook_extensions', 'main.js'),
+        "--destination",
+        "marvin.js",
+        "--sys-prefix",
+        "--symlink",
+        "--overwrite"
+    ]
+
+    os.system(' '.join(install_command))
+
+    enable_command = [
+        "jupyter",
+        "nbextension",
+        "enable",
+        "marvin",
+        "--sys-prefix"
+    ]
+
+    os.system(' '.join(enable_command))
+
+
 class develop(_develop):
     def run(self):
         _develop.run(self)
-        self.execute(_set_autocomplete, (self.install_lib,), msg="Running autocomplete preparation task")
+        self.execute(_develop_hook, (self.install_lib,), msg="Running develop preparation task")
 
 
 class Tox(TestCommand):
