@@ -31,22 +31,20 @@ from .exceptions import InvalidConfigException
 from .utils import from_json
 
 
-__all__ = ['Configuration', 'Config', 'load_conf_from_file', 'DEFAULT_CONFIG_PATH']
+__all__ = ['Configuration', 'Config', 'load_conf_from_file']
 
 
 logger = get_logger('core')
 
-DEFAULT_CONFIG_PATH = os.path.join('marvin.ini')
 
-
-def load_conf_from_file(path=None, section='config'):
+def load_conf_from_file(path=None, section='marvin'):
     data = {}
     config_parser = ConfigParser()
     config_path = path  # try to get config path from args
     if not config_path:  # try to get config file from env
         config_path = os.getenv('MARVIN_CONFIG_FILE') or os.getenv('CONFIG_FILE')
     if not config_path:  # use default file
-        config_path = DEFAULT_CONFIG_PATH
+        config_path = os.getenv("DEFAULT_CONFIG_PATH")
     logger.info('Loading configuration values from "{path}"...'.format(path=config_path))
     config_parser = ConfigObj(config_path)
     try:
@@ -58,7 +56,7 @@ def load_conf_from_file(path=None, section='config'):
 
 
 DEFAULT_PREFIX = 'marvin.'
-DEFAULT_SECT = 'main'
+DEFAULT_SECT = 'marvin'
 
 
 class Configuration(object):
