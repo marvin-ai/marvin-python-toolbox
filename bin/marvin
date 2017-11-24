@@ -22,6 +22,7 @@ import os.path
 
 from marvin_python_toolbox.config import find_inidir, parse_ini
 from marvin_python_toolbox.management import create_cli
+import marvin_python_toolbox as toolbox
 
 # Find the ini directory
 inifilename = 'marvin.ini'
@@ -32,6 +33,11 @@ if not inidir:
 
 # Load the ini file
 inipath = os.path.join(inidir, inifilename)
+
+os.environ["DEFAULT_CONFIG_PATH"] = inipath
+os.environ["MARVIN_ENGINE_PATH"] = inidir
+os.environ["MARVIN_TOOLBOX_PATH"] = toolbox.__path__[0]
+
 config_defaults = {
     'inidir': inidir,
     'marvin_packagedir': '{inidir}/{marvin_package}',
