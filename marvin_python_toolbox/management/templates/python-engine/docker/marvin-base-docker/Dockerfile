@@ -15,13 +15,17 @@ RUN echo "deb http://http.debian.net/debian jessie-backports main" >> /etc/apt/s
 #Engines will run using the user marvin
 RUN useradd --create-home -s /bin/bash -G sudo marvin
 
-##Install virtualenv
+##Install virtualenv & update pip
 ENV WORKON_HOME /home/marvin/.virtualenvs
 RUN pip install -q virtualenvwrapper \
-	&& echo 'source /usr/local/bin/virtualenvwrapper.sh' >> /home/marvin/.profile
+	&& echo 'source /usr/local/bin/virtualenvwrapper.sh' >> /home/marvin/.profile \
+    && mkdir -p /opt/marvin/data \
+    && pip install --upgrade pip
 
 #Take ownership of needed folders
 RUN chown -R marvin:marvin /opt
+
+ENV MARVIN_DATA_PATH /opt/marvin/data
 
 USER marvin
 WORKDIR /home/marvin
