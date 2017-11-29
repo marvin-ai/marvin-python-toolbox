@@ -330,7 +330,7 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
 @click.option('--version', '-v', default=VERSION, help="Image version to be used.")
 def build_docker(type, tag, version):
     logger.info("Will generate a package with the engine in order to build the docker image.")
-    commandTar = ['tar', '-cf', 'engine.tar', '*']
+    commandTar = ['tar', '-cf', 'engine.tar', '.']
     run_command(commandTar, "Failed to generate tar file.")
 
     logger.info("Will move the package to the docker folder.")
