@@ -318,6 +318,37 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
             server.stop(0)
 
 
+@cli.command('engine-dockerbuild', help='Builds a docker image containing the engine. Requires docker service running in the host machine.')
+@click.option(
+    '--type',
+    '-t',
+    type=click.Choice(['spark', 'base']),
+    default='spark',
+    help='What image type to build. Example: marvin with spark.',
+)
+@click.option('--tag', '-t', default='marvin-engine', help='Image tag to be used.')
+@click.option('--version', '-v', default=VERSION, help="Image version to be used.")
+def build_docker(type, tag, version):
+    logger.info("Will generate a package with the engine in order to build the docker image.")
+    commandTar = ['tar', '-cf', 'engine.tar', '*']
+    run_command(commandTar, "Failed to generate tar file.")
+
+    logger.info("Will move the package to the docker folder.")
+    commandMv = ['mv', 'engine.tar', 'docker/marvin-spark-docker/']
+    run_command(commandMv, "Failed to move the package to docker folder.")
+
+    logger.info("Building docker image.")
+    command = ['docker', 'build', '-t {0}:{1}'.format(tag, version), 'docker/marvin-spark-docker/']
+    run_command(command, "Failed to build docker image.")
+
+
+def run_command(command, error_message="A failure occurred."):
+    try:
+        subprocess.Popen(command, env=os.environ).wait()
+    except:
+        logger.exception(error_message)
+        sys.exit(1)
+
 TEMPLATE_BASES = {
     'python-engine': os.path.join(os.path.dirname(__file__), 'templates', 'python-engine')
 }
@@ -333,7 +364,6 @@ IGNORE_DIRS = [
 
 
 _orig_type = type
-
 
 @cli.command('engine-generateenv', help='Generate a new marvin engine environment and install default requirements.')
 @click.argument('engine-path', type=click.Path(exists=True))
