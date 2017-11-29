@@ -338,7 +338,7 @@ def build_docker(type, tag, version):
     run_command(commandMv, "Failed to move the package to docker folder.")
 
     logger.info("Building docker image.")
-    command = ['docker', 'build', '-t {0}:{1}'.format(tag, version), 'docker/marvin-spark-docker/']
+    command = ['docker', 'build', '-t', '{0}:{1}'.format(tag, version), 'docker/marvin-spark-docker/']
     run_command(command, "Failed to build docker image.")
 
 
