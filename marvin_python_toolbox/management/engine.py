@@ -326,7 +326,7 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
     default='spark',
     help='What image type to build. Example: marvin with spark.',
 )
-@click.option('--tag', '-t', default='marvin-engine', help='Image tag to be used.')
+@click.option('--tag', '-t', default='marvinai/marvin', help='Image tag to be used.')
 @click.option('--version', '-v', default=VERSION, help="Image version to be used.")
 def build_docker(type, tag, version):
     buildTypes = {
