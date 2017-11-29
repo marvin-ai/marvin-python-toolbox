@@ -5,7 +5,7 @@ USER root
 ADD http://archive.apache.org/dist/spark/spark-2.1.1/spark-2.1.1-bin-hadoop2.6.tgz /opt/
 
 #Unpack tgzs
-RUN tar -zxvf /opt/spark-2.1.1-bin-hadoop2.6.tgz --directory=/opt \
+RUN ls -l /opt \
 	&& mv /opt/spark-2.1.1-bin-hadoop2.6 /opt/spark 
 
 #Add configuration files
