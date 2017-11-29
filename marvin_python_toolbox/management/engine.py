@@ -328,17 +328,27 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
 )
 @click.option('--tag', '-t', default='marvin-engine', help='Image tag to be used.')
 @click.option('--version', '-v', default=VERSION, help="Image version to be used.")
-def build_docker(type, tag, version):
+def build_docker(buildtype, tag, version):
+    buildTypes = {
+        "spark": {
+            "folder": "marvin-spark-docker"
+        },
+        "base": {
+            "folder": "marvin-base-docker"
+        }
+    }
     logger.info("Will generate a package with the engine in order to build the docker image.")
-    commandTar = ['tar', '-cf', 'engine.tar', '.']
-    run_command(commandTar, "Failed to generate tar file.")
+    command_tar = ['tar', '-cf', 'engine.tar', '.']
+    run_command(command_tar, "Failed to generate tar file.")
 
+    docker_folder = buildTypes[buildtype]["folder"]
     logger.info("Will move the package to the docker folder.")
-    commandMv = ['mv', 'engine.tar', 'docker/marvin-spark-docker/']
-    run_command(commandMv, "Failed to move the package to docker folder.")
+    command_mv = ['mv', 'engine.tar', 'docker/{0}/'.format(docker_folder)]
+    run_command(command_mv, "Failed to move the package to docker folder.")
 
     logger.info("Building docker image.")
-    command = ['docker', 'build', '-t', '{0}:{1}'.format(tag, version), 'docker/marvin-spark-docker/']
+    tag = "{0}-{1}".format(tag, buildtype)
+    command = ['docker', 'build', '-t', '{0}:{1}'.format(tag, version), 'docker/{0}/'.format(docker_folder)]
     run_command(command, "Failed to build docker image.")
 
 
