@@ -16,13 +16,14 @@
 # limitations under the License.
 
 import pytest
+import os
 
 try:
     import mock
 except ImportError:
     import unittest.mock as mock
 
-from marvin_python_toolbox.common.config import Config, load_conf_from_file, DEFAULT_CONFIG_PATH
+from marvin_python_toolbox.common.config import Config, load_conf_from_file
 from marvin_python_toolbox.common.exceptions import InvalidConfigException
 
 
@@ -52,7 +53,7 @@ class TestConfig:
     def test_load_conf_from_default_path(self, ConfigParserMocked):
         load_conf_from_file()
 
-        ConfigParserMocked.assert_called_once_with(DEFAULT_CONFIG_PATH)
+        ConfigParserMocked.assert_called_once_with(os.environ['DEFAULT_CONFIG_PATH'])
 
     @mock.patch('marvin_python_toolbox.common.config.ConfigObj')
     def test_load_conf_from_default_path_with_invalid_section(self, ConfigParserMocked):

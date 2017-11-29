@@ -16,7 +16,6 @@
 # limitations under the License.
 
 import os
-from os.path import expanduser
 
 from abc import ABCMeta, abstractmethod
 import joblib as serializer
@@ -49,7 +48,7 @@ class EngineBaseAction():
         self.action_name = self.__class__.__name__
         self._params = self._get_arg(kwargs=kwargs, arg='params')
         self._persistence_mode = self._get_arg(kwargs=kwargs, arg='persistence_mode', default_value='memory')
-        self._default_root_path = self._get_arg(kwargs=kwargs, arg='default_root_path', default_value=os.path.join(expanduser("~"), '.marvin'))
+        self._default_root_path = self._get_arg(kwargs=kwargs, arg='default_root_path', default_value=os.path.join(os.environ['MARVIN_DATA_PATH'], '.artifacts'))
         self._is_remote_calling = self._get_arg(kwargs=kwargs, arg='is_remote_calling', default_value=False)
         logger.debug("Starting {} engine action with {} persistence mode...".format(self.__class__.__name__, self._persistence_mode))
 
