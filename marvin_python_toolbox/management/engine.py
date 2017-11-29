@@ -351,6 +351,8 @@ def build_docker(type, tag, version):
     command = ['docker', 'build', '-t', '{0}:{1}'.format(tag, version), 'docker/{0}/'.format(docker_folder)]
     run_command(command, "Failed to build docker image.")
 
+    logger.info("Successfully built docker image with tag {0}. To start the engine-httpserver with docker run <docker run -it {0}>.".format(tag))
+
 
 def run_command(command, error_message="A failure occurred."):
     try:
