@@ -401,7 +401,7 @@ def generate(name, description, mantainer, email, package, dest, no_env, no_git)
         sys.exit(1)
 
     project = {
-        'name': name,
+        'name': _slugify(name),
         'description': description,
         'package': package,
         'toolbox_version': TOOLBOX_VERSION,

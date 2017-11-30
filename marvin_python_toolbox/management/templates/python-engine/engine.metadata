@@ -3,11 +3,11 @@
 	"version": "v0.0.1",
 	"engineType": "python",
 	"artifactsRemotePath": "/tmp/marvin",
+	"artifactManagerType": "FS",
 	"onlineActionTimeout": 1000,
     "healthCheckTimeout": 2000,
 	"reloadTimeout": 600000,
 	"batchActionTimeout": 600000,
-	"hdfsHost": "hdfs://marvin-hadoop:8020",
 	"pipelineActions": ["acquisitor", "tpreparator", "trainer", "evaluator"],
 	"actions": [{
 		"name": "acquisitor",
