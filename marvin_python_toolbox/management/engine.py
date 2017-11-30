@@ -329,7 +329,7 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
     help='What image type to build. Example: marvin with spark.',
 )
 @click.option('--tag', '-tg', default='marvinai/marvin', help='Image tag to be used.')
-@click.option('--version', '-v', default=VERSION, help="Image version to be used.")
+@click.option('--version', '-v', help="Image version to be used.")
 def build_docker(type, tag, version):
     buildTypes = {
         "spark": {
@@ -339,6 +339,8 @@ def build_docker(type, tag, version):
             "folder": "marvin-base-docker"
         }
     }
+    if version is None:
+        version = VERSION
     print("Will generate a package with the engine in order to build the docker image.")
     command_tar = ['tar', '-cf', 'engine.tar', '.']
     run_command(command_tar, "Failed to generate tar file.")
