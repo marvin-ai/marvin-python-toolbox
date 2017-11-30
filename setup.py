@@ -22,6 +22,8 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 from setuptools.command.develop import develop as _develop
+from setuptools.command.install import install as _install
+import shutil
 
 # Package basic info
 PACKAGE_NAME = 'marvin_python_toolbox'
@@ -100,25 +102,25 @@ def _get_version():
     return version
 
 
-def _develop_hook(dir):
+def _hooks(dir):
     _set_autocomplete()
     _install_notebook_extension()
 
 
 def _set_autocomplete():
+
     virtualenv = os.environ.get('VIRTUAL_ENV', None)
 
     if virtualenv:
         postactivate = os.path.join(virtualenv, 'bin', 'postactivate')
 
         if os.path.exists(postactivate):
-            from pkg_resources import Requirement, resource_filename
+            shutil.copy(
+                os.path.join('marvin_python_toolbox', 'extras', 'marvin_bash_completion'),
+                os.path.join(virtualenv, 'marvin_bash_completion')
+            )
 
-            bash_completion = resource_filename(
-                Requirement.parse('marvin_python_toolbox'),
-                os.path.join('marvin_python_toolbox', 'extras', 'marvin_bash_completion'))
-
-            command = 'source "{}"'.format(bash_completion)
+            command = 'source "{}"'.format(os.path.join(virtualenv, 'marvin_bash_completion'))
 
             with open(postactivate, 'r+') as fp:
                 lines = fp.readlines()
@@ -150,7 +152,6 @@ def _install_notebook_extension():
         "--destination",
         "marvin.js",
         "--sys-prefix",
-        "--symlink",
         "--overwrite"
     ]
 
@@ -170,7 +171,13 @@ def _install_notebook_extension():
 class develop(_develop):
     def run(self):
         _develop.run(self)
-        self.execute(_develop_hook, (self.install_lib,), msg="Running develop preparation task")
+        self.execute(_hooks, (self.install_lib,), msg="Running develop preparation task")
+
+
+class install(_install):
+    def run(self):
+        _install.run(self)
+        self.execute(_hooks, (self.install_lib,), msg="Running install preparation task")
 
 
 class Tox(TestCommand):
@@ -239,5 +246,5 @@ setup(
     tests_require=REQUIREMENTS_TESTS,
     dependency_links=DEPENDENCY_LINKS_EXTERNAL,
     scripts=SCRIPTS,
-    cmdclass={'test': Tox, 'develop': develop},
+    cmdclass={'test': Tox, 'develop': develop, 'install': install},
 )
