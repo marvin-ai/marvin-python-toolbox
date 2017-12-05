@@ -34,12 +34,14 @@ def marvin_code_export(model, **kwargs):
 
     artifacts = {
         'initial_dataset': re.compile(r"(\binitial_dataset\b)"),
-         'dataset': re.compile(r"(\bdataset\b)"),
-         'model': re.compile(r"(\bmodel\b)"),
-         'metrics': re.compile(r"(\bmetrics\b)")
+        'dataset': re.compile(r"(\bdataset\b)"),
+        'model': re.compile(r"(\bmodel\b)"),
+        'metrics': re.compile(r"(\bmetrics\b)"),
+        'params': re.compile(r"(\bparams\b)")
     }
 
-    exec_pattern = re.compile("(def\s+execute\s*\(\s*self\s*,\s*\*\*kwargs\s*\)\s*:)")
+    batch_exec_pattern = re.compile("(def\s+execute\s*\(\s*self\s*,\s*\*\*kwargs\s*\)\s*:)")
+    online_exec_pattern = re.compile("(def\s+execute\s*\(\s*self\s*,\s*input_message\s*,\s*\*\*kwargs\s*\)\s*:)")
 
     CLAZZES = {
         "acquisitor": "AcquisitorAndCleaner",
@@ -69,9 +71,18 @@ def marvin_code_export(model, **kwargs):
 
                 fnew_source_lines.append(fnew_line)
 
-            fnew_source = "".join(fnew_source_lines)
+            if marvin_action == "predictor":
+                fnew_source_lines.append("        return final_prediction\n")
+                exec_pattern = online_exec_pattern
 
-            print ("File {} updated!".format(source_path))
+            elif marvin_action == "ppreparator":
+                fnew_source_lines.append("        return input_message\n")
+                exec_pattern = online_exec_pattern
+
+            else:
+                exec_pattern = batch_exec_pattern
+
+            fnew_source = "".join(fnew_source_lines)
 
             with open(source_path, 'r+') as fp:
                 lines = fp.readlines()
@@ -86,6 +97,9 @@ def marvin_code_export(model, **kwargs):
                     else:
                         fp.write(line)
 
+            print ("File {} updated!".format(source_path))
+
     print("Finished the marvin export hook script...")
+
 
 c.FileContentsManager.pre_save_hook = marvin_code_export
