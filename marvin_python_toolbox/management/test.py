@@ -47,7 +47,6 @@ def test(ctx, cov, no_capture, pdb, args):
     else:
         args = ['tests']
 
-    print(no_capture)
     if no_capture:
         args += ['--capture=no']
 
