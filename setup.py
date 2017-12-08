@@ -83,6 +83,8 @@ REQUIREMENTS_EXTERNAL = [
     'grpcio-tools==1.6.0',
     'joblib==0.11',
     'autopep8==1.3.3',
+    'progressbar2==3.34.3',
+    'rpyc==3.4.4',
 ]
 
 # Test dependencies
