@@ -37,7 +37,8 @@ inipath = os.path.join(inidir, inifilename)
 os.environ["DEFAULT_CONFIG_PATH"] = inipath
 os.environ["MARVIN_ENGINE_PATH"] = inidir
 os.environ["MARVIN_TOOLBOX_PATH"] = toolbox.__path__[0]
-os.environ["LOG_LEVEL"] = 'INFO'
+if not os.getenv("LOG_LEVEL"):
+	os.environ["LOG_LEVEL"] = 'INFO'
 
 config_defaults = {
     'inidir': inidir,
