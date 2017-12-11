@@ -566,16 +566,14 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
 
     try:
         grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver', '-a', action, '-w', str(max_workers), '-rw', str(max_rpc_workers)])
-        time.sleep(5)
+        time.sleep(3)
 
     except:
         logger.exception("Could not start grpc server!")
         sys.exit(1)
 
     try:
-
         if not (executor_path and os.path.exists(executor_path)):
-            print("Downloading executor binary to be used ...")
             executor_url = Config.get("executor_url", section="marvin")
             executor_path = MarvinData.download_file(executor_url, force=False)
 
