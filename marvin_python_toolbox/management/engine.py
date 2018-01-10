@@ -72,7 +72,8 @@ def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, mo
     print(chr(27) + "[2J")
 
     # setting spark configuration directory
-    os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
+    os.environ["SPARK_CONF_DIR"] = spark_conf
+    os.environ["YARN_CONF_DIR"] = spark_conf
 
     params = read_file(params_file)
     messages = read_file(messages_file)
@@ -281,7 +282,8 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
     print("Starting server ...")
 
     # setting spark configuration directory
-    os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
+    os.environ["SPARK_CONF_DIR"] = spark_conf
+    os.environ["YARN_CONF_DIR"] = spark_conf
 
     params = read_file(params_file)
     metadata = read_file(metadata_file)
