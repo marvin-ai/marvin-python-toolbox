@@ -21,12 +21,17 @@
 
 import os
 import requests
+import progressbar
 
 # Use six to create code compatible with Python 2 and 3.
 # See http://pythonhosted.org/six/
 from .._compatibility import six
 from .utils import check_path
 from .exceptions import InvalidConfigException
+
+from .._logging import get_logger
+
+logger = get_logger('common.data')
 
 
 class MarvinData(object):
@@ -81,7 +86,7 @@ class MarvinData(object):
         return content
 
     @classmethod
-    def download_file(cls, url, local_file_name=None, force=False):
+    def download_file(cls, url, local_file_name=None, force=False, chunk_size=1024):
         """
         Download file from a given url
         """
@@ -90,9 +95,37 @@ class MarvinData(object):
         filepath = os.path.join(cls.data_path, local_file_name)
 
         if not os.path.exists(filepath) or force:
-            r = requests.get(url, stream=True)
-            with open(filepath, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=1024):
-                    if chunk:
-                        f.write(chunk)
+            try:
+                headers = requests.head(url, allow_redirects=True).headers
+                length = headers.get('Content-Length')
+
+                logger.info("Marvin engine executor not found, starting download of {} file with {} bytes ...".format(url, length))
+
+                widgets = [
+                    'Downloading file please wait...', progressbar.Percentage(),
+                    ' ', progressbar.Bar(),
+                    ' ', progressbar.ETA(),
+                    ' ', progressbar.FileTransferSpeed(),
+                ]
+                bar = progressbar.ProgressBar(widgets=widgets, max_value=int(length) + chunk_size).start()
+
+                r = requests.get(url, stream=True)
+
+                with open(filepath, 'wb') as f:
+                    total_chunk = 0
+
+                    for chunk in r.iter_content(chunk_size):
+                        if chunk:
+                            f.write(chunk)
+                            total_chunk += chunk_size
+                            bar.update(total_chunk)
+
+                bar.finish()
+
+            except:
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+
+                raise
+
         return filepath

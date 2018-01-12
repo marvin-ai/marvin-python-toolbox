@@ -32,7 +32,7 @@ brew install openssl graphviz
 2. VirtualEnvWrapper Installation
 ```
 sudo pip install --upgrade pip
-sudo pip install virtualenvwrapper
+sudo pip install virtualenvwrapper --ignore-installed six
 ```
 3. Spark installation
 ```

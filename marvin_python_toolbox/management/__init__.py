@@ -40,7 +40,7 @@ logger = get_logger('management')
 
 EXCLUDE_BY_TYPE = {
     'python-engine': ['engine-generate', 'engine-generateenv'],
-    'tool': ['engine-server', 'engine-dryrun']
+    'tool': ['engine-server', 'engine-dryrun', 'engine-httpserver', 'engine-grpcserver', 'engine-deploy', 'engine-httpserver-remote']
 }
 
 

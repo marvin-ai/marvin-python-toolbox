@@ -112,7 +112,6 @@ class Configuration(object):
         try:
             value = from_json(value)  # parse value
         except (TypeError, ValueError):
-            logger.debug('Could not parse as json: {}'.format(value))
             pass  # if not json parseable, then keep the string value
 
         return value

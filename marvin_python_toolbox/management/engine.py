@@ -72,7 +72,8 @@ def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, mo
     print(chr(27) + "[2J")
 
     # setting spark configuration directory
-    os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
+    os.environ["SPARK_CONF_DIR"] = spark_conf
+    os.environ["YARN_CONF_DIR"] = spark_conf
 
     params = read_file(params_file)
     messages = read_file(messages_file)
@@ -281,7 +282,8 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
     print("Starting server ...")
 
     # setting spark configuration directory
-    os.system("SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf))
+    os.environ["SPARK_CONF_DIR"] = spark_conf
+    os.environ["YARN_CONF_DIR"] = spark_conf
 
     params = read_file(params_file)
     metadata = read_file(metadata_file)
@@ -566,16 +568,14 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
 
     try:
         grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver', '-a', action, '-w', str(max_workers), '-rw', str(max_rpc_workers)])
-        time.sleep(5)
+        time.sleep(3)
 
     except:
         logger.exception("Could not start grpc server!")
         sys.exit(1)
 
     try:
-
         if not (executor_path and os.path.exists(executor_path)):
-            print("Downloading executor binary to be used ...")
             executor_url = Config.get("executor_url", section="marvin")
             executor_path = MarvinData.download_file(executor_url, force=False)
 

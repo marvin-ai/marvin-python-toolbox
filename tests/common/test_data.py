@@ -87,3 +87,14 @@ def test_load_data_from_filesystem_exception(data_path_key, data_path):
 
 def test_data_key_using_abspath(data_path_key, data_path):
     assert MarvinData._convert_path_to_key(os.path.join(data_path, 'brands.json')) == 'brands.json'
+
+
+@mock.patch('marvin_python_toolbox.common.data.progressbar')
+@mock.patch('marvin_python_toolbox.common.data.requests')
+def test_download_file(mocked_requests, mocked_progressbar):
+    file_url = 'google.com/file.json'
+    file_path = MarvinData.download_file(file_url)
+    assert file_path == '/tmp/data/file.json'
+
+    file_path = MarvinData.download_file(file_url, local_file_name='myfile')
+    assert file_path == '/tmp/data/myfile'
