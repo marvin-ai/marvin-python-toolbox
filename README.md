@@ -43,6 +43,10 @@ sudo ln -s /opt/spark-2.1.1-bin-hadoop2.6 /opt/spark
 
 echo "export SPARK_HOME=/opt/spark" >> $HOME/.bash_profile
 ```
+If you do not have /opt directory created, before unpacking spark, run:
+```
+sudo mkdir /opt
+```
 4. Set environment variables
 ```
 echo "export WORKON_HOME=$HOME/.virtualenvs" >> $HOME/.bash_profile
