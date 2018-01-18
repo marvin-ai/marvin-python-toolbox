@@ -29,9 +29,13 @@ def cli():
 
 @cli.command('notebook', help='Start the Jupyter notebook server.')
 @click.option('--port', '-p', default=8888, help='Jupyter server port')
-@click.option('--enable_security', is_flag=True, help='Enable jupyter notebook token security.')
+@click.option('--enable-security', is_flag=True, help='Enable jupyter notebook token security.')
 @click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.pass_context
+def notebook_cli(ctx, port, enable_security, spark_conf):
+    notebook(ctx, port, enable_security, spark_conf)
+
+
 def notebook(ctx, port, enable_security, spark_conf):
     notebookdir = os.path.join(ctx.obj['base_path'], 'notebooks')
     command = [
