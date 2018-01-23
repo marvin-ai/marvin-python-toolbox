@@ -22,8 +22,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install openssl graphviz  ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libsasl2-dev python-pip graphviz -y ; fi
   - sudo pip install --upgrade pip
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo pip install virtualenvwrapper ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo pip install virtualenvwrapper --ignore-installed six  ; fi
+  - sudo pip install virtualenvwrapper --ignore-installed six
   - source virtualenvwrapper.sh
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkvirtualenv marvin-env         ; fi
 
