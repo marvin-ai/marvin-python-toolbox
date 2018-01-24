@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.PHONY: help marvin update clean-pyc clean-build clean-reports clean-deps clean grpc
+.PHONY: help marvin update clean-pyc clean-build clean-reports clean-deps clean grpc distribution
 
 help:
 	@echo "    marvin"
@@ -31,6 +31,8 @@ help:
 	@echo "        Remove marvin setup.py dependencies."
 	@echo "    grpc"
 	@echo "        Build grpc stubs."
+	@echo "    distribution"
+	@echo "        Build and upload the toolbox as a wheel package in pypi."
 
 marvin:
 	pip install -e .
@@ -63,3 +65,7 @@ clean: clean-build clean-pyc clean-reports clean-deps
 grpc:
 	python -m grpc_tools.protoc --proto_path=marvin_python_toolbox/engine_base/protos --python_out=marvin_python_toolbox/engine_base/stubs --grpc_python_out=marvin_python_toolbox/engine_base/stubs marvin_python_toolbox/engine_base/protos/actions.proto
 	ls -la marvin_python_toolbox/engine_base/stubs/*.py
+
+distribution: clean-build
+	python setup.py bdist_wheel
+	twine upload dist/marvin_python_toolbox*.whl
