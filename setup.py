@@ -39,7 +39,7 @@ PYTHON_3 = False
 
 # Project status
 # (should be 'planning', 'pre-alpha', 'alpha', 'beta', 'stable', 'mature' or 'inactive').
-STATUS = 'alpha'
+STATUS = 'stable'
 
 # Project topic
 # See https://pypi.python.org/pypi?%3Aaction=list_classifiers for a list

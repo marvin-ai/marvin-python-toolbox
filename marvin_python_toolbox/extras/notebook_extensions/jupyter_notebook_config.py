@@ -49,7 +49,8 @@ def marvin_code_export(model, **kwargs):
         "trainer": "Trainer",
         "evaluator": "MetricsEvaluator",
         "ppreparator": "PredictionPreparator",
-        "predictor": "Predictor"
+        "predictor": "Predictor",
+        "feedback": "Feedback"
     }
 
     for cell in cells:
@@ -77,6 +78,10 @@ def marvin_code_export(model, **kwargs):
 
             elif marvin_action == "ppreparator":
                 fnew_source_lines.append("        return input_message\n")
+                exec_pattern = online_exec_pattern
+
+            elif marvin_action == "feedback":
+                fnew_source_lines.append("        return message\n")
                 exec_pattern = online_exec_pattern
 
             else:

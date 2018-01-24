@@ -623,7 +623,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
             '-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']),
             '-DmarvinConfig.ipAddress={}'.format(http_host),
             '-DmarvinConfig.port={}'.format(http_port),
-            '-DmarvinConfig.modelProtocol={}'.format(protocol),
+            '-DmarvinConfig.protocol={}'.format(protocol),
             '-jar',
             executor_path])
 
