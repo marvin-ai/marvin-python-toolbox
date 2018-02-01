@@ -55,7 +55,7 @@ def cli():
     '--action',
     '-a',
     default='all',
-    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor']),
+    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor', 'feedback']),
     help='Marvin engine action name')
 @click.option('--initial-dataset', '-id', help='Initial dataset file path', type=click.Path(exists=True))
 @click.option('--dataset', '-d', help='Dataset file path', type=click.Path(exists=True))
@@ -63,11 +63,16 @@ def cli():
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--messages-file', '-mf', default='engine.messages', help='Marvin engine predictor input messages file path', type=click.Path(exists=True))
+@click.option('--feedback-file', '-ff', default='feedback.messages', help='Marvin engine feedback input messages file path', type=click.Path(exists=True))
 @click.option('--response', '-r', default=True, is_flag=True, help='If enable, print responses from engine online actions (ppreparator and predictor)')
 @click.option('--profiling', default=False, is_flag=True, help='Enable execute method profiling')
-@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', envvar='SPARK_HOME', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.pass_context
-def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, model, metrics, response, spark_conf, profiling):
+def dryrun_cli(ctx, action, params_file, messages_file, feedback_file, initial_dataset, dataset, model, metrics, response, spark_conf, profiling):
+    dryrun(ctx, action, params_file, messages_file, feedback_file, initial_dataset, dataset, model, metrics, response, spark_conf, profiling)
+
+
+def dryrun(ctx, action, params_file, messages_file, feedback_file, initial_dataset, dataset, model, metrics, response, spark_conf, profiling):
 
     print(chr(27) + "[2J")
 
@@ -76,23 +81,29 @@ def dryrun(ctx, action, params_file, messages_file, initial_dataset, dataset, mo
     os.environ["YARN_CONF_DIR"] = spark_conf
 
     params = read_file(params_file)
-    messages = read_file(messages_file)
+    messages_file = read_file(messages_file)
+    feedback_file = read_file(feedback_file)
 
-    if action in ['all', 'ppreparator', 'predictor'] and not messages:
-        print('Please, set the input message to be used by the dry run process. Use --input_message flag to informe in a json valid form.')
+    if action in ['all', 'ppreparator', 'predictor'] and not messages_file:
+        print('Please, set the input message to be used by the dry run process. Use --messages-file flag to informe in a json valid form.')
+        sys.exit("Stoping process!")
+
+    if action in ['all', 'feedback'] and not feedback_file:
+        print('Please, set the feedback input message to be used by the dry run process. Use --feedback-file flag to informe in a json valid form.')
         sys.exit("Stoping process!")
 
     if action == 'all':
-        pipeline = ['acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor']
+        pipeline = ['acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor', 'feedback']
     else:
         pipeline = [action]
 
-    dryrun = MarvinDryRun(ctx=ctx, messages=messages, print_response=response)
+    _dryrun = MarvinDryRun(ctx=ctx, messages=[messages_file, feedback_file], print_response=response)
 
     initial_start_time = time.time()
 
     for step in pipeline:
-        dryrun.execute(clazz=CLAZZES[step], params=params, initial_dataset=initial_dataset, dataset=dataset, model=model, metrics=metrics, profiling_enabled=profiling)
+        _dryrun.execute(clazz=CLAZZES[step], params=params, initial_dataset=initial_dataset, dataset=dataset, model=model, metrics=metrics,
+                        profiling_enabled=profiling)
 
     print("Total Time : {:.2f}s".format(time.time() - initial_start_time))
 
@@ -105,13 +116,15 @@ CLAZZES = {
     "trainer": "Trainer",
     "evaluator": "MetricsEvaluator",
     "ppreparator": "PredictionPreparator",
-    "predictor": "Predictor"
+    "predictor": "Predictor",
+    "feedback": "Feedback"
 }
 
 
 class MarvinDryRun(object):
     def __init__(self, ctx, messages, print_response):
-        self.messages = messages
+        self.predictor_messages = messages[0]
+        self.feedback_messages = messages[1]
         self.pmessages = []
         self.package_name = ctx.obj['package_name']
         self.kwargs = None
@@ -155,7 +168,11 @@ class MarvinDryRun(object):
             return result
 
         if clazz == 'PredictionPreparator':
-            for idx, msg in enumerate(self.messages):
+            for idx, msg in enumerate(self.predictor_messages):
+                self.pmessages.append(call_online_actions(step, msg, idx))
+
+        elif clazz == 'Feedback':
+            for idx, msg in enumerate(self.feedback_messages):
                 self.pmessages.append(call_online_actions(step, msg, idx))
 
         elif clazz == 'Predictor':
@@ -265,7 +282,7 @@ class MarvinEngineServer(object):
     '--action',
     '-a',
     default='all',
-    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor']),
+    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor', 'feedback']),
     help='Marvin engine action name')
 @click.option('--initial-dataset', '-id', help='Initial dataset file path', type=click.Path(exists=True))
 @click.option('--dataset', '-d', help='Dataset file path', type=click.Path(exists=True))
@@ -273,7 +290,7 @@ class MarvinEngineServer(object):
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--metadata-file', '-mf', default='engine.metadata', help='Marvin engine metadata file path', type=click.Path(exists=True))
-@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', envvar='SPARK_HOME', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
 @click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
 @click.pass_context
@@ -315,7 +332,8 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
 
     try:
         while True:
-            time.sleep(10)
+            time.sleep(100)
+
     except KeyboardInterrupt:
         print("Terminating server ...")
         for server in servers:
@@ -544,30 +562,51 @@ def _call_git_init(dest):
     '--action',
     '-a',
     default='all',
-    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor']),
+    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor', 'feedback']),
     help='Marvin engine action name')
 @click.option('--initial-dataset', '-id', help='Initial dataset file path', type=click.Path(exists=True))
 @click.option('--dataset', '-d', help='Dataset file path', type=click.Path(exists=True))
 @click.option('--model', '-m', help='Engine model file path', type=click.Path(exists=True))
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
+@click.option('--protocol', '-pr', default='', help='Marvin protocol to be loaded during initialization.')
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
-@click.option('--spark-conf', '-c', default='/opt/spark/conf', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
-@click.option('--http_host', '-h', default='localhost', help='Engine executor http bind host')
-@click.option('--http_port', '-p', default=8000, help='Engine executor http port')
+@click.option('--spark-conf', '-c', envvar='SPARK_HOME', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--http-host', '-h', default='localhost', help='Engine executor http bind host')
+@click.option('--http-port', '-p', default=8000, help='Engine executor http port')
 @click.option('--executor-path', '-e', help='Marvin engine executor jar path', type=click.Path(exists=True))
 @click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
 @click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
 @click.pass_context
-def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
-                      model, metrics, spark_conf, http_host, http_port,
-                      executor_path, max_workers, max_rpc_workers):
+def engine_httpserver_cli(ctx, action, params_file, initial_dataset, dataset,
+                          model, metrics, protocol, spark_conf, http_host, http_port,
+                          executor_path, max_workers, max_rpc_workers):
+    engine_httpserver(
+        ctx, action, params_file, initial_dataset, dataset,
+        model, metrics, protocol, spark_conf, http_host, http_port,
+        executor_path, max_workers, max_rpc_workers
+    )
+
+
+def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, protocol, spark_conf, http_host,
+                      http_port, executor_path, max_workers, max_rpc_workers):
     logger.info("Starting http and grpc servers ...")
 
     grpcserver = None
     httpserver = None
 
+    def _params(**kwargs):
+        params = []
+        if kwargs is not None:
+            for key, value in kwargs.iteritems():
+                if value is not None:
+                    params.append("-{0}".format(str(key)))
+                    params.append(str(value))
+        return params
+
     try:
-        grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver', '-a', action, '-w', str(max_workers), '-rw', str(max_rpc_workers)])
+        optional_args = _params(id=initial_dataset, d=dataset, m=model, me=metrics, pf=params_file)
+        grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver', '-a', action, '-w', str(max_workers), '-rw', str(max_rpc_workers)] + optional_args)
+
         time.sleep(3)
 
     except:
@@ -584,6 +623,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
             '-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']),
             '-DmarvinConfig.ipAddress={}'.format(http_host),
             '-DmarvinConfig.port={}'.format(http_port),
+            '-DmarvinConfig.modelProtocol={}'.format(protocol),
             '-jar',
             executor_path])
 
@@ -595,6 +635,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset,
     try:
         while True:
             time.sleep(100)
+
     except KeyboardInterrupt:
         logger.info("Terminating http and grpc servers...")
         grpcserver.terminate() if grpcserver else None

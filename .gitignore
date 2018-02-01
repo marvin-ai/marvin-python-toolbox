@@ -14,3 +14,5 @@ tests/__pycache__
 build
 .idea
 python-toolbox
+.profiling
+dist

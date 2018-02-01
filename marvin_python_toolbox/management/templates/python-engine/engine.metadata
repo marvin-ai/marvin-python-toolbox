@@ -49,5 +49,13 @@
 		"artifactsToPersist": [],
 		"artifactsToLoad": ["model", "metrics"],
 		"pipeline": ["ppreparator"]
+	}, {
+		"name": "feedback",
+		"actionType": "online",
+		"port": 50056,
+		"host": "localhost",
+		"artifactsToPersist": [],
+		"artifactsToLoad": [],
+		"pipeline": []
 	}]
 }

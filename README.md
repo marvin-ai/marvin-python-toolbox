@@ -36,12 +36,16 @@ sudo pip install virtualenvwrapper --ignore-installed six
 ```
 3. Spark installation
 ```
-$ curl https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz -o /tmp/spark-2.1.1-bin-hadoop2.6.tgz
+curl https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz -o /tmp/spark-2.1.1-bin-hadoop2.6.tgz
 
 sudo tar -xf /tmp/spark-2.1.1-bin-hadoop2.6.tgz -C /opt/
 sudo ln -s /opt/spark-2.1.1-bin-hadoop2.6 /opt/spark
 
 echo "export SPARK_HOME=/opt/spark" >> $HOME/.bash_profile
+```
+If you do not have /opt directory created, before unpacking spark, run:
+```
+sudo mkdir /opt
 ```
 4. Set environment variables
 ```

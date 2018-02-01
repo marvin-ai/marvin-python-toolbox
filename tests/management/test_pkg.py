@@ -32,7 +32,6 @@ from marvin_python_toolbox.management.pkg import get_git_tag
 from marvin_python_toolbox.management.pkg import get_git_commit
 from marvin_python_toolbox.management.pkg import get_tag_from_repo_url
 from marvin_python_toolbox.management.pkg import get_repos_from_requirements
-from marvin_python_toolbox.management.pkg import update_repo_tag
 
 
 @mock.patch('marvin_python_toolbox.management.pkg.open')
@@ -43,7 +42,6 @@ def test_get_repos_from_requirements(curdir_mocked, join_mocked, open_mocked):
 
     get_repos_from_requirements(path=None)
 
-    curdir_mocked.assert_called_once
     join_mocked.assert_called_with(curdir_mocked, 'requirements.txt')
     open_mocked.assert_called_with('/tmp', 'r')
 
@@ -100,9 +98,7 @@ def test_get_git_branch(popen_mocked, curdir_mocked, pipe_mocked):
 
     branch = get_git_branch()
 
-    curdir_mocked.assert_called_once
     popen_mocked.assert_called_once_with(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stdout=pipe_mocked, cwd=curdir_mocked)
-    mockx.stdout.assert_called_once
 
     assert branch == 'branch'
 
@@ -121,8 +117,6 @@ def test_get_git_tag(popen_mocked, curdir_mocked, pipe_mocked):
 
     tags = get_git_tag()
 
-    curdir_mocked.assert_called_once
-    mockx.stdout.assert_called_once
     popen_mocked.assert_called_with(['git', 'describe', '--tags', 'tag'], stdout=pipe_mocked, cwd=curdir_mocked)
 
     assert tags == 'tag'
@@ -142,7 +136,6 @@ def test_get_git_commit(popen_mocked, curdir_mocked, pipe_mocked):
 
     commit = get_git_commit()
 
-    curdir_mocked.assert_called_once
     popen_mocked.assert_called_once_with(['git', 'rev-parse', 'HEAD'], stdout=pipe_mocked, cwd=curdir_mocked)
 
     assert commit == 'commit'
@@ -151,7 +144,6 @@ def test_get_git_commit(popen_mocked, curdir_mocked, pipe_mocked):
     popen_mocked.assert_called_with(['git', 'rev-parse', 'HEAD'], stdout=pipe_mocked, cwd='/tmp')
 
     commit = get_git_commit(tag='tag')
-    curdir_mocked.assert_called_once
     popen_mocked.assert_called_with(['git', 'rev-list', '-n', '1', 'tag'], stdout=pipe_mocked, cwd=curdir_mocked)
 
 
@@ -165,9 +157,7 @@ def test_get_git_repository_url(popen_mocked, curdir_mocked, pipe_mocked):
 
     url = get_git_repository_url()
 
-    curdir_mocked.assert_called_once
     popen_mocked.assert_called_once_with(['git', 'config', '--get', 'remote.origin.url'], stdout=pipe_mocked, cwd=curdir_mocked)
-    mockx.stdout.assert_called_once
 
     assert url == 'url'
 
@@ -186,9 +176,7 @@ def test_get_git_tags(popen_mocked, curdir_mocked, pipe_mocked):
 
     tags = get_git_tags()
 
-    curdir_mocked.assert_called_once
     popen_mocked.assert_called_once_with(['git', 'tag'], stdout=pipe_mocked, cwd=curdir_mocked)
-    mockx.stdout.assert_called_once
 
     assert tags == ['tags', 'git']
 
@@ -206,7 +194,6 @@ def test_is_git_clean(curdir_mocked, popen_mocked, pipe_mocked):
     popen_mocked.return_value = mockx
 
     clean = is_git_clean()
-    curdir_mocked.assert_called_once
     popen_mocked.assert_called_once_with(['git', 'diff', '--quiet', 'HEAD'], stdout=pipe_mocked, cwd=curdir_mocked)
 
     assert clean == 'done'
