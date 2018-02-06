@@ -138,10 +138,11 @@ def test_engine_httpserver(Popen_mocked, Config_mocked, MarvinData_mocked, sleep
         '-w', '9',
         '-rw', '99',
         '-me', 'test_me',
-        '-pf', 'test_params',
+        '-c', 'test_conf',
+        '-d', 'test_d',
         '-m', 'test_m',
-        '-id', 'test_id',
-        '-d', 'test_d']
+        '-pf', 'test_params',
+        '-id', 'test_id']
     ))
 
     expected_calls.append(call([
