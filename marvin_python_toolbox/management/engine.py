@@ -604,7 +604,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
         return params
 
     try:
-        optional_args = _params(id=initial_dataset, d=dataset, m=model, me=metrics, pf=params_file)
+        optional_args = _params(id=initial_dataset, d=dataset, m=model, me=metrics, pf=params_file, c=spark_conf)
         grpcserver = subprocess.Popen(['marvin', 'engine-grpcserver', '-a', action, '-w', str(max_workers), '-rw', str(max_rpc_workers)] + optional_args)
 
         time.sleep(3)
