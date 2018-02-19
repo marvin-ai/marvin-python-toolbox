@@ -1,0 +1,438 @@
+openapi: "3.0.0"
+info:
+  version: 0.0.2
+  title: {{project.package}} API Doc
+  contact:
+      name: mantainer {{mantainer.name}}
+      email: {{mantainer.email}}
+      url: {{project.url}}
+  license:
+    name: Apache License 2.0
+servers:
+  - url: http://localhost:8000
+tags:
+  - name: Acquisitor
+    description: Setup the initial_dataset with all cleaned data necessary to build your dataset in the next action
+  - name: Tpreparator
+    description: Setup the dataset with the transformed data that is compatible with the algorithm used to build the model in the next action
+  - name: Trainer
+    description: Setup the model with the result of the algorithm used to training
+  - name: Evaluator
+    description: Setup the metrics with the result of the algorithms used to test the model
+  - name: Predictor
+    description: Return the predicted value in a json parsable object format
+  - name: Feedback
+    description: Receive feedback message, user can manipulate this message for any use
+  - name: Pipeline
+    description: Perform all batch actions in your right order
+paths:
+  /acquisitor/health:
+    get:
+      summary: Get acquisitor's service status
+      requestBody:
+        description: Use an empty json as body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: getHealth
+      tags:
+        - Acquisitor
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /acquisitor:
+    post:
+      summary: Run acquisitor
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: acquisit
+      tags:
+        - Acquisitor
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /tpreparator/health:
+    get:
+      summary: Get trainer preparator's service status
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: tpreparator
+      tags:
+        - Tpreparator
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /tpreparator/reload?protocol=:
+    put:
+      summary: Reload artifact for trainer preparator
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: tpreparator
+      tags:
+        - Tpreparator
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /tpreparator:
+    post:
+      summary: Run trainer preparator
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: tpreparator
+      tags:
+        - Tpreparator
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /trainer/health:
+    get:
+      summary: Get trainer's service status
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: trainer
+      tags:
+        - Trainer
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /trainer/reload?protocol=:
+    put:
+      summary: Reload artifact for trainer
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: trainer
+      tags:
+        - Trainer
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /trainer:
+    post:
+      summary: Run trainer
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: trainer
+      tags:
+        - Trainer
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /evaluator/health:
+    get:
+      summary: Get evaluator's service status
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: evaluator
+      tags:
+        - Evaluator
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /evaluator/reload?protocol=:
+    put:
+      summary: Reload artifact for evaluator
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: evaluator
+      tags:
+        - Evaluator
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /evaluator:
+    post:
+      summary: Run evaluator
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: evaluator
+      tags:
+        - Evaluator
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /predictor/health:
+    get:
+      summary: Get predictor's service status
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: getHealth
+      tags:
+        - Predictor
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /predictor/reload?protocol=:
+    put:
+      summary: Reload artifact for predictor
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: reloadArtifact
+      tags:
+        - Predictor
+      parameters:
+        - name: protocol
+          in: path
+          required: true
+          description: The artifact's protocol name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /predictor:
+    post:
+      summary: Run predictor
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: predict
+      tags:
+        - Predictor
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /feedback/health:
+    get:
+      summary: Get feedback's service status
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: feedback
+      tags:
+        - Feedback
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /feedback/reload?protocol=:
+    put:
+      summary: Reload artifact for feedback
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: reloadArtifact
+      tags:
+        - Feedback
+      parameters:
+        - name: protocol
+          in: path
+          required: true
+          description: The artifact's protocol name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /feedback:
+    post:
+      summary: Run feedback
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: feedback
+      tags:
+        - Feedback
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /pipeline:
+    post:
+      summary: Do all batch actions (from Acquisitor to Evaluator)
+      requestBody:
+        description: The default value for body is an empty json object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: pipeline
+      tags:
+        - Pipeline
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
