@@ -150,7 +150,7 @@ def test_engine_httpserver(Popen_mocked, Config_mocked, MarvinData_mocked, sleep
         '-DmarvinConfig.engineHome=test_dir',
         '-DmarvinConfig.ipAddress=test_host',
         '-DmarvinConfig.port=9999',
-        '-DmarvinConfig.modelProtocol=test_protocol',
+        '-DmarvinConfig.protocol=test_protocol',
         '-jar',
         MarvinData_mocked.download_file('test_executor')]
     ))
