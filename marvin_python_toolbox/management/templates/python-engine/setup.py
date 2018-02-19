@@ -48,7 +48,7 @@ setup(
     url='{{project.url}}',
     description='{{project.description}}',
     long_description=open(join(dirname(__file__), 'README.md')).read(),
-    author='Marvin AI Researcher',
+    author='{{mantainer.name}}',
     maintainer='{{mantainer.name}}',
     maintainer_email='{{mantainer.email}}',
     packages=find_packages(exclude=('tests', 'tests.*')),
@@ -72,7 +72,7 @@ setup(
         'numpy==1.13.1',
         'pandas==0.20.3',
         'matplotlib==2.0.2',
-        'marvin-python-toolbox==0.0.1',
+        'marvin-python-toolbox=={{project.toolbox_version}}',
         'Fabric==1.14.0',
     ],
     tests_require=[
