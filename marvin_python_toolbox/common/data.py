@@ -99,7 +99,7 @@ class MarvinData(object):
                 headers = requests.head(url, allow_redirects=True).headers
                 length = headers.get('Content-Length')
 
-                logger.info("Marvin engine executor not found, starting download of {} file with {} bytes ...".format(url, length))
+                logger.info("Starting download of {} file with {} bytes ...".format(url, length))
 
                 widgets = [
                     'Downloading file please wait...', progressbar.Percentage(),
