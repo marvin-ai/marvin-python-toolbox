@@ -35,11 +35,11 @@ help:
 	@echo "        Build and upload the toolbox as a wheel package in pypi."
 
 marvin:
-	pip install -e .
+	pip install -e . --process-dependency-links
 	marvin --help
 
 update:
-	pip install -e . -U 
+	pip install -e . --process-dependency-links -U 
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
