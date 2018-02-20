@@ -39,11 +39,6 @@ from .._logging import get_logger
 
 logger = get_logger('management.engine')
 
-MARVIN_HOME = os.getenv('MARVIN_HOME')
-MARVIN_DATA_PATH = os.getenv('MARVIN_DATA_PATH')
-
-TOOLBOX_VERSION = "0.0.1"
-
 
 @click.group('engine')
 def cli():
@@ -244,7 +239,7 @@ def generate_kwargs(clazz, params=None, initial_dataset=None, dataset=None, mode
         kwargs["metrics"] = clazz.retrieve_obj(metrics)
 
     kwargs["persistence_mode"] = 'local'
-    kwargs["default_root_path"] = os.path.join(MARVIN_DATA_PATH, '.artifacts')
+    kwargs["default_root_path"] = os.path.join(os.getenv('MARVIN_DATA_PATH'), '.artifacts')
     kwargs["is_remote_calling"] = True
 
     return kwargs
@@ -424,7 +419,7 @@ def generate(name, description, mantainer, email, package, dest, no_env, no_git)
         'name': _slugify(name),
         'description': description,
         'package': package,
-        'toolbox_version': TOOLBOX_VERSION,
+        'toolbox_version': os.getenv('TOOLBOX_VERSION'),
         'type': type_
     }
 
@@ -649,6 +644,9 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
 @click.option('--package', is_flag=True, default=False, help='Creates engine package')
 @click.option('--skip-clean', is_flag=True, default=False, help='Skips make clean')
 def engine_deploy(provision, package, skip_clean):
+
+    TOOLBOX_VERSION = os.getenv('TOOLBOX_VERSION')
+
     if provision:
         subprocess.Popen([
             "fab",

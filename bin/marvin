@@ -23,6 +23,7 @@ import os.path
 from marvin_python_toolbox.config import find_inidir, parse_ini
 from marvin_python_toolbox.management import create_cli
 import marvin_python_toolbox as toolbox
+from marvin_python_toolbox import __version__ as TOOLBOX_VERSION
 
 # Find the ini directory
 inifilename = 'marvin.ini'
@@ -37,13 +38,16 @@ inipath = os.path.join(inidir, inifilename)
 os.environ["DEFAULT_CONFIG_PATH"] = inipath
 os.environ["MARVIN_ENGINE_PATH"] = inidir
 os.environ["MARVIN_TOOLBOX_PATH"] = toolbox.__path__[0]
+os.environ["TOOLBOX_VERSION"] = TOOLBOX_VERSION
+
 if not os.getenv("LOG_LEVEL"):
-	os.environ["LOG_LEVEL"] = 'INFO'
+    os.environ["LOG_LEVEL"] = 'INFO'
 
 config_defaults = {
     'inidir': inidir,
     'marvin_packagedir': '{inidir}/{marvin_package}',
 }
+
 config = parse_ini(inipath, config_defaults)
 
 package_name = config['marvin_package']
@@ -53,8 +57,7 @@ type_ = config.get('marvin_type', None)
 
 exclude_commands = config.get('marvin_exclude', None)
 
-cli = create_cli(package_name, package_path, type_=type_,
-                 exclude=exclude_commands, config=config)
+cli = create_cli(package_name, package_path, type_=type_, exclude=exclude_commands, config=config)
 
 cli()
 
