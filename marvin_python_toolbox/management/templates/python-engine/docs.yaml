@@ -5,12 +5,14 @@ info:
   contact:
       name: mantainer {{mantainer.name}}
       email: {{mantainer.email}}
-      url: {{project.url}}
+      url: https://github.com/marvin-ai
   license:
     name: Apache License 2.0
 servers:
   - url: http://localhost:8000
 tags:
+  - name: Docker
+    description: For Docker users, please use "make docker-build" and "make docker-run" commands in your engine virtualenv to start the server
   - name: Acquisitor
     description: Setup the initial_dataset with all cleaned data necessary to build your dataset in the next action
   - name: Tpreparator
@@ -28,7 +30,7 @@ tags:
 paths:
   /acquisitor/health:
     get:
-      summary: Get acquisitor's service status
+      summary: Get acquisitor's service health
       requestBody:
         description: Use an empty json as body
         required: true
@@ -37,6 +39,35 @@ paths:
             schema:
               type: object
       operationId: getHealth
+      tags:
+        - Acquisitor
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /acquisitor/status:
+    get:
+      summary: Get acquisitor's service status
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
+      requestBody:
+        description: Use an empty json as body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: getStatus
       tags:
         - Acquisitor
       responses:
@@ -72,7 +103,7 @@ paths:
           description: Service Unavailable
   /tpreparator/health:
     get:
-      summary: Get trainer preparator's service status
+      summary: Get trainer preparator's service health
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -92,9 +123,45 @@ paths:
           description: Internal Server Error / Timeout
         '503':
           description: Service Unavailable
+  /tpreparator/status:
+    get:
+      summary: Get trainer preparator's service status
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
+      requestBody:
+        description: Use an empty json as body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: getStatus
+      tags:
+        - Tpreparator
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
   /tpreparator/reload?protocol=:
     put:
       summary: Reload artifact for trainer preparator
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -138,7 +205,7 @@ paths:
           description: Service Unavailable
   /trainer/health:
     get:
-      summary: Get trainer's service status
+      summary: Get trainer's service health
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -158,9 +225,45 @@ paths:
           description: Internal Server Error / Timeout
         '503':
           description: Service Unavailable
+  /trainer/status:
+    get:
+      summary: Get trainer's service status
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
+      requestBody:
+        description: Use an empty json as body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: getStatus
+      tags:
+        - Trainer
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
   /trainer/reload?protocol=:
     put:
       summary: Reload artifact for trainer
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -204,7 +307,7 @@ paths:
           description: Service Unavailable
   /evaluator/health:
     get:
-      summary: Get evaluator's service status
+      summary: Get evaluator's service health
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -224,9 +327,45 @@ paths:
           description: Internal Server Error / Timeout
         '503':
           description: Service Unavailable
+  /evaluator/status:
+    get:
+      summary: Get evaluator's service status
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
+      requestBody:
+        description: Use an empty json as body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: getStatus
+      tags:
+        - Evaluator
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
   /evaluator/reload?protocol=:
     put:
       summary: Reload artifact for evaluator
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -270,7 +409,7 @@ paths:
           description: Service Unavailable
   /predictor/health:
     get:
-      summary: Get predictor's service status
+      summary: Get predictor's service health
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -290,9 +429,45 @@ paths:
           description: Internal Server Error / Timeout
         '503':
           description: Service Unavailable
+  /predictor/status:
+    get:
+      summary: Get predictor's service status
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
+      requestBody:
+        description: Use an empty json as body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: getStatus
+      tags:
+        - Predictor
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
   /predictor/reload?protocol=:
     put:
       summary: Reload artifact for predictor
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -303,13 +478,6 @@ paths:
       operationId: reloadArtifact
       tags:
         - Predictor
-      parameters:
-        - name: protocol
-          in: path
-          required: true
-          description: The artifact's protocol name
-          schema:
-            type: string
       responses:
         '200':
           description: Result Message / Success
@@ -343,7 +511,7 @@ paths:
           description: Service Unavailable
   /feedback/health:
     get:
-      summary: Get feedback's service status
+      summary: Get feedback's service health
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -363,9 +531,45 @@ paths:
           description: Internal Server Error / Timeout
         '503':
           description: Service Unavailable
+  /feedback/status:
+    get:
+      summary: Get feedback's service status
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
+      requestBody:
+        description: Use an empty json as body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: getStatus
+      tags:
+        - Feedback
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
   /feedback/reload?protocol=:
     put:
       summary: Reload artifact for feedback
+      parameters: 
+        - in: query
+          name: protocol
+          schema:
+            type: string
+          required: true
+          description: The Protocol value generated from last action
       requestBody:
         description: The default value for body is an empty json object
         required: true
@@ -376,13 +580,6 @@ paths:
       operationId: reloadArtifact
       tags:
         - Feedback
-      parameters:
-        - name: protocol
-          in: path
-          required: true
-          description: The artifact's protocol name
-          schema:
-            type: string
       responses:
         '200':
           description: Result Message / Success
