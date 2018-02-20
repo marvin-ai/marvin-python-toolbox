@@ -64,7 +64,7 @@ docker-build: clean-build
 	sudo docker build -t $(DOCKER_REGISTRY_ADRESS)/$(MARVIN_ENGINE_NAME):$(DOCKER_VERSION) .
 
 docker-run:
-	sudo docker run --name=marvin-$(MARVIN_ENGINE_NAME)-$(DOCKER_VERSION) --mount type=bind,source=$(MARVIN_DATA_PATH),destination=/marvin-data --network=host -p 8000:8000 $(DOCKER_REGISTRY_ADRESS)/$(MARVIN_ENGINE_NAME):$(DOCKER_VERSION)
+	sudo docker run --name=marvin-$(MARVIN_ENGINE_NAME)-$(DOCKER_VERSION) --mount type=bind,source=$(MARVIN_DATA_PATH),destination=/marvin-data -p 8000:8000 $(DOCKER_REGISTRY_ADRESS)/$(MARVIN_ENGINE_NAME):$(DOCKER_VERSION)
 
 docker-push:
 	sudo docker push $(DOCKER_REGISTRY_ADRESS)/$(MARVIN_ENGINE_NAME):$(DOCKER_VERSION)
