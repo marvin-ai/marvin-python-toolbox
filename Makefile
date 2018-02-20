@@ -67,5 +67,6 @@ grpc:
 	ls -la marvin_python_toolbox/engine_base/stubs/*.py
 
 distribution: clean-build
+	pip install twine
 	python setup.py bdist_wheel
 	twine upload dist/marvin_python_toolbox*.whl
