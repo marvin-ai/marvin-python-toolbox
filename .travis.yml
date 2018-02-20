@@ -33,11 +33,3 @@ install:
 script:
   - marvin test
   - codecov
-
-deploy:
-  provider: pypi
-  user: "takabayashi"
-  password:
-    secure: siUVUMBLqqP2IihmoG8foGwIz6ne5PzFxYjAGFYGraJWCqrxDyvmQLbJlmNCxl6S7ZSr33ZGmaKshMH8vdDHFkfs0NuxvPzeDLwezd9Z6rPXrddB7oDo9OZfk0oyMfpj0jKJwiCT1gnZdoMceRjRuZII3rgWr9vwNhXu8xT1Vq0ncwZv/A5SS1/uicw8KCECI/zaTW+sDaCax3xIQfb67WeuxxGEHj62spCyGrvqwTOZidFtd14e/7MnA3d6Y84LWUS2YaLxE7awjiH1rR/lV0YOy9Gb8GXBPIUrrRBbeSWc+uiBj7HsSgBRbF2u+nrBTdXlH6eapKAlGyUUHuLCwaG+PIeGkU9G7cH5mBLvbJHejZYl8oyNwfdulmSmvdauMXZJHS37oDmGclLDyNWA+PWZK6Za/dmF5x5Ti+3qXY2GeF1nKxnprJ5BKaegtE0lTz1ATMKi+UpEi6kxAXNKwSK3/XECdOYadz+JW6wHjmjCnQ80m3Uq9oZLQsAi4wUiEn3FtH8rwlwlQZyxOxyzHuFRtq56AUl1bqiGDrIqdrJy6+E3BgwCBL8a8sQq0EfMTN9ciOqsd+9tILBz4ArvurrN2OJ20TRZ2GjRKzUZy+pLRW/VqIFmBPCmnlPh0uR1lfX8+aaFnlch4KTbS7lqCj4cqTtZpcFQLuWiIsW9kXE=
-  on:
-    branch: master
