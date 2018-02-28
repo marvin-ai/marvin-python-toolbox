@@ -77,7 +77,7 @@ make marvin
 ```
 marvin test
 ```
-### Installing Marvin with Others SOs
+### Installing Marvin with Other OS
 Take the following steps to install Marvin Toolbox using Vagrant:
 1. Install requirements
 - [Virtual box](http://www.virtualbox.org) (Version 5.1 +)
