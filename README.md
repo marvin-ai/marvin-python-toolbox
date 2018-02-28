@@ -12,7 +12,7 @@
 
 ## Getting Started
 * [Installing Marvin (Ubuntu and MacOS user)](#installing-marvin-as-ubuntu-and-macos-user)
-* [Installing Marvin (Others SOs)](#installing-marvin-with-others-sos)
+* [Installing Marvin (Other OS)](#installing-marvin-with-other-os)
 * [Creating a new engine](#creating-a-new-engine)
 * [Working in an existing engine](#working-in-an-existing-engine)
 * [Command line interface](#command-line-interface)
