@@ -15,14 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+try:
+    import mock
+except ImportError:
+    import unittest.mock as mock
+
 import cPickle as serializer
 import pytest
 import os
 import shutil
 import copy
 
-from marvin_python_toolbox.engine_base import EngineBaseAction
-from marvin_python_toolbox.engine_base.stubs.actions_pb2 import HealthCheckResponse, HealthCheckRequest
+from marvin_python_toolbox.engine_base import EngineBaseAction, EngineBaseOnlineAction
+from marvin_python_toolbox.engine_base.stubs.actions_pb2 import HealthCheckResponse, HealthCheckRequest, OnlineActionRequest
 
 
 @pytest.fixture
@@ -175,4 +180,48 @@ class TestEngineBaseAction:
         response = engine_action._health_check(request=request, context=None)
 
         assert expected_response.status == response.status
+
+    def test_remote_execute_with_string_response(self):
+        class StringReturnedAction(EngineBaseOnlineAction):
+            def execute(self, input_message, **kwargs):
+                return "message 1"
+
+        request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
+        engine_action = StringReturnedAction()
+        response = engine_action._remote_execute(request=request, context=None)
+
+        assert response.message == "message 1"
+
+    def test_remote_execute_with_int_response(self):
+        class StringReturnedAction(EngineBaseOnlineAction):
+            def execute(self, input_message, **kwargs):
+                return 1
+
+        request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
+        engine_action = StringReturnedAction()
+        response = engine_action._remote_execute(request=request, context=None)
+
+        assert response.message == "1"
+
+    def test_remote_execute_with_object_response(self):
+        class StringReturnedAction(EngineBaseOnlineAction):
+            def execute(self, input_message, **kwargs):
+                return {"r": 1}
+
+        request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
+        engine_action = StringReturnedAction()
+        response = engine_action._remote_execute(request=request, context=None)
+
+        assert response.message == "{\"r\": 1}"
+
+    def test_remote_execute_with_list_response(self):
+        class StringReturnedAction(EngineBaseOnlineAction):
+            def execute(self, input_message, **kwargs):
+                return [1, 2]
+
+        request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
+        engine_action = StringReturnedAction()
+        response = engine_action._remote_execute(request=request, context=None)
+
+        assert response.message == "[1, 2]"
 

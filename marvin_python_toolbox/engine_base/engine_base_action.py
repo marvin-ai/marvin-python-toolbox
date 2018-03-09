@@ -208,7 +208,11 @@ class EngineBaseOnlineAction(EngineBaseAction):
         _message = self._pipeline_execute(input_message=input_message, params=params)
 
         logger.info("Handling returned message from engine action...")
-        response_message = OnlineActionResponse(message=json.dumps(_message))
+
+        if type(_message) != str:
+            _message = json.dumps(_message)
+
+        response_message = OnlineActionResponse(message=_message)
 
         logger.info("Return final results to the client!")
         return response_message
