@@ -15,11 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-try:
-    import mock
-except ImportError:
-    import unittest.mock as mock
-
 import cPickle as serializer
 import pytest
 import os
