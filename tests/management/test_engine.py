@@ -128,7 +128,7 @@ def test_engine_httpserver(Popen_mocked, Config_mocked, MarvinData_mocked, sleep
 
     engine_httpserver(ctx=mocked_ctx, action='all', params_file='test_params', initial_dataset='test_id', dataset='test_d', model='test_m', metrics='test_me',
                       protocol='test_protocol', spark_conf='test_conf', http_host='test_host', http_port=9999, executor_path='test_executor',
-                      max_workers=9, max_rpc_workers=99)
+                      max_workers=9, max_rpc_workers=99, extra_executor_parameters="-DXX=123")
 
     expected_calls = []
 
@@ -151,6 +151,7 @@ def test_engine_httpserver(Popen_mocked, Config_mocked, MarvinData_mocked, sleep
         '-DmarvinConfig.ipAddress=test_host',
         '-DmarvinConfig.port=9999',
         '-DmarvinConfig.protocol=test_protocol',
+        '-DXX=123',
         '-jar',
         MarvinData_mocked.download_file('test_executor')]
     ))

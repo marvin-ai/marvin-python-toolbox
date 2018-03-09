@@ -571,19 +571,20 @@ def _call_git_init(dest):
 @click.option('--executor-path', '-e', help='Marvin engine executor jar path', type=click.Path(exists=True))
 @click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
 @click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
+@click.option('--extra-executor-parameters', default="", help='Use to send extra JVM parameters to engine executor process')
 @click.pass_context
 def engine_httpserver_cli(ctx, action, params_file, initial_dataset, dataset,
                           model, metrics, protocol, spark_conf, http_host, http_port,
-                          executor_path, max_workers, max_rpc_workers):
+                          executor_path, max_workers, max_rpc_workers, extra_executor_parameters):
     engine_httpserver(
         ctx, action, params_file, initial_dataset, dataset,
         model, metrics, protocol, spark_conf, http_host, http_port,
-        executor_path, max_workers, max_rpc_workers
+        executor_path, max_workers, max_rpc_workers, extra_executor_parameters
     )
 
 
 def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, protocol, spark_conf, http_host,
-                      http_port, executor_path, max_workers, max_rpc_workers):
+                      http_port, executor_path, max_workers, max_rpc_workers, extra_executor_parameters):
     logger.info("Starting http and grpc servers ...")
 
     grpcserver = None
@@ -619,6 +620,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
             '-DmarvinConfig.ipAddress={}'.format(http_host),
             '-DmarvinConfig.port={}'.format(http_port),
             '-DmarvinConfig.protocol={}'.format(protocol),
+            extra_executor_parameters,
             '-jar',
             executor_path])
 
