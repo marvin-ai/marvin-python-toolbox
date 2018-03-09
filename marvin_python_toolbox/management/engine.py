@@ -72,8 +72,8 @@ def dryrun(ctx, action, params_file, messages_file, feedback_file, initial_datas
     print(chr(27) + "[2J")
 
     # setting spark configuration directory
-    os.environ["SPARK_CONF_DIR"] = spark_conf
-    os.environ["YARN_CONF_DIR"] = spark_conf
+    os.environ["SPARK_CONF_DIR"] = spark_conf if spark_conf else os.path.join(os.environ["SPARK_HOME"], "conf")
+    os.environ["YARN_CONF_DIR"] = os.environ["SPARK_CONF_DIR"]
 
     params = read_file(params_file)
     messages_file = read_file(messages_file)
@@ -285,7 +285,7 @@ class MarvinEngineServer(object):
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--metadata-file', '-mf', default='engine.metadata', help='Marvin engine metadata file path', type=click.Path(exists=True))
-@click.option('--spark-conf', '-c', envvar='SPARK_CONF_DIR', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', envvar='SPARK_CONF_DIR', type=click.Path(exists=True), help='Spark configuration path to be used')
 @click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
 @click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
 @click.pass_context
@@ -294,8 +294,8 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
     print("Starting server ...")
 
     # setting spark configuration directory
-    os.environ["SPARK_CONF_DIR"] = spark_conf
-    os.environ["YARN_CONF_DIR"] = spark_conf
+    os.environ["SPARK_CONF_DIR"] = spark_conf if spark_conf else os.path.join(os.environ["SPARK_HOME"], "conf")
+    os.environ["YARN_CONF_DIR"] = os.environ["SPARK_CONF_DIR"]
 
     params = read_file(params_file)
     metadata = read_file(metadata_file)

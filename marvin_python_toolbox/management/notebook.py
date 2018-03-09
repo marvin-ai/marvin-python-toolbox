@@ -39,7 +39,7 @@ def notebook_cli(ctx, port, enable_security, spark_conf):
 def notebook(ctx, port, enable_security, spark_conf):
     notebookdir = os.path.join(ctx.obj['base_path'], 'notebooks')
     command = [
-        "SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf),
+        "SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf if spark_conf else os.path.join(os.environ["SPARK_HOME"], "conf")),
         'jupyter', 'notebook',
         '--notebook-dir', notebookdir,
         '--ip', '0.0.0.0',
