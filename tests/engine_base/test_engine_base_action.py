@@ -44,10 +44,6 @@ class TestEngineBaseAction:
         serializer.dump(obj, open(path, 'wb'))
         assert obj == EngineBaseAction.retrieve_obj(path)
 
-    def test_params(self, engine_action):
-        engine_action._params = {'x': '1'}
-        assert engine_action.params == {'x': '1'}
-
     def test_constructor(self):
         class EngineAction(EngineBaseAction):
             def execute(self, **kwargs):
@@ -55,7 +51,7 @@ class TestEngineBaseAction:
 
         engine = EngineAction(params={"x", 1}, persistence_mode='x')
 
-        assert engine.params == {"x", 1}
+        assert engine._params == {"x", 1}
         assert engine._persistence_mode == 'x'
 
     def test_get_object_file_path(self, engine_action):
@@ -66,7 +62,7 @@ class TestEngineBaseAction:
         object_reference = '_params'
         engine_action._save_obj(object_reference, obj)
 
-        assert obj == engine_action.params
+        assert obj == engine_action._params
         assert not os.path.exists("/tmp/.marvin/test_base_action/params")
 
     def test_save_obj_local_persistence(self, engine_action):
@@ -75,7 +71,7 @@ class TestEngineBaseAction:
         engine_action._persistence_mode = 'local'
         engine_action._save_obj(object_reference, obj)
 
-        assert obj == engine_action.params
+        assert obj == engine_action._params
         assert os.path.exists("/tmp/.marvin/test_base_action/params")
         assert engine_action._local_saved_objects.keys() == [object_reference]
 
@@ -87,7 +83,7 @@ class TestEngineBaseAction:
 
         assert engine_action._local_saved_objects.keys() == [object_reference]
         engine_action._release_local_saved_objects()
-        assert engine_action.params is None
+        assert engine_action._params is None
 
     def test_save_two_times(self, engine_action):
         obj = [6, 5, 4]
@@ -113,13 +109,13 @@ class TestEngineBaseAction:
         engine_action2._persistence_mode = 'local'
         engine_action2._load_obj(object_reference)
 
-        assert obj == engine_action2.params
+        assert obj == engine_action2._params
 
         engine_action2._persistence_mode = 'memory'
         engine_action2._params = [1]
         engine_action2._load_obj(object_reference)
 
-        assert [1] == engine_action2.params
+        assert [1] == engine_action2._params
 
     def test_health_check_ok(self, engine_action):
         obj1_key = "obj1"

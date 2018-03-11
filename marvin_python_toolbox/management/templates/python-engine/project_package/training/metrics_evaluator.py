@@ -22,7 +22,7 @@ class MetricsEvaluator(EngineBaseTraining):
     def __init__(self, **kwargs):
         super(MetricsEvaluator, self).__init__(**kwargs)
 
-    def execute(self, **kwargs):
+    def execute(self, params, **kwargs):
         """
         Setup the metrics with the result of the algorithms used to test the model.
         Use the self.dataset and self.model prepared in the last actions.
