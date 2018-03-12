@@ -36,7 +36,7 @@ class Feedback(EngineBasePrediction):
     def __init__(self, **kwargs):
         super(Feedback, self).__init__(**kwargs)
 
-    def execute(self, input_message, **kwargs):
+    def execute(self, input_message, params, **kwargs):
         """
         Receive feedback message, user can manipulate this message for any use.
         Return "Done" to signal that the message is received and processed.

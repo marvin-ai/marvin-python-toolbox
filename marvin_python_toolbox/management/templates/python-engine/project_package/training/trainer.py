@@ -22,7 +22,7 @@ class Trainer(EngineBaseTraining):
     def __init__(self, **kwargs):
         super(Trainer, self).__init__(**kwargs)
 
-    def execute(self, **kwargs):
+    def execute(self, params, **kwargs):
         """
         Setup the model with the result of the algorithm used to training.
         Use the self.dataset prepared in the last action as source of data.

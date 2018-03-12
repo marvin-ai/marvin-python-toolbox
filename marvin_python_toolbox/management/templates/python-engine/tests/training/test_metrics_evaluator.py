@@ -12,6 +12,6 @@ from {{project.package}}.training import MetricsEvaluator
 
 class TestMetricsEvaluator:
     def test_execute(self, mocked_params):
-        ac = MetricsEvaluator(params=mocked_params)
-        ac.execute()
-        assert ac.params == mocked_params
+        ac = MetricsEvaluator()
+        ac.execute(params=mocked_params)
+        assert not ac._params
