@@ -61,7 +61,7 @@ def cli():
 @click.option('--feedback-file', '-ff', default='feedback.messages', help='Marvin engine feedback input messages file path', type=click.Path(exists=True))
 @click.option('--response', '-r', default=True, is_flag=True, help='If enable, print responses from engine online actions (ppreparator and predictor)')
 @click.option('--profiling', default=False, is_flag=True, help='Enable execute method profiling')
-@click.option('--spark-conf', '-c', envvar='SPARK_HOME', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', envvar='SPARK_CONF_DIR', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.pass_context
 def dryrun_cli(ctx, action, params_file, messages_file, feedback_file, initial_dataset, dataset, model, metrics, response, spark_conf, profiling):
     dryrun(ctx, action, params_file, messages_file, feedback_file, initial_dataset, dataset, model, metrics, response, spark_conf, profiling)
@@ -72,8 +72,8 @@ def dryrun(ctx, action, params_file, messages_file, feedback_file, initial_datas
     print(chr(27) + "[2J")
 
     # setting spark configuration directory
-    os.environ["SPARK_CONF_DIR"] = spark_conf
-    os.environ["YARN_CONF_DIR"] = spark_conf
+    os.environ["SPARK_CONF_DIR"] = spark_conf if spark_conf else os.path.join(os.environ["SPARK_HOME"], "conf")
+    os.environ["YARN_CONF_DIR"] = os.environ["SPARK_CONF_DIR"]
 
     params = read_file(params_file)
     messages_file = read_file(messages_file)
@@ -285,7 +285,7 @@ class MarvinEngineServer(object):
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
 @click.option('--metadata-file', '-mf', default='engine.metadata', help='Marvin engine metadata file path', type=click.Path(exists=True))
-@click.option('--spark-conf', '-c', envvar='SPARK_HOME', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', envvar='SPARK_CONF_DIR', type=click.Path(exists=True), help='Spark configuration path to be used')
 @click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
 @click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
 @click.pass_context
@@ -294,8 +294,8 @@ def engine_server(ctx, action, params_file, metadata_file, initial_dataset, data
     print("Starting server ...")
 
     # setting spark configuration directory
-    os.environ["SPARK_CONF_DIR"] = spark_conf
-    os.environ["YARN_CONF_DIR"] = spark_conf
+    os.environ["SPARK_CONF_DIR"] = spark_conf if spark_conf else os.path.join(os.environ["SPARK_HOME"], "conf")
+    os.environ["YARN_CONF_DIR"] = os.environ["SPARK_CONF_DIR"]
 
     params = read_file(params_file)
     metadata = read_file(metadata_file)
@@ -565,25 +565,26 @@ def _call_git_init(dest):
 @click.option('--metrics', '-me', help='Engine Metrics file path', type=click.Path(exists=True))
 @click.option('--protocol', '-pr', default='', help='Marvin protocol to be loaded during initialization.')
 @click.option('--params-file', '-pf', default='engine.params', help='Marvin engine params file path', type=click.Path(exists=True))
-@click.option('--spark-conf', '-c', envvar='SPARK_HOME', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.option('--spark-conf', '-c', envvar='SPARK_CONF_DIR', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
 @click.option('--http-host', '-h', default='localhost', help='Engine executor http bind host')
 @click.option('--http-port', '-p', default=8000, help='Engine executor http port')
 @click.option('--executor-path', '-e', help='Marvin engine executor jar path', type=click.Path(exists=True))
 @click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
 @click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
+@click.option('--extra-executor-parameters', '-jvm', help='Use to send extra JVM parameters to engine executor process')
 @click.pass_context
 def engine_httpserver_cli(ctx, action, params_file, initial_dataset, dataset,
                           model, metrics, protocol, spark_conf, http_host, http_port,
-                          executor_path, max_workers, max_rpc_workers):
+                          executor_path, max_workers, max_rpc_workers, extra_executor_parameters):
     engine_httpserver(
         ctx, action, params_file, initial_dataset, dataset,
         model, metrics, protocol, spark_conf, http_host, http_port,
-        executor_path, max_workers, max_rpc_workers
+        executor_path, max_workers, max_rpc_workers, extra_executor_parameters
     )
 
 
 def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model, metrics, protocol, spark_conf, http_host,
-                      http_port, executor_path, max_workers, max_rpc_workers):
+                      http_port, executor_path, max_workers, max_rpc_workers, extra_executor_parameters):
     logger.info("Starting http and grpc servers ...")
 
     grpcserver = None
@@ -613,14 +614,19 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
             executor_url = Config.get("executor_url", section="marvin")
             executor_path = MarvinData.download_file(executor_url, force=False)
 
-        httpserver = subprocess.Popen([
-            'java',
-            '-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']),
-            '-DmarvinConfig.ipAddress={}'.format(http_host),
-            '-DmarvinConfig.port={}'.format(http_port),
-            '-DmarvinConfig.protocol={}'.format(protocol),
-            '-jar',
-            executor_path])
+        command_list = ['java']
+        command_list.append('-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']))
+        command_list.append('-DmarvinConfig.ipAddress={}'.format(http_host))
+        command_list.append('-DmarvinConfig.port={}'.format(http_port))
+        command_list.append('-DmarvinConfig.protocol={}'.format(protocol))
+
+        if extra_executor_parameters:
+            command_list.append(extra_executor_parameters)
+
+        command_list.append('-jar')
+        command_list.append(executor_path)
+
+        httpserver = subprocess.Popen(command_list)
 
     except:
         logger.exception("Could not start http server!")

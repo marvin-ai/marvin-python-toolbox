@@ -21,14 +21,14 @@ import os
 import shutil
 import copy
 
-from marvin_python_toolbox.engine_base import EngineBaseAction
-from marvin_python_toolbox.engine_base.stubs.actions_pb2 import HealthCheckResponse, HealthCheckRequest
+from marvin_python_toolbox.engine_base import EngineBaseAction, EngineBaseOnlineAction
+from marvin_python_toolbox.engine_base.stubs.actions_pb2 import HealthCheckResponse, HealthCheckRequest, OnlineActionRequest
 
 
 @pytest.fixture
 def engine_action():
     class EngineAction(EngineBaseAction):
-        def execute(self, **kwargs):
+        def execute(self, params, **kwargs):
             return 1
 
     return EngineAction(default_root_path="/tmp/.marvin")
@@ -46,7 +46,7 @@ class TestEngineBaseAction:
 
     def test_constructor(self):
         class EngineAction(EngineBaseAction):
-            def execute(self, **kwargs):
+            def execute(self, params, **kwargs):
                 return 1
 
         engine = EngineAction(params={"x", 1}, persistence_mode='x')
@@ -154,7 +154,7 @@ class TestEngineBaseAction:
 
     def test_health_check_exception(self):
         class BadEngineAction(EngineBaseAction):
-            def execute(self, **kwargs):
+            def execute(self, params, **kwargs):
                 return 1
 
             def __getattribute__(self, name):
@@ -171,4 +171,48 @@ class TestEngineBaseAction:
         response = engine_action._health_check(request=request, context=None)
 
         assert expected_response.status == response.status
+
+    def test_remote_execute_with_string_response(self):
+        class StringReturnedAction(EngineBaseOnlineAction):
+            def execute(self, input_message, params, **kwargs):
+                return "message 1"
+
+        request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
+        engine_action = StringReturnedAction()
+        response = engine_action._remote_execute(request=request, context=None)
+
+        assert response.message == "message 1"
+
+    def test_remote_execute_with_int_response(self):
+        class StringReturnedAction(EngineBaseOnlineAction):
+            def execute(self, input_message, params, **kwargs):
+                return 1
+
+        request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
+        engine_action = StringReturnedAction()
+        response = engine_action._remote_execute(request=request, context=None)
+
+        assert response.message == "1"
+
+    def test_remote_execute_with_object_response(self):
+        class StringReturnedAction(EngineBaseOnlineAction):
+            def execute(self, input_message, params, **kwargs):
+                return {"r": 1}
+
+        request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
+        engine_action = StringReturnedAction()
+        response = engine_action._remote_execute(request=request, context=None)
+
+        assert response.message == "{\"r\": 1}"
+
+    def test_remote_execute_with_list_response(self):
+        class StringReturnedAction(EngineBaseOnlineAction):
+            def execute(self, input_message, params, **kwargs):
+                return [1, 2]
+
+        request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
+        engine_action = StringReturnedAction()
+        response = engine_action._remote_execute(request=request, context=None)
+
+        assert response.message == "[1, 2]"
 
