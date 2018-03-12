@@ -29,7 +29,7 @@ class TrainingPreparator(EngineBaseDataHandler):
 
         Eg.
 
-            self.dataset = {...}
+            self.marvin_dataset = {...}
         """
-        self.dataset = {}
+        self.marvin_dataset = {}
 

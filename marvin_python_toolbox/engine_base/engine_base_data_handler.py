@@ -38,17 +38,17 @@ class EngineBaseDataHandler(EngineBaseBatchAction):
         super(EngineBaseDataHandler, self).__init__(**kwargs)
 
     @property
-    def initial_dataset(self):
+    def marvin_initial_dataset(self):
         return self._load_obj(object_reference='_initial_dataset')
 
-    @initial_dataset.setter
-    def initial_dataset(self, initial_dataset):
+    @marvin_initial_dataset.setter
+    def marvin_initial_dataset(self, initial_dataset):
         self._save_obj(object_reference='_initial_dataset', obj=initial_dataset)
 
     @property
-    def dataset(self):
+    def marvin_dataset(self):
         return self._load_obj(object_reference='_dataset')
 
-    @dataset.setter
-    def dataset(self, dataset):
+    @marvin_dataset.setter
+    def marvin_dataset(self, dataset):
         self._save_obj(object_reference='_dataset', obj=dataset)

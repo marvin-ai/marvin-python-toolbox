@@ -29,6 +29,6 @@ class MetricsEvaluator(EngineBaseTraining):
 
         Eg.
 
-            self.metrics = {...}
+            self.marvin_metrics = {...}
         """
-        self.metrics = {}
+        self.marvin_metrics = {}
