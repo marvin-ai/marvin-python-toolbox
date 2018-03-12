@@ -2,7 +2,7 @@
 
 [![Join the chat at https://gitter.im/gitterHQ/gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/marvin-ai)
 
-# Marvin Toolbox v0.0.2
+# Marvin Toolbox v0.0.3
 
 ![](https://images-americanas.b2w.io/img/_staging/marvin/marvin.png)
 
