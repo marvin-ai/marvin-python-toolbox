@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle as serializer
+import joblib as serializer
 import pytest
 import os
 import shutil
@@ -28,7 +28,7 @@ from marvin_python_toolbox.engine_base.stubs.actions_pb2 import HealthCheckRespo
 @pytest.fixture
 def engine_action():
     class EngineAction(EngineBaseAction):
-        def execute(self, **kwargs):
+        def execute(self, params, **kwargs):
             return 1
 
     return EngineAction(default_root_path="/tmp/.marvin")
@@ -46,7 +46,7 @@ class TestEngineBaseAction:
 
     def test_constructor(self):
         class EngineAction(EngineBaseAction):
-            def execute(self, **kwargs):
+            def execute(self, params, **kwargs):
                 return 1
 
         engine = EngineAction(params={"x", 1}, persistence_mode='x')
@@ -73,7 +73,7 @@ class TestEngineBaseAction:
 
         assert obj == engine_action._params
         assert os.path.exists("/tmp/.marvin/test_base_action/params")
-        assert engine_action._local_saved_objects.keys() == [object_reference]
+        assert list(engine_action._local_saved_objects.keys()) == [object_reference]
 
     def test_release_saved_objects(self, engine_action):
         obj = [6, 5, 4]
@@ -81,7 +81,7 @@ class TestEngineBaseAction:
         engine_action._persistence_mode = 'local'
         engine_action._save_obj(object_reference, obj)
 
-        assert engine_action._local_saved_objects.keys() == [object_reference]
+        assert list(engine_action._local_saved_objects.keys()) == [object_reference]
         engine_action._release_local_saved_objects()
         assert engine_action._params is None
 
@@ -154,7 +154,7 @@ class TestEngineBaseAction:
 
     def test_health_check_exception(self):
         class BadEngineAction(EngineBaseAction):
-            def execute(self, **kwargs):
+            def execute(self, params, **kwargs):
                 return 1
 
             def __getattribute__(self, name):
@@ -174,7 +174,7 @@ class TestEngineBaseAction:
 
     def test_remote_execute_with_string_response(self):
         class StringReturnedAction(EngineBaseOnlineAction):
-            def execute(self, input_message, **kwargs):
+            def execute(self, input_message, params, **kwargs):
                 return "message 1"
 
         request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
@@ -185,7 +185,7 @@ class TestEngineBaseAction:
 
     def test_remote_execute_with_int_response(self):
         class StringReturnedAction(EngineBaseOnlineAction):
-            def execute(self, input_message, **kwargs):
+            def execute(self, input_message, params, **kwargs):
                 return 1
 
         request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
@@ -196,7 +196,7 @@ class TestEngineBaseAction:
 
     def test_remote_execute_with_object_response(self):
         class StringReturnedAction(EngineBaseOnlineAction):
-            def execute(self, input_message, **kwargs):
+            def execute(self, input_message, params, **kwargs):
                 return {"r": 1}
 
         request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")
@@ -207,7 +207,7 @@ class TestEngineBaseAction:
 
     def test_remote_execute_with_list_response(self):
         class StringReturnedAction(EngineBaseOnlineAction):
-            def execute(self, input_message, **kwargs):
+            def execute(self, input_message, params, **kwargs):
                 return [1, 2]
 
         request = OnlineActionRequest(message="{\"k\": 1}", params="{\"k\": 1}")

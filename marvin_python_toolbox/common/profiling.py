@@ -22,7 +22,7 @@ import cProfile
 import pstats
 import uuid
 from functools import wraps
-import StringIO
+from .._compatibility import StringIO
 
 from .._logging import get_logger
 
@@ -36,7 +36,7 @@ class Profile(cProfile.Profile):
         super(Profile, self).__init__(*args, **kwargs)
 
     def _repr_html_(self):
-        s = StringIO.StringIO()
+        s = StringIO()
         stats = pstats.Stats(self, stream=s).sort_stats(self.sortby)
         stats.print_stats(10)
         stats_value = s.getvalue()
@@ -111,7 +111,7 @@ class profiling(object):
 
             # make sure the output path exists
             if not os.path.exists(output_path):  # pragma: no cover
-                os.makedirs(output_path, mode=0774)
+                os.makedirs(output_path, mode=0o774)
 
             # collect profiling info
             stats = pstats.Stats(pr)

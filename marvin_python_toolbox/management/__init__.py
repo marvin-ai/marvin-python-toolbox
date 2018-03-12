@@ -83,7 +83,7 @@ def create_cli(package_name, package_path, type_=None, exclude=None, config=None
             config = {}
 
     exclude = config.get('marvin_exclude', ','.join(exclude))
-    if isinstance(exclude, basestring):
+    if isinstance(exclude, str):
         exclude = exclude.split(',')
 
     @click.group('custom')

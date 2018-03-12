@@ -93,7 +93,7 @@ def test_copy(copytree_mocked, ignore_mocked):
 @mock.patch('marvin_python_toolbox.management.pkg.subprocess.Popen')
 def test_get_git_branch(popen_mocked, curdir_mocked, pipe_mocked):
     mockx = mock.MagicMock()
-    mockx.stdout.read.return_value = 'branch '
+    mockx.stdout.read.return_value = b'branch '
     popen_mocked.return_value = mockx
 
     branch = get_git_branch()
@@ -112,7 +112,7 @@ def test_get_git_branch(popen_mocked, curdir_mocked, pipe_mocked):
 @mock.patch('marvin_python_toolbox.management.pkg.subprocess.Popen')
 def test_get_git_tag(popen_mocked, curdir_mocked, pipe_mocked):
     mockx = mock.MagicMock()
-    mockx.stdout.read.return_value = 'tag '
+    mockx.stdout.read.return_value = b'tag '
     popen_mocked.return_value = mockx
 
     tags = get_git_tag()
@@ -131,7 +131,7 @@ def test_get_git_tag(popen_mocked, curdir_mocked, pipe_mocked):
 @mock.patch('marvin_python_toolbox.management.pkg.subprocess.Popen')
 def test_get_git_commit(popen_mocked, curdir_mocked, pipe_mocked):
     mockx = mock.MagicMock()
-    mockx.stdout.read.return_value = 'commit '
+    mockx.stdout.read.return_value = b'commit '
     popen_mocked.return_value = mockx
 
     commit = get_git_commit()
@@ -152,7 +152,7 @@ def test_get_git_commit(popen_mocked, curdir_mocked, pipe_mocked):
 @mock.patch('marvin_python_toolbox.management.pkg.subprocess.Popen')
 def test_get_git_repository_url(popen_mocked, curdir_mocked, pipe_mocked):
     mockx = mock.MagicMock()
-    mockx.stdout.read.return_value = 'url '
+    mockx.stdout.read.return_value = b'url '
     popen_mocked.return_value = mockx
 
     url = get_git_repository_url()

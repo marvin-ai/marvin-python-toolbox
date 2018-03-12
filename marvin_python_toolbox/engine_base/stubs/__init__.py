@@ -15,5 +15,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from actions_pb2_grpc import *
-from actions_pb2 import *
+from .actions_pb2_grpc import *
+from .actions_pb2 import *

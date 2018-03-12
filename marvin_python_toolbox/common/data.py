@@ -28,13 +28,19 @@ import progressbar
 from .._compatibility import six
 from .utils import check_path
 from .exceptions import InvalidConfigException
-
+from six import with_metaclass
 from .._logging import get_logger
 
 logger = get_logger('common.data')
 
 
-class MarvinData(object):
+class AbstractMarvinData(type):
+    @property
+    def data_path(cls):
+        return cls.get_data_path()
+
+
+class MarvinData(with_metaclass(AbstractMarvinData)):
     _key = 'MARVIN_DATA_PATH'
 
     @classmethod
@@ -57,11 +63,6 @@ class MarvinData(object):
             raise InvalidConfigException('Data path does not exist!')
 
         return marvin_path
-
-    class __metaclass__(type):
-        @property
-        def data_path(cls):
-            return cls.get_data_path()
 
     @classmethod
     def _convert_path_to_key(cls, path):
