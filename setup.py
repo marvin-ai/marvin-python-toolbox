@@ -93,7 +93,7 @@ REQUIREMENTS_TESTS = []
 DEPENDENCY_LINKS_EXTERNAL = []
 
 # script to be used
-SCRIPTS = ['bin/marvin']
+SCRIPTS = ['bin/marvin', 'marvin.ini']
 
 
 def _get_version():

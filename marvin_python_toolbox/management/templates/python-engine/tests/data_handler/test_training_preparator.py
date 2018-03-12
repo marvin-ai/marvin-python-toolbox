@@ -12,6 +12,6 @@ from {{project.package}}.data_handler import TrainingPreparator
 
 class TestTrainingPreparator:
     def test_execute(self, mocked_params):
-        ac = TrainingPreparator(params=mocked_params)
-        ac.execute()
-        assert ac.params == mocked_params
+        ac = TrainingPreparator()
+        ac.execute(params=mocked_params)
+        assert not ac._params

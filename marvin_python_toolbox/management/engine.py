@@ -148,13 +148,13 @@ class MarvinDryRun(object):
 
             if profiling_enabled:
                 with profiling(output_path=".profiling", uid=clazz) as prof:
-                    result = step.execute(input_message=msg)
+                    result = step.execute(input_message=msg, params=params)
 
                 prof.disable
                 print("\nProfile images created in {}\n".format(prof.image_path))
 
             else:
-                result = step.execute(input_message=msg)
+                result = step.execute(input_message=msg, params=params)
 
             if self.print_response:
                 print("\nResult for Message {} :\n".format(msg_idx))
@@ -182,14 +182,14 @@ class MarvinDryRun(object):
         else:
             if profiling_enabled:
                 with profiling(output_path=".profiling", uid=clazz) as prof:
-                    step.execute()
+                    step.execute(params=params)
 
                 prof.disable
 
                 print("\nProfile images created in {}\n".format(prof.image_path))
 
             else:
-                step.execute()
+                step.execute(params=params)
 
         self.print_finish_step()
 
@@ -277,7 +277,7 @@ class MarvinEngineServer(object):
     '--action',
     '-a',
     default='all',
-    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'ppreparator', 'predictor', 'feedback']),
+    type=click.Choice(['all', 'acquisitor', 'tpreparator', 'trainer', 'evaluator', 'predictor', 'feedback']),
     help='Marvin engine action name')
 @click.option('--initial-dataset', '-id', help='Initial dataset file path', type=click.Path(exists=True))
 @click.option('--dataset', '-d', help='Dataset file path', type=click.Path(exists=True))

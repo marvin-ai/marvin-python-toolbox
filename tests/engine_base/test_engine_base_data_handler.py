@@ -53,9 +53,9 @@ class TestEngineBaseDataHandler:
         assert 1 == EngineAction().execute()
 
     def test_initial_dataset(self, engine_action):
-        engine_action.initial_dataset = [1]
-        assert engine_action.initial_dataset == engine_action._initial_dataset == [1]
+        engine_action.marvin_initial_dataset = [1]
+        assert engine_action.marvin_initial_dataset == engine_action._initial_dataset == [1]
 
     def test_dataset(self, engine_action):
-        engine_action.dataset = [1]
-        assert engine_action.dataset == engine_action._dataset == [1]
+        engine_action.marvin_dataset = [1]
+        assert engine_action.marvin_dataset == engine_action._dataset == [1]

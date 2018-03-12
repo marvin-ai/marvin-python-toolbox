@@ -22,14 +22,14 @@ class TrainingPreparator(EngineBaseDataHandler):
     def __init__(self, **kwargs):
         super(TrainingPreparator, self).__init__(**kwargs)
 
-    def execute(self, **kwargs):
+    def execute(self, params, **kwargs):
         """
         Setup the dataset with the transformed data that is compatible with the algorithm used to build the model in the next action.
         Use the self.initial_dataset prepared in the last action as source of data.
 
         Eg.
 
-            self.dataset = {...}
+            self.marvin_dataset = {...}
         """
-        self.dataset = {}
+        self.marvin_dataset = {}
 

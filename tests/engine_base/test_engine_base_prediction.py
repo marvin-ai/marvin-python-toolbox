@@ -53,9 +53,9 @@ class TestEngineBasePrediction:
         assert 1 == EngineAction().execute(input_message="ssss")
 
     def test_model(self, engine_action):
-        engine_action.model = [2]
-        assert engine_action.model == engine_action._model == [2]
+        engine_action.marvin_model = [2]
+        assert engine_action.marvin_model == engine_action._model == [2]
 
     def test_metrics(self, engine_action):
-        engine_action.metrics = [3]
-        assert engine_action.metrics == engine_action._metrics == [3]
+        engine_action.marvin_metrics = [3]
+        assert engine_action.marvin_metrics == engine_action._metrics == [3]
