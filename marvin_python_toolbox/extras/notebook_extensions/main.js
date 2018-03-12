@@ -34,6 +34,7 @@ define([
     		select.append($('<option/>').attr('value', 'evaluator').attr("id", "evaluator").text('Metrics Evaluator'));
     		select.append($('<option/>').attr('value', 'ppreparator').attr("id", "ppreparator").text('Prediction Preparator'));
     		select.append($('<option/>').attr('value', 'predictor').attr("id", "predictor").text('Predictor'));
+            select.append($('<option/>').attr('value', 'feedback').attr("id", "feedback").text('Feedback'));
     		Jupyter.toolbar.element.append(select);
     	};
 

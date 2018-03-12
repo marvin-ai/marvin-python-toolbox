@@ -22,7 +22,7 @@ class AcquisitorAndCleaner(EngineBaseDataHandler):
     def __init__(self, **kwargs):
         super(AcquisitorAndCleaner, self).__init__(**kwargs)
 
-    def execute(self, **kwargs):
+    def execute(self, params, **kwargs):
         """
         Setup the initial_dataset with all cleaned data necessary to build your dataset in the next action.
 
