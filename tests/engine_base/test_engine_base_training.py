@@ -30,27 +30,6 @@ def engine_action():
 
 
 class TestEngineBaseTraining:
-    def test_instantiation_error(self):
-        try:
-            EngineBaseTraining()
-            assert False
-
-        except TypeError:
-            assert True
-
-    def test_instantiation_ok(self):
-        class EngineAction(EngineBaseTraining):
-            def execute(self, **kwargs):
-                return 1
-
-        try:
-            EngineAction()
-            assert True
-
-        except TypeError:
-            assert False
-
-        assert 1 == EngineAction().execute()
 
     def test_dataset(self, engine_action):
         engine_action.marvin_dataset = [1]

@@ -33,7 +33,7 @@ import multiprocessing
 from marvin_python_toolbox.common.profiling import profiling
 from marvin_python_toolbox.common.data import MarvinData
 from marvin_python_toolbox.common.config import Config
-
+from .._compatibility import iteritems
 from .._logging import get_logger
 
 
@@ -592,7 +592,7 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
     def _params(**kwargs):
         params = []
         if kwargs is not None:
-            for key, value in kwargs.iteritems():
+            for key, value in iteritems(kwargs):
                 if value is not None:
                     params.append("-{0}".format(str(key)))
                     params.append(str(value))

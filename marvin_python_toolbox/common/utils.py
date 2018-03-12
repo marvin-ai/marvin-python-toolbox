@@ -28,12 +28,11 @@ import uuid
 import hashlib
 import jsonschema
 import warnings
-import urllib
 from slugify import slugify
 
 # Use six to create code compatible with Python 2 and 3.
 # See http://pythonhosted.org/six/
-from .._compatibility import six
+from .._compatibility import xrange, text_type, quote
 from .._logging import get_logger
 from .exceptions import InvalidJsonException
 
@@ -156,7 +155,7 @@ def _from_json_object_hook(obj):
 
     for key, value in obj.items():
         # Check for datetime objects
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             dt_result = datetime_regex.match(value)
             if dt_result:
                 year, month, day, hour, minute, second = map(
@@ -180,9 +179,9 @@ def from_json(json_str):
 
 
 def validate_json(data, schema):
-    if isinstance(data, basestring):
+    if isinstance(data, str):
         data = from_json(data)
-    if isinstance(schema, basestring):
+    if isinstance(schema, str):
         schema = from_json(schema)
 
     try:
@@ -291,6 +290,6 @@ def url_encode(url):
     :param url: str
     :return: str - encoded url
     """
-    if isinstance(url, unicode):
+    if isinstance(url, text_type):
         url = url.encode('utf8')
-    return urllib.quote(url, ':/%?&=')
+    return quote(url, ':/%?&=')

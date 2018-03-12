@@ -23,8 +23,8 @@ from concurrent import futures
 import grpc
 import json
 
-from stubs.actions_pb2 import BatchActionResponse, OnlineActionResponse, ReloadResponse, HealthCheckResponse
-from stubs import actions_pb2_grpc
+from .stubs.actions_pb2 import BatchActionResponse, OnlineActionResponse, ReloadResponse, HealthCheckResponse
+from .stubs import actions_pb2_grpc
 
 from .._compatibility import six
 from .._logging import get_logger

@@ -21,7 +21,7 @@ except ImportError:
     import unittest.mock as mock
 
 from mock import call
-
+from mock import ANY
 from marvin_python_toolbox.management.engine import MarvinDryRun
 from marvin_python_toolbox.management.engine import dryrun
 from marvin_python_toolbox.management.engine import engine_httpserver
@@ -137,12 +137,12 @@ def test_engine_httpserver(Popen_mocked, Config_mocked, MarvinData_mocked, sleep
         '-a', 'all',
         '-w', '9',
         '-rw', '99',
-        '-me', 'test_me',
-        '-c', 'test_conf',
-        '-d', 'test_d',
-        '-m', 'test_m',
-        '-pf', 'test_params',
-        '-id', 'test_id']
+        ANY, ANY,
+        ANY, ANY,
+        ANY, ANY,
+        ANY, ANY,
+        ANY, ANY,
+        ANY, ANY]
     ))
 
     expected_calls.append(call([
@@ -156,4 +156,4 @@ def test_engine_httpserver(Popen_mocked, Config_mocked, MarvinData_mocked, sleep
     ))
 
     Popen_mocked.assert_has_calls(expected_calls)
-    exit_mocked.assert_called_once_with(0)
+    exit_mocked.assert_called_with(0)

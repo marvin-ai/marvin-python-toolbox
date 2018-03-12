@@ -57,7 +57,7 @@ class TestConfig:
 
     @mock.patch('marvin_python_toolbox.common.config.ConfigObj')
     def test_load_conf_from_default_path_with_invalid_section(self, ConfigParserMocked):
-        from ConfigParser import NoSectionError
+        from configparser import NoSectionError
 
         ConfigParserMocked.return_value.items.side_effect = NoSectionError('')
         assert len(load_conf_from_file(section='invalidsection')) == 0
@@ -100,7 +100,7 @@ class TestConfig:
     @mock.patch('marvin_python_toolbox.common.config.load_conf_from_file')
     def test_keys_with_invalid_section(self, load_conf_from_file_mocked):
         load_conf_from_file_mocked.return_value = {}
-        assert Config.keys(section='invalidsection') == []
+        assert not Config.keys(section='invalidsection')
 
     @mock.patch('os.getenv')
     def test_read_with_real_file(self, env_read):
