@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from httplib import HTTPException as HTTPExceptionBase
+from http.client import HTTPException as HTTPExceptionBase
 
 
 class ConfigException(Exception):

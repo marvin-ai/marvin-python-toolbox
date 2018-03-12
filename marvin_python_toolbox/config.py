@@ -21,7 +21,7 @@ import os
 import os.path
 import copy
 
-import ConfigParser
+import configparser
 
 from ._compatibility import six
 from ._logging import get_logger
@@ -61,7 +61,7 @@ def parse_ini(inipath, defaults=None):
 
     logger.debug("Parsing marvinini '{}' with defaults '{}'".format(inipath, defaults))
 
-    config_raw = ConfigParser.ConfigParser()
+    config_raw = configparser.ConfigParser()
     config_raw.read(inipath)
 
     config = copy.deepcopy(defaults)

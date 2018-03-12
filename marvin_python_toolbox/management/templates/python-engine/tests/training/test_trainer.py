@@ -12,6 +12,7 @@ from {{project.package}}.training import Trainer
 
 class TestTrainer:
     def test_execute(self, mocked_params):
-        ac = Trainer(params=mocked_params)
-        ac.execute()
-        assert ac.params == mocked_params
+        ac = Trainer()
+        ac.execute(params=mocked_params)
+        assert not ac._params
+

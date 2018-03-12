@@ -19,7 +19,7 @@
 """
 
 import os
-from ConfigParser import ConfigParser, NoSectionError
+from configparser import ConfigParser, NoSectionError
 from configobj import ConfigObj
 
 # Use six to create code compatible with Python 2 and 3.

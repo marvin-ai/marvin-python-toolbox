@@ -33,15 +33,14 @@ def marvin_code_export(model, **kwargs):
     cells = model['content']['cells']
 
     artifacts = {
-        'initial_dataset': re.compile(r"(\binitial_dataset\b)"),
-        'dataset': re.compile(r"(\bdataset\b)"),
-        'model': re.compile(r"(\bmodel\b)"),
-        'metrics': re.compile(r"(\bmetrics\b)"),
-        'params': re.compile(r"(\bparams\b)")
+        'marvin_initial_dataset': re.compile(r"(\bmarvin_initial_dataset\b)"),
+        'marvin_dataset': re.compile(r"(\bmarvin_dataset\b)"),
+        'marvin_model': re.compile(r"(\bmarvin_model\b)"),
+        'marvin_metrics': re.compile(r"(\bmarvin_metrics\b)")
     }
 
-    batch_exec_pattern = re.compile("(def\s+execute\s*\(\s*self\s*,\s*\*\*kwargs\s*\)\s*:)")
-    online_exec_pattern = re.compile("(def\s+execute\s*\(\s*self\s*,\s*input_message\s*,\s*\*\*kwargs\s*\)\s*:)")
+    batch_exec_pattern = re.compile("(def\s+execute\s*\(\s*self\s*,\s*params\s*,\s*\*\*kwargs\s*\)\s*:)")
+    online_exec_pattern = re.compile("(def\s+execute\s*\(\s*self\s*,\s*input_message\s*,\s*params\s*,\s*\*\*kwargs\s*\)\s*:)")
 
     CLAZZES = {
         "acquisitor": "AcquisitorAndCleaner",
@@ -49,7 +48,8 @@ def marvin_code_export(model, **kwargs):
         "trainer": "Trainer",
         "evaluator": "MetricsEvaluator",
         "ppreparator": "PredictionPreparator",
-        "predictor": "Predictor"
+        "predictor": "Predictor",
+        "feedback": "Feedback"
     }
 
     for cell in cells:
@@ -77,6 +77,10 @@ def marvin_code_export(model, **kwargs):
 
             elif marvin_action == "ppreparator":
                 fnew_source_lines.append("        return input_message\n")
+                exec_pattern = online_exec_pattern
+
+            elif marvin_action == "feedback":
+                fnew_source_lines.append("        return \"Thanks for the feedback!\"\n")
                 exec_pattern = online_exec_pattern
 
             else:

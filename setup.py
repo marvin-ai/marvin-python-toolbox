@@ -35,7 +35,7 @@ AUTHOR_NAME = 'Daniel Takabayashi'
 AUTHOR_EMAIL = 'daniel.takabayashi@gmail.com'
 
 PYTHON_2 = True
-PYTHON_3 = False
+PYTHON_3 = True
 
 # Project status
 # (should be 'planning', 'pre-alpha', 'alpha', 'beta', 'stable', 'mature' or 'inactive').
@@ -93,7 +93,7 @@ REQUIREMENTS_TESTS = []
 DEPENDENCY_LINKS_EXTERNAL = []
 
 # script to be used
-SCRIPTS = ['bin/marvin']
+SCRIPTS = ['bin/marvin', 'marvin.ini']
 
 
 def _get_version():
@@ -227,7 +227,7 @@ if PYTHON_2:
 if PYTHON_3:
     CLASSIFIERS += [
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ]
 
 setup(

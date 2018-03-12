@@ -23,8 +23,8 @@ from concurrent import futures
 import grpc
 import json
 
-from stubs.actions_pb2 import BatchActionResponse, OnlineActionResponse, ReloadResponse, HealthCheckResponse
-from stubs import actions_pb2_grpc
+from .stubs.actions_pb2 import BatchActionResponse, OnlineActionResponse, ReloadResponse, HealthCheckResponse
+from .stubs import actions_pb2_grpc
 
 from .._compatibility import six
 from .._logging import get_logger
@@ -106,10 +106,6 @@ class EngineBaseAction():
         logger.info("Retrieve object from {}".format(object_file_path))
         return serializer.load(object_file_path)
 
-    @property
-    def params(self):
-        return self._params
-
     def _remote_reload(self, request, context):
         protocol = request.protocol
         artifacts = request.artifacts
@@ -148,22 +144,22 @@ class EngineBaseBatchAction(EngineBaseAction):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def execute(self, **kwargs):
+    def execute(self, params, **kwargs):
         pass
 
-    def _pipeline_execute(self, **kwargs):
+    def _pipeline_execute(self, params):
         if self._previous_step:
-            self._previous_step._pipeline_execute(kwargs=kwargs)
+            self._previous_step._pipeline_execute(params)
 
         logger.info("Start of the {} execute method!".format(self.action_name))
-        self.execute(kwargs=kwargs)
+        self.execute(params)
         logger.info("Finish of the {} execute method!".format(self.action_name))
 
     def _remote_execute(self, request, context):
         logger.info("Received message from client and sending to engine action...")
         logger.debug("Received Params: {}".format(request.params))
 
-        params = json.loads(request.params) if request.params else None
+        params = json.loads(request.params) if request.params else self._params
 
         self._pipeline_execute(params=params)
 
@@ -186,15 +182,15 @@ class EngineBaseOnlineAction(EngineBaseAction):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def execute(self, input_message, **kwargs):
+    def execute(self, input_message, params, **kwargs):
         pass
 
-    def _pipeline_execute(self, input_message, **kwargs):
+    def _pipeline_execute(self, input_message, params):
         if self._previous_step:
-            input_message = self._previous_step._pipeline_execute(input_message=input_message, kwargs=kwargs)
+            input_message = self._previous_step._pipeline_execute(input_message, params)
 
         logger.info("Start of the {} execute method!".format(self.action_name))
-        return self.execute(input_message=input_message, kwargs=kwargs)
+        return self.execute(input_message, params)
         logger.info("Finish of the {} execute method!".format(self.action_name))
 
     def _remote_execute(self, request, context):
@@ -203,7 +199,7 @@ class EngineBaseOnlineAction(EngineBaseAction):
         logger.debug("Received Message: {}".format(request.message))
 
         input_message = json.loads(request.message) if request.message else None
-        params = json.loads(request.params) if request.params else None
+        params = json.loads(request.params) if request.params else self._params
 
         _message = self._pipeline_execute(input_message=input_message, params=params)
 
