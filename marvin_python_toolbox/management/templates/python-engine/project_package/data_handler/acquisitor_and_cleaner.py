@@ -28,7 +28,7 @@ class AcquisitorAndCleaner(EngineBaseDataHandler):
 
         Eg.
 
-            self.initial_dataset = {...}
+            self.marvin_initial_dataset = {...}
         """
-        self.initial_dataset = {}
+        self.marvin_initial_dataset = {}
 

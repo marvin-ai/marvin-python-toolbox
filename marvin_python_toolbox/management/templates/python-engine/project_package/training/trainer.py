@@ -29,6 +29,6 @@ class Trainer(EngineBaseTraining):
 
         Eg.
 
-            self.model = {...}
+            self.marvin_model = {...}
         """
-        self.model = {}
+        self.marvin_model = {}
