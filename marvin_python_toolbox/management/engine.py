@@ -571,7 +571,7 @@ def _call_git_init(dest):
 @click.option('--executor-path', '-e', help='Marvin engine executor jar path', type=click.Path(exists=True))
 @click.option('--max-workers', '-w', default=multiprocessing.cpu_count(), help='Max number of grpc threads workers per action')
 @click.option('--max-rpc-workers', '-rw', default=multiprocessing.cpu_count(), help='Max number of grpc workers per action')
-@click.option('--extra-executor-parameters', default="", help='Use to send extra JVM parameters to engine executor process')
+@click.option('--extra-executor-parameters', '-jvm', help='Use to send extra JVM parameters to engine executor process')
 @click.pass_context
 def engine_httpserver_cli(ctx, action, params_file, initial_dataset, dataset,
                           model, metrics, protocol, spark_conf, http_host, http_port,
@@ -614,15 +614,19 @@ def engine_httpserver(ctx, action, params_file, initial_dataset, dataset, model,
             executor_url = Config.get("executor_url", section="marvin")
             executor_path = MarvinData.download_file(executor_url, force=False)
 
-        httpserver = subprocess.Popen([
-            'java',
-            '-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']),
-            '-DmarvinConfig.ipAddress={}'.format(http_host),
-            '-DmarvinConfig.port={}'.format(http_port),
-            '-DmarvinConfig.protocol={}'.format(protocol),
-            extra_executor_parameters,
-            '-jar',
-            executor_path])
+        command_list = ['java']
+        command_list.append('-DmarvinConfig.engineHome={}'.format(ctx.obj['config']['inidir']))
+        command_list.append('-DmarvinConfig.ipAddress={}'.format(http_host))
+        command_list.append('-DmarvinConfig.port={}'.format(http_port))
+        command_list.append('-DmarvinConfig.protocol={}'.format(protocol))
+
+        if extra_executor_parameters:
+            command_list.append(extra_executor_parameters)
+
+        command_list.append('-jar')
+        command_list.append(executor_path)
+
+        httpserver = subprocess.Popen(command_list)
 
     except:
         logger.exception("Could not start http server!")
