@@ -39,18 +39,18 @@ class EngineBasePrediction(EngineBaseOnlineAction):
         super(EngineBasePrediction, self).__init__(**kwargs)
 
     @property
-    def model(self):
+    def marvin_model(self):
         return self._load_obj(object_reference='_model')
 
-    @model.setter
-    def model(self, model):
+    @marvin_model.setter
+    def marvin_model(self, model):
         self._save_obj(object_reference='_model', obj=model)
 
     @property
-    def metrics(self):
+    def marvin_metrics(self):
         return self._load_obj(object_reference='_metrics')
 
-    @metrics.setter
-    def metrics(self, metrics):
+    @marvin_metrics.setter
+    def marvin_metrics(self, metrics):
         self._save_obj(object_reference='_metrics', obj=metrics)
 

@@ -33,10 +33,10 @@ def marvin_code_export(model, **kwargs):
     cells = model['content']['cells']
 
     artifacts = {
-        'initial_dataset': re.compile(r"(\binitial_dataset\b)"),
-        'dataset': re.compile(r"(\bdataset\b)"),
-        'model': re.compile(r"(\bmodel\b)"),
-        'metrics': re.compile(r"(\bmetrics\b)"),
+        'marvin_initial_dataset': re.compile(r"(\bmarvin_initial_dataset\b)"),
+        'marvin_dataset': re.compile(r"(\bmarvin_dataset\b)"),
+        'marvin_model': re.compile(r"(\bmarvin_model\b)"),
+        'marvin_metrics': re.compile(r"(\bmarvin_metrics\b)"),
         'params': re.compile(r"(\bparams\b)")
     }
 

@@ -53,13 +53,13 @@ class TestEngineBaseTraining:
         assert 1 == EngineAction().execute()
 
     def test_dataset(self, engine_action):
-        engine_action.dataset = [1]
-        assert engine_action.dataset == engine_action._dataset == [1]
+        engine_action.marvin_dataset = [1]
+        assert engine_action.marvin_dataset == engine_action._dataset == [1]
 
     def test_model(self, engine_action):
-        engine_action.model = [2]
-        assert engine_action.model == engine_action._model == [2]
+        engine_action.marvin_model = [2]
+        assert engine_action.marvin_model == engine_action._model == [2]
 
     def test_metrics(self, engine_action):
-        engine_action.metrics = [3]
-        assert engine_action.metrics == engine_action._metrics == [3]
+        engine_action.marvin_metrics = [3]
+        assert engine_action.marvin_metrics == engine_action._metrics == [3]
