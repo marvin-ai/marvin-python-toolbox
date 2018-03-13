@@ -30,7 +30,7 @@ inifilename = 'marvin.ini'
 inidir = find_inidir(inifilename)
 
 if not inidir:
-    default_ini_path = os.path.dirname(os.path.dirname(__file__))
+    default_ini_path = os.path.dirname(__file__)
     if os.path.exists(os.path.join(default_ini_path, inifilename)):
         inidir = default_ini_path
 
