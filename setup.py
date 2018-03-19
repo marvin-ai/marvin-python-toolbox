@@ -73,6 +73,7 @@ REQUIREMENTS_EXTERNAL = [
     'python-slugify==0.1.0',
     'path.py==7.2',
     'httpretty==0.8.4',
+    'tornado==4.1',
     'jsonschema>=2.5.1',
     'gprof2dot',
     'ujsonpath==0.0.2',
