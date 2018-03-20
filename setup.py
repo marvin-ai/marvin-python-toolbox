@@ -48,6 +48,7 @@ TOPIC = 'Topic :: Software Development :: Libraries :: Python Modules',
 # External dependencies
 # More info https://pythonhosted.org/setuptools/setuptools.html#declaring-dependencies
 REQUIREMENTS_EXTERNAL = [
+    'pip==9.0.1',
     'six>=1.10.0',
     'bumpversion>=0.5.3',
     'click>=3.3',
@@ -73,7 +74,7 @@ REQUIREMENTS_EXTERNAL = [
     'python-slugify==0.1.0',
     'path.py==7.2',
     'httpretty==0.8.4',
-    'tornado==4.1',
+    'tornado==4.5.3',
     'jsonschema>=2.5.1',
     'gprof2dot',
     'ujsonpath==0.0.2',

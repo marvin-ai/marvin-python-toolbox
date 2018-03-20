@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.2
+  version: 0.0.1
   title: {{project.package}} API Doc
   contact:
       name: mantainer {{mantainer.name}}
@@ -10,6 +10,7 @@ info:
     name: Apache License 2.0
 servers:
   - url: http://localhost:8000
+  - url: http://0.0.0.0:8000
 tags:
   - name: Docker
     description: For Docker users, please use "make docker-build" and "make docker-run" commands in your engine virtualenv to start the server
@@ -31,13 +32,6 @@ paths:
   /acquisitor/health:
     get:
       summary: Get acquisitor's service health
-      requestBody:
-        description: Use an empty json as body
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
       operationId: getHealth
       tags:
         - Acquisitor
@@ -104,14 +98,7 @@ paths:
   /tpreparator/health:
     get:
       summary: Get trainer preparator's service health
-      requestBody:
-        description: The default value for body is an empty json object
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: tpreparator
+      operationId: getHealth
       tags:
         - Tpreparator
       responses:
@@ -206,14 +193,7 @@ paths:
   /trainer/health:
     get:
       summary: Get trainer's service health
-      requestBody:
-        description: The default value for body is an empty json object
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: trainer
+      operationId: getHealth
       tags:
         - Trainer
       responses:
@@ -308,14 +288,7 @@ paths:
   /evaluator/health:
     get:
       summary: Get evaluator's service health
-      requestBody:
-        description: The default value for body is an empty json object
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: evaluator
+      operationId: getHealth
       tags:
         - Evaluator
       responses:
@@ -410,13 +383,6 @@ paths:
   /predictor/health:
     get:
       summary: Get predictor's service health
-      requestBody:
-        description: The default value for body is an empty json object
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
       operationId: getHealth
       tags:
         - Predictor
@@ -512,14 +478,7 @@ paths:
   /feedback/health:
     get:
       summary: Get feedback's service health
-      requestBody:
-        description: The default value for body is an empty json object
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: feedback
+      operationId: getHealth
       tags:
         - Feedback
       responses:
