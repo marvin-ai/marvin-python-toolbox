@@ -5,9 +5,9 @@ dist: trusty
 matrix:
     include:
         - os: linux
-          python: 
-            2.7
-            3.6
+          python: "2.7"
+        - os: linux
+          python: "3.6"
         - os: osx
           language: generic
 
