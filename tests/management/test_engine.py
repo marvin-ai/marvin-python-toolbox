@@ -25,6 +25,8 @@ from mock import ANY
 from marvin_python_toolbox.management.engine import MarvinDryRun
 from marvin_python_toolbox.management.engine import dryrun
 from marvin_python_toolbox.management.engine import engine_httpserver
+from marvin_python_toolbox.management.engine import _create_virtual_env
+import os
 
 
 class mocked_ctx(object):
@@ -158,3 +160,50 @@ def test_engine_httpserver(Popen_mocked, Config_mocked, MarvinData_mocked, sleep
 
     Popen_mocked.assert_has_calls(expected_calls)
     exit_mocked.assert_called_with(0)
+
+
+@mock.patch('marvin_python_toolbox.management.engine.subprocess.Popen')
+def test_create_virtual_env(Popen_mocked):
+    name = "my_project"
+    dest = "/tmp/xxx"
+    python = "python"
+
+    mockx = mock.MagicMock()
+    mockx.wait.return_value = 0
+    Popen_mocked.return_value = mockx
+
+    env_name = _create_virtual_env(name, dest, python)
+
+    commands = [
+        'bash',
+        '-c',
+        '. virtualenvwrapper.sh; mkvirtualenv -p {0} -a {1} {2};'.format(python, dest, env_name)
+    ]
+
+    Popen_mocked.assert_called_with(commands, env=os.environ)
+    assert env_name == 'my-project-env'
+
+
+@mock.patch('marvin_python_toolbox.management.engine.sys')
+@mock.patch('marvin_python_toolbox.management.engine.subprocess.Popen')
+def test_create_virtual_env_error(Popen_mocked, sys_mocked):
+    name = "my_project"
+    dest = "/tmp/xxx"
+    python = "python"
+
+    mockx = mock.MagicMock()
+    mockx.wait.return_value = 3
+    Popen_mocked.return_value = mockx
+
+    env_name = _create_virtual_env(name, dest, python)
+
+    commands = [
+        'bash',
+        '-c',
+        '. virtualenvwrapper.sh; mkvirtualenv -p {0} -a {1} {2};'.format(python, dest, env_name)
+    ]
+
+    Popen_mocked.assert_called_with(commands, env=os.environ)
+    mockx.wait.assert_called_once()
+    # sys_mocked.exit.assert_called_once_with(1)
+
