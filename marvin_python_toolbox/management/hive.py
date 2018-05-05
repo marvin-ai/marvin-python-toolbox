@@ -29,6 +29,8 @@ import hashlib
 
 from .._logging import get_logger
 
+from .._compatibility import six
+
 
 logger = get_logger('management.hive')
 
@@ -40,6 +42,10 @@ def cli():
 
 @cli.command('hive-generateconf', help='Generate default configuration file')
 @click.pass_context
+def hive_generateconf_cli(ctx):
+    hive_generateconf(ctx)
+
+
 def hive_generateconf(ctx):
     default_conf = [{
         "origin_host": "xxx_host_name",
@@ -61,6 +67,10 @@ def hive_generateconf(ctx):
 @click.option('--queue', '-h', default='default')
 @click.option('--engine', default=(os.path.relpath(".", "..")), help='Marvin engine name (default is the current folder)')
 @click.pass_context
+def hive_resetremote_cli(ctx, host, engine, queue):
+    hive_resetremote(ctx, host, engine, queue)
+
+
 def hive_resetremote(ctx, host, engine, queue):
     hdi = HiveDataImporter(
         engine=engine,
@@ -71,6 +81,7 @@ def hive_resetremote(ctx, host, engine, queue):
         sample_sql=None,
         max_query_size=None,
         destination_host=None,
+        destination_port=None,
         destination_host_username='vagrant',
         destination_host_password='vagrant',
         destination_hdfs_root_path='/user/hive/warehouse/',
@@ -97,10 +108,21 @@ def hive_resetremote(ctx, host, engine, queue):
 @click.option('--sql-id', '-q', help='If informed the process will be applied exclusivelly for this sample sql')
 @click.option('--conf', '-c', default='hive_dataimport.conf', help='Hive data import configuration file')
 @click.pass_context
+def hive_dataimport_cli(
+    ctx, conf, sql_id, engine, skip_remote_preparation, force_copy_files, validate, force,
+    force_remote, max_query_size, destination_host, destination_port, destination_host_username,
+    destination_host_password, destination_hdfs_root_path
+):
+    hive_dataimport(
+        ctx, conf, sql_id, engine, skip_remote_preparation, force_copy_files, validate, force,
+        force_remote, max_query_size, destination_host, destination_port, destination_host_username,
+        destination_host_password, destination_hdfs_root_path
+    )
+
 def hive_dataimport(
     ctx, conf, sql_id, engine, skip_remote_preparation, force_copy_files, validate, force,
-    force_remote, max_query_size, destination_host, destination_port, destination_host_username, destination_host_password,
-    destination_hdfs_root_path
+    force_remote, max_query_size, destination_host, destination_port, destination_host_username,
+    destination_host_password, destination_hdfs_root_path
 ):
 
     initial_start_time = time.time()
@@ -156,7 +178,7 @@ def read_config(filename):
         return {}
 
 
-class HiveDataImporter(object):
+class HiveDataImporter():
     def __init__(
         self, origin_host, origin_db, origin_queue, target_table_name, sample_sql, engine,
         max_query_size, destination_host, destination_port, destination_host_username, destination_host_password,
@@ -447,7 +469,12 @@ class HiveDataImporter(object):
 
     @property
     def temp_table_name(self):
-        return "{}_{}_{}_{}".format(self.temp_table_prefix, self.origin_db, self.target_table_name, hashlib.sha1(slugify(self.sample_sql)).hexdigest())
+        return "{}_{}_{}_{}".format(
+            self.temp_table_prefix,
+            self.origin_db,
+            self.target_table_name,
+            hashlib.sha1(slugify(self.sample_sql).encode('utf-8')).hexdigest()
+        )
 
     @property
     def full_table_name(self):
@@ -614,7 +641,8 @@ class HiveDataImporter(object):
     def get_table_location(self, conn, table_name):
         cursor = conn.cursor()
         cursor.execute("DESCRIBE FORMATTED {}".format(table_name))
-        location = [key[1].strip() for key in cursor.fetchall() if key[0] and key[0].strip().upper() == 'LOCATION:'][0].replace('hdfs://', 'hftp://')
+        location = [key[1].strip() for key in cursor.fetchall() if key[0] and key[0].strip().upper() == 'LOCATION:']
+        location = location[0].replace('hdfs://', 'hftp://')
         cursor.close()
         return location
 

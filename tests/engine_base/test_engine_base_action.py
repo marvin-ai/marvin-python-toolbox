@@ -20,9 +20,15 @@ import pytest
 import os
 import shutil
 import copy
+try:
+    import mock
+except ImportError:
+    import unittest.mock as mock
 
+from marvin_python_toolbox.engine_base import EngineBaseBatchAction
 from marvin_python_toolbox.engine_base import EngineBaseAction, EngineBaseOnlineAction
-from marvin_python_toolbox.engine_base.stubs.actions_pb2 import HealthCheckResponse, HealthCheckRequest, OnlineActionRequest
+from marvin_python_toolbox.engine_base.stubs.actions_pb2 import HealthCheckResponse, HealthCheckRequest
+from marvin_python_toolbox.engine_base.stubs.actions_pb2 import OnlineActionRequest, ReloadRequest, BatchActionRequest
 
 
 @pytest.fixture
@@ -32,6 +38,15 @@ def engine_action():
             return 1
 
     return EngineAction(default_root_path="/tmp/.marvin")
+
+
+@pytest.fixture
+def batch_engine_action():
+    class BatchEngineAction(EngineBaseBatchAction):
+        def execute(self, params, **kwargs):
+            return 1
+
+    return BatchEngineAction(default_root_path="/tmp/.marvin")
 
 
 class TestEngineBaseAction:
@@ -215,4 +230,63 @@ class TestEngineBaseAction:
         response = engine_action._remote_execute(request=request, context=None)
 
         assert response.message == "[1, 2]"
+
+    @mock.patch('marvin_python_toolbox.engine_base.engine_base_action.EngineBaseAction._load_obj')
+    def test_remote_reload_with_artifacts(self, load_obj_mocked, engine_action):
+        objs_key = "obj1"
+        engine_action._save_obj(objs_key, "check")
+        request = ReloadRequest(artifacts=objs_key, protocol='xyz')
+
+        response = engine_action._remote_reload(request, None)
+        load_obj_mocked.assert_called_once_with(object_reference=u'obj1')
+        assert response.message == "Reloaded"
+
+    @mock.patch('marvin_python_toolbox.engine_base.engine_base_action.EngineBaseAction._load_obj')
+    def test_remote_reload_without_artifacts(self, load_obj_mocked, engine_action):
+        request = ReloadRequest(artifacts=None, protocol='xyz')
+
+        response = engine_action._remote_reload(request, None)
+        load_obj_mocked.assert_not_called()
+        assert response.message == "Nothing to reload"
+
+
+class TestEngineBaseBatchAction:
+    def setup(self):
+        shutil.rmtree("/tmp/.marvin", ignore_errors=True)
+
+    def test_pipeline_execute_without_previous_steps(self, batch_engine_action):
+        batch_engine_action.execute = mock.MagicMock()
+        batch_engine_action._pipeline_execute(params=123)
+        
+        batch_engine_action.execute.assert_called_once_with(123)
+
+    def test_pipeline_execute_with_previous_steps(self, batch_engine_action):
+        previous = copy.copy(batch_engine_action)
+        previous._pipeline_execute = mock.MagicMock()
+        batch_engine_action._previous_step = previous
+        batch_engine_action.execute = mock.MagicMock()
+
+        batch_engine_action._pipeline_execute(params=123)
+        
+        previous._pipeline_execute.assert_called_once_with(123)
+        batch_engine_action.execute.assert_called_once_with(123)
+
+    def test_remote_execute_without_request_params(self, batch_engine_action):
+        batch_engine_action._params = 123
+        batch_engine_action._pipeline_execute = mock.MagicMock()
+
+        request = BatchActionRequest()
+        batch_engine_action._remote_execute(request, None)
+
+        batch_engine_action._pipeline_execute.assert_called_once_with(params=123)
+
+    def test_remote_execute_with_request_params(self, batch_engine_action):
+        batch_engine_action._params = 123
+        batch_engine_action._pipeline_execute = mock.MagicMock()
+
+        request = BatchActionRequest(params='{"test": 123}')
+        batch_engine_action._remote_execute(request, None)
+
+        batch_engine_action._pipeline_execute.assert_called_once_with(params={u"test": 123})
+
 

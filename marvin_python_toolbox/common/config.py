@@ -39,7 +39,6 @@ logger = get_logger('core')
 
 def load_conf_from_file(path=None, section='marvin'):
     data = {}
-    config_parser = ConfigParser()
     config_path = path  # try to get config path from args
     if not config_path:  # try to get config file from env
         config_path = os.getenv('MARVIN_CONFIG_FILE') or os.getenv('CONFIG_FILE')
@@ -50,7 +49,9 @@ def load_conf_from_file(path=None, section='marvin'):
     try:
         data = config_parser[section]
     except NoSectionError:
-        pass
+        logger.warn('Couldn\'t find "{section}" section in "{path}"'.format(
+            section=section, path=config_path
+        ))
 
     return data
 

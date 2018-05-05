@@ -99,3 +99,52 @@ def test_download_file(mocked_requests, mocked_progressbar):
 
     file_path = MarvinData.download_file(file_url, local_file_name='myfile')
     assert file_path == '/tmp/data/myfile'
+
+@mock.patch('marvin_python_toolbox.common.data.progressbar')
+@mock.patch('marvin_python_toolbox.common.data.requests')
+def test_download_file_delete_file_if_exception(mocked_requests, mocked_progressbar):
+    mocked_requests.get.side_effect = Exception()
+    with open('/tmp/data/error.json', 'w') as f:
+        f.write('test')
+    
+    file_url = 'google.com/error.json'
+    with pytest.raises(Exception) as excinfo:
+        file_path = MarvinData.download_file(file_url, force=True)
+
+    assert os.path.exists('/tmp/data/error.json') is False
+
+@mock.patch('marvin_python_toolbox.common.data.progressbar.ProgressBar')
+@mock.patch('marvin_python_toolbox.common.data.requests')
+def test_download_file_write_file_if_content(mocked_requests, mocked_progressbar):
+    from requests import Response
+    file_url = 'google.com/file.json'
+
+    response = mock.Mock(spec=Response)
+    response.iter_content.return_value = 'x'
+    mocked_requests.get.return_value = response
+        
+    mocked_open = mock.mock_open()
+    with mock.patch('marvin_python_toolbox.common.data.open', mocked_open, create=True):
+        MarvinData.download_file(file_url, force=True)
+
+    mocked_open.assert_called_once_with('/tmp/data/file.json', 'wb')
+    handle = mocked_open()
+    handle.write.assert_called_once_with('x')
+
+@mock.patch('marvin_python_toolbox.common.data.progressbar.ProgressBar')
+@mock.patch('marvin_python_toolbox.common.data.requests')
+def test_download_file_dont_write_file_if_no_content(mocked_requests, mocked_progressbar):
+    from requests import Response
+    file_url = 'google.com/file.json'
+
+    response = mock.Mock(spec=Response)
+    response.iter_content.return_value = ''
+    mocked_requests.get.return_value = response
+        
+    mocked_open = mock.mock_open()
+    with mock.patch('marvin_python_toolbox.common.data.open', mocked_open, create=True):
+        MarvinData.download_file(file_url, force=True)
+
+    mocked_open.assert_called_once_with('/tmp/data/file.json', 'wb')
+    handle = mocked_open()
+    assert handle.write.call_count == 0

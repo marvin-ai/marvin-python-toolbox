@@ -55,12 +55,18 @@ class TestConfig:
 
         ConfigParserMocked.assert_called_once_with(os.environ['DEFAULT_CONFIG_PATH'])
 
-    @mock.patch('marvin_python_toolbox.common.config.ConfigObj')
-    def test_load_conf_from_default_path_with_invalid_section(self, ConfigParserMocked):
+    @mock.patch('marvin_python_toolbox.common.config.logger')
+    @mock.patch('marvin_python_toolbox.common.config.ConfigObj.__getitem__')
+    def test_load_conf_from_default_path_with_invalid_section(self, ConfigParserGetItemMocked, logger_mocked):
         from configparser import NoSectionError
 
-        ConfigParserMocked.return_value.items.side_effect = NoSectionError('')
-        assert len(load_conf_from_file(section='invalidsection')) == 0
+        filepath = '/path/to/config/file.ini'
+
+        ConfigParserGetItemMocked.side_effect = NoSectionError('')
+        assert len(load_conf_from_file(filepath, section='invalidsection')) == 0
+        logger_mocked.warn.assert_called_once_with(
+            "Couldn't find \"invalidsection\" section in \"/path/to/config/file.ini\""
+        )
 
     @mock.patch('marvin_python_toolbox.common.config.load_conf_from_file')
     def test_get(self, load_conf_from_file_mocked, config_fixture):
@@ -109,4 +115,3 @@ class TestConfig:
         assert Config.get('models.default_context_name', section='section') == 'pdl2'
         assert Config.get('models.default_type_name') == 'pdl'
         assert Config.get('models.default_type_name') == Config.get('models.default_type_name', section='section')
-
