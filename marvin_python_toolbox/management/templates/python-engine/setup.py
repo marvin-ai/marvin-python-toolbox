@@ -72,7 +72,7 @@ setup(
         'numpy==1.13.1',
         'pandas==0.20.3',
         'matplotlib==2.0.2',
-        'marvin-python-toolbox==0',
+        'marvin-python-toolbox==0.0.3',
         'Fabric==1.14.0',
     ],
     dependency_links=['git+https://github.com/marvin-ai/marvin-python-toolbox.git/@v{{project.toolbox_version}}#egg=marvin_python_toolbox-0'],
