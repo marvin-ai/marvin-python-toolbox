@@ -10,7 +10,7 @@
 
 ## Review
 
-**Marvin** is an open source Artificial Intelligence platform that focus on help data science team members, in an easy way, to deliver complex solutions supported by a high-scale, low-latency, language agnostic and standardized architecture while simplifying the process of exploitation and modeling.
+**Marvin** is an open-source Artificial Intelligence platform that focuses on helping data scientists deliver meaningful solutions to complex problems. Supported by a standardized large-scale, language-agnostic architecture, Marvin simplifies the process of exploration and modeling.
 
 ## Getting Started
 * [Installing Marvin (Ubuntu and MacOS user)](#installing-marvin-as-ubuntu-and-macos-user)
@@ -18,10 +18,10 @@
 * [Creating a new engine](#creating-a-new-engine)
 * [Working in an existing engine](#working-in-an-existing-engine)
 * [Command line interface](#command-line-interface)
-* [Running a example engine](#running-a-example-engine)
+* [Running an example engine](#running-a-example-engine)
 
 ### Installing Marvin as Ubuntu and MacOS user
-Take the following steps to install Marvin Toolbox:
+Perform the following steps to install the Marvin Toolbox:
 1. Libsasl2-dev, Python-pip and Graphviz installation
 ```
 Ubuntu: 
@@ -45,7 +45,7 @@ sudo ln -s /opt/spark-2.1.1-bin-hadoop2.6 /opt/spark
 
 echo "export SPARK_HOME=/opt/spark" >> $HOME/.bash_profile
 ```
-If you do not have /opt directory created, before unpacking spark, run:
+If there is no /opt directory present, before unpacking spark, run:
 ```
 sudo mkdir /opt
 ```
@@ -80,26 +80,26 @@ make marvin
 marvin test
 ```
 ### Installing Marvin with Other OS
-Take the following steps to install Marvin Toolbox using Vagrant:
+Perform the following steps to install Marvin Toolbox using Vagrant:
 1. Install requirements
 - [Virtual box](http://www.virtualbox.org) (Version 5.1 +)
 - [Vagrant](http://www.vagrantup.com) (Version 1.9.2 or +)
 
 
-2. Clone repository and start provision
+2. Clone the repository and start provision
 ```
 git clone https://github.com/marvin-ai/marvin-vagrant-dev.git
 cd marvin-vagrant-dev
 ```
 
-3. Prepare dev (engine creation) box
+3. Prepare the dev (engine creation) box
 ```
 vagrant up dev
 vagrant ssh dev
 ```
 Wait for provision process and follow interactive configuration script after access the dev box using vagrant ssh command.
 
-4. The marvin source projects will be on your home folder, to compile and use the marvin toolbox
+4. The marvin source projects will be located in your home folder; to compile and use the Marvin toolbox
 ```
 workon python-toolbox-env
 make marvin
@@ -110,19 +110,19 @@ make marvin
 workon python-toolbox-env
 marvin engine-generate
 ```
-Respond the interactive prompt and wait for the engine environment preparation, and don't forget to start dev box before if you are using vagrant.
+Respond to the prompt and wait for the engine environment preparation to complete. Don't forget to start dev box before if you are using vagrant.
 
 2. Test the new engine
 ```
 workon <new_engine_name>-env
 marvin test
 ```
-3. For more informations
+3. For more information
 ```
 marvin --help
 ```
 ### Working in an existing engine
-1. Set VirtualEnv and get to engine's path
+1. Set VirtualEnv and get to the engine's path
 ```
 workon <engine_name>-env
 ```
@@ -167,11 +167,11 @@ Commands:
 ```
 
 ### Running a example engine 
-1. Clone example engine from repository
+1. Clone the example engine from the repository
 ```
 git clone https://github.com/marvin-ai/engines.git
 ```
-2. Generate a new marvin engine environment for Iris species engine
+2. Generate a new Marvin engine environment for the Iris species engine
 ```
 workon python-toolbox-env
 marvin engine-generateenv ../engines/iris-species-engine/
