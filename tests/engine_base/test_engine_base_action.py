@@ -238,7 +238,7 @@ class TestEngineBaseAction:
         request = ReloadRequest(artifacts=objs_key, protocol='xyz')
 
         response = engine_action._remote_reload(request, None)
-        load_obj_mocked.assert_called_once_with(object_reference=u'obj1')
+        load_obj_mocked.assert_called_once_with(force=True, object_reference=u'obj1')
         assert response.message == "Reloaded"
 
     @mock.patch('marvin_python_toolbox.engine_base.engine_base_action.EngineBaseAction._load_obj')
@@ -248,6 +248,25 @@ class TestEngineBaseAction:
         response = engine_action._remote_reload(request, None)
         load_obj_mocked.assert_not_called()
         assert response.message == "Nothing to reload"
+
+    def test_load_obj_dont_reload_without_force(self, engine_action):
+        obj = [6, 5, 4]
+        object_reference = '_params'
+        engine_action._persistence_mode = 'local'
+        engine_action._save_obj(object_reference, obj)
+
+        assert obj == engine_action._params
+
+        new_obj = [1, 2, 3]
+        path = engine_action._get_object_file_path(object_reference)
+        engine_action._serializer_dump(new_obj, path)
+        engine_action._load_obj(object_reference)
+
+        assert obj == engine_action._params
+
+        engine_action._load_obj(object_reference, force=True)
+
+        assert new_obj == engine_action._params
 
 
 class TestEngineBaseBatchAction:

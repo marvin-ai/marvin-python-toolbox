@@ -85,8 +85,8 @@ class EngineBaseAction():
             logger.info("Object {} saved!".format(object_reference))
             self._local_saved_objects[object_reference] = object_file_path
 
-    def _load_obj(self, object_reference):
-        if getattr(self, object_reference, None) is None and self._persistence_mode == 'local':
+    def _load_obj(self, object_reference, force=False):
+        if (getattr(self, object_reference, None) is None and self._persistence_mode == 'local') or force:
             object_file_path = self._get_object_file_path(object_reference)
             logger.info("Loading object from {}".format(object_file_path))
             setattr(self, object_reference, self._serializer_load(object_file_path))
@@ -116,7 +116,7 @@ class EngineBaseAction():
 
         if artifacts:
             for artifact in artifacts.split(","):
-                self._load_obj(object_reference=artifact)
+                self._load_obj(object_reference=artifact, force=True)
 
         else:
             message = "Nothing to reload"
