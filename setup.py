@@ -62,7 +62,6 @@ REQUIREMENTS_EXTERNAL = [
     'pytest-testmon>=0.8.2',
     'jsonschema>=2.5.1',
     'pytest==2.9.2',
-    'pytest-flask>=0.10.0',
     'python-slugify==0.1.0',
     'paramiko==2.1.2',
     'PyHive==0.3.0',
