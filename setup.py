@@ -85,7 +85,8 @@ REQUIREMENTS_EXTERNAL = [
     'joblib==0.11',
     'autopep8==1.3.3',
     'progressbar2==3.34.3',
-    'urllib3==1.21.1'
+    'urllib3==1.21.1',
+    'idna==2.5'
 ]
 
 # Test dependencies
