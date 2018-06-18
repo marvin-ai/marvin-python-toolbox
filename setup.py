@@ -86,7 +86,6 @@ REQUIREMENTS_EXTERNAL = [
     'progressbar2==3.34.3',
     'urllib3==1.21.1',
     'idna==2.5',
-    'pip==10.0.1'
 ]
 
 # Test dependencies
