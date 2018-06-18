@@ -75,7 +75,7 @@ setup(
         'marvin-python-toolbox==0',
         'Fabric==1.14.0',
     ],
-    dependency_links=['git+https://github.com/marvin-ai/marvin-python-toolbox.git/@master#egg=marvin_python_toolbox-0'],
+    dependency_links=['git+https://github.com/marvin-ai/marvin-python-toolbox.git/@zhg_pip_version_fix#egg=marvin_python_toolbox-0'],
     tests_require=[
         'pytest>=2.6.4',
         'pytest-cov>=1.8.1',
