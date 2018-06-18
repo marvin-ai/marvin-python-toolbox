@@ -373,7 +373,7 @@ def generate_env(engine_path, python):
 @click.option('--dest', '-d', envvar='MARVIN_HOME', type=click.Path(exists=True), help='Root folder path for the creation')
 @click.option('--no-env', is_flag=True, default=False, help='Don\'t create the virtual enviroment')
 @click.option('--no-git', is_flag=True, default=False, help='Don\'t initialize the git repository')
-@click.option('--python', '-p', default='python', help='The Python interpreter to use to create the new environment')
+@click.option('--python', '-py', default='python', help='The Python interpreter to use to create the new environment')
 def generate(name, description, mantainer, email, package, dest, no_env, no_git, python):
     type_ = 'python-engine'
     type = _orig_type
