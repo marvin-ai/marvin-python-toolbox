@@ -48,7 +48,6 @@ TOPIC = 'Topic :: Software Development :: Libraries :: Python Modules',
 # External dependencies
 # More info https://pythonhosted.org/setuptools/setuptools.html#declaring-dependencies
 REQUIREMENTS_EXTERNAL = [
-    'pip==9.0.1',
     'six>=1.10.0',
     'bumpversion>=0.5.3',
     'click>=3.3',
@@ -86,7 +85,7 @@ REQUIREMENTS_EXTERNAL = [
     'autopep8==1.3.3',
     'progressbar2==3.34.3',
     'urllib3==1.21.1',
-    'idna==2.5'
+    'idna==2.5',
 ]
 
 # Test dependencies
