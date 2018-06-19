@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import unicode_literals
 import joblib as serializer
 import pytest
 import os
@@ -111,7 +112,7 @@ class TestEngineBaseAction:
             assert False
 
         except Exception as e:
-            assert str(e) == "(u'MultipleAssignException', '_params')"
+            assert str(e) == "('MultipleAssignException', '_params')"
 
     def test_load_obj_local_persistence(self, engine_action):
         engine_action2 = copy.copy(engine_action)
