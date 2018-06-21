@@ -52,6 +52,7 @@ REQUIREMENTS_EXTERNAL = [
     'bumpversion>=0.5.3',
     'click>=3.3',
     'jupyter>=1.0.0',
+    'jupyterlab>=0.32.1',
     'pep8>=1.7.0',
     'virtualenv>=15.0.1',
     'pytest-cov>=1.8.1',

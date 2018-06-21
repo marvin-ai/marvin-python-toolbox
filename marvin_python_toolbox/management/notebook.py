@@ -52,3 +52,29 @@ def notebook(ctx, port, enable_security, spark_conf):
 
     ret = os.system(' '.join(command))
     sys.exit(ret)
+
+
+@cli.command('lab', help='Start the JupyterLab server.')
+@click.option('--port', '-p', default=8888, help='JupyterLab server port')
+@click.option('--enable-security', is_flag=True, help='Enable jupyterlab token security.')
+@click.option('--spark-conf', '-c', envvar='SPARK_CONF_DIR', type=click.Path(exists=True), help='Spark configuration folder path to be used in this session')
+@click.pass_context
+def lab_cli(ctx, port, enable_security, spark_conf):
+    lab(ctx, port, enable_security, spark_conf)
+
+
+def lab(ctx, port, enable_security, spark_conf):
+    notebookdir = os.path.join(ctx.obj['base_path'], 'notebooks')
+    command = [
+        "SPARK_CONF_DIR={0} YARN_CONF_DIR={0}".format(spark_conf if spark_conf else os.path.join(os.environ["SPARK_HOME"], "conf")),
+        'jupyter-lab',
+        '--notebook-dir', notebookdir,
+        '--ip', '0.0.0.0',
+        '--port', str(port),
+        '--no-browser',
+    ]
+
+    command.append("--NotebookApp.token=") if not enable_security else None
+
+    ret = os.system(' '.join(command))
+    sys.exit(ret)
