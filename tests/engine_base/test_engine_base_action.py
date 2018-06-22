@@ -112,7 +112,8 @@ class TestEngineBaseAction:
             assert False
 
         except Exception as e:
-            assert str(e) == "(u'MultipleAssignException', '_params')"
+            assert str(e.args[0]) == 'MultipleAssignException'
+            assert str(e.args[1]) == '_params'
 
     def test_load_obj_local_persistence(self, engine_action):
         engine_action2 = copy.copy(engine_action)
