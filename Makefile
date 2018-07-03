@@ -68,5 +68,5 @@ grpc:
 
 distribution: clean-build
 	pip install twine
-	python setup.py bdist_wheel
+	python setup.py bdist_wheel --universal
 	twine upload dist/marvin_python_toolbox*.whl

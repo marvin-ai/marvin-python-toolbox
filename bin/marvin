@@ -59,6 +59,17 @@ config = parse_ini(inipath, config_defaults)
 package_name = config['marvin_package']
 package_path = config['marvin_packagedir']
 
+home = os.environ['HOME']
+os.environ.setdefault('SPARK_HOME', '/opt/spark')
+os.environ.setdefault('WORKON_HOME', os.path.join(home, '.virtualenvs'))
+os.environ.setdefault('MARVIN_HOME', os.path.join(home, 'marvin'))
+os.environ.setdefault('MARVIN_DATA_PATH', os.path.join(home, 'marvin/data'))
+
+marvin_data = os.environ['MARVIN_DATA_PATH']
+if not os.path.exists(marvin_data):
+    os.makedirs(marvin_data)
+
+
 type_ = config.get('marvin_type', None)
 
 exclude_commands = config.get('marvin_exclude', None)

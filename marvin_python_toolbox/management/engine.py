@@ -458,7 +458,8 @@ def generate(name, description, mantainer, email, package, dest, no_env, no_git,
         if not no_env:
             print('Now to workon in the new engine project use: workon {}'.format(venv_name))
 
-    except:
+    except Exception as e:
+        logger.info(e)
         # remove project if created
         if os.path.exists(dest) and folder_created:
             shutil.rmtree(dest)
@@ -500,7 +501,7 @@ def _copy_processed_files(src, dest, context):
         for file in files:
 
             # Ignore trash
-            if file == '.DS_Store':
+            if file == '.DS_Store' or file.endswith('.pyc'):
                 continue
 
             from_ = os.path.join(dirname, file)

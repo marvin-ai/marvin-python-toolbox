@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 import os.path
 import os
 import sys
@@ -67,12 +68,12 @@ REQUIREMENTS_EXTERNAL = [
     'PyHive==0.3.0',
     'thrift==0.10.0',
     'thrift-sasl==0.2.1',
-    'virtualenvwrapper>=4.7.1'
-    'requests==2.5.1',
-    'python-dateutil==2.4.2',
+    'virtualenvwrapper>=4.7.1',
+    'requests==2.19.1',
+    'python-dateutil==2.7.3',
     'python-slugify==0.1.0',
     'path.py==7.2',
-    'httpretty==0.8.4',
+    'httpretty==0.9.5',
     'tornado==4.5.3',
     'jsonschema>=2.5.1',
     'gprof2dot',
@@ -112,7 +113,6 @@ def _hooks(dir):
 
 
 def _set_autocomplete():
-
     virtualenv = os.environ.get('VIRTUAL_ENV', None)
 
     if virtualenv:
