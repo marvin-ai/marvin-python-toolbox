@@ -13,3 +13,4 @@ tests/__pycache__
 .DS_Store
 .packages
 .profiling
+notebooks/data

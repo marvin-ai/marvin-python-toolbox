@@ -444,6 +444,7 @@ def generate(name, description, mantainer, email, package, dest, no_env, no_git,
 
         _copy_processed_files(TEMPLATE_BASES[type_], dest, context)
         _rename_dirs(dest, RENAME_DIRS, context)
+        _make_data_link(dest)
 
         venv_name = None
         if not no_env:
@@ -568,6 +569,12 @@ def _call_git_init(dest):
         subprocess.Popen(command, env=os.environ).wait()
     except OSError:
         print('WARNING: Could not initialize repository!')
+
+
+def _make_data_link(dest):
+    data_path = os.environ['MARVIN_DATA_PATH']
+    data_link = os.path.join(dest, 'notebooks/data')
+    os.symlink(data_path, data_link)
 
 
 @cli.command('engine-httpserver', help='Marvin http api server starts')

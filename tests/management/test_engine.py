@@ -26,6 +26,7 @@ from marvin_python_toolbox.management.engine import MarvinDryRun
 from marvin_python_toolbox.management.engine import dryrun
 from marvin_python_toolbox.management.engine import engine_httpserver
 from marvin_python_toolbox.management.engine import _create_virtual_env
+from marvin_python_toolbox.management.engine import _make_data_link
 import os
 
 
@@ -207,3 +208,10 @@ def test_create_virtual_env_error(Popen_mocked, sys_mocked):
     mockx.wait.assert_called_once()
     # sys_mocked.exit.assert_called_once_with(1)
 
+
+@mock.patch('marvin_python_toolbox.management.engine.os.symlink')
+def test_make_data_link_call_symlink(mock_symlink):
+    os.environ['MARVIN_DATA_PATH'] = '/tmp/'
+    dest = '/tmp/'
+    _make_data_link(dest)
+    mock_symlink.assert_called_once_with('/tmp/', '/tmp/notebooks/data')
