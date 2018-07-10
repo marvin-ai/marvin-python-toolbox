@@ -66,10 +66,18 @@ class EngineBaseAction():
         return os.path.join(directory, "{}".format(object_reference.replace('_', '')))
 
     def _serializer_dump(self, obj, object_file_path):
-        serializer.dump(obj, object_file_path, protocol=2, compress=3)
+        if object_file_path.split(os.sep)[-1] == 'metrics':
+            with open(object_file_path, 'w') as f:
+                json.dump(obj, f, sort_keys=True, indent=4, separators=(',', ': '))
+        else:
+            serializer.dump(obj, object_file_path, protocol=2, compress=3)
 
     def _serializer_load(self, object_file_path):
-        return serializer.load(object_file_path)
+        if object_file_path.split(os.sep)[-1] == 'metrics':
+            with open(object_file_path, 'r') as f:
+                return json.load(f)
+        else:
+            return serializer.load(object_file_path)
 
     def _save_obj(self, object_reference, obj):
         if not self._is_remote_calling:

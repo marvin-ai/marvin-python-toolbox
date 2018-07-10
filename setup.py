@@ -81,13 +81,16 @@ REQUIREMENTS_EXTERNAL = [
     'simplejson>=3.10.0',
     'configobj>=5.0.6',
     'findspark==1.1.0',
-    'grpcio==1.6.0',
-    'grpcio-tools==1.6.0',
+    'grpcio==1.13.0',
+    'grpcio-tools==1.13.0',
     'joblib==0.11',
     'autopep8==1.3.3',
     'progressbar2==3.34.3',
     'urllib3==1.21.1',
     'idna==2.5',
+    'Keras==2.2.0',
+    'tensorflow==1.8.0',
+    'bleach==1.5.0',
 ]
 
 # Test dependencies

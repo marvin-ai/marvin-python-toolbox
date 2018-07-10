@@ -21,6 +21,7 @@ import pytest
 import os
 import shutil
 import copy
+from mock import ANY
 try:
     import mock
 except ImportError:
@@ -309,5 +310,43 @@ class TestEngineBaseBatchAction:
         batch_engine_action._remote_execute(request, None)
 
         batch_engine_action._pipeline_execute.assert_called_once_with(params={u"test": 123})
+
+    @mock.patch("json.load")
+    def test__serializer_load_metrics(self, mocked_load):
+        obj = {"key", 1}
+        mocked_load.return_value = obj
+        object_reference = "_metrics"
+
+        class _EAction(EngineBaseAction):
+            _metrics = None
+
+            def execute(self, params, **kwargs):
+                pass
+
+        mocked_open = mock.mock_open()
+        with mock.patch('marvin_python_toolbox.engine_base.engine_base_action.open', mocked_open, create=False):
+            _metrics = _EAction(default_root_path="/tmp/.marvin", persistence_mode="local")._load_obj(object_reference)
+
+        mocked_load.assert_called_once_with(ANY)
+        mocked_open.assert_called_once()
+        assert obj == _metrics
+
+    @mock.patch("json.dump")
+    def test__serializer_dump_metrics(self, mocked_dump):
+        obj = {"key", 1}
+        object_reference = "_metrics"
+
+        class _EAction(EngineBaseAction):
+            _metrics = None
+
+            def execute(self, params, **kwargs):
+                pass
+
+        mocked_open = mock.mock_open()
+        with mock.patch('marvin_python_toolbox.engine_base.engine_base_action.open', mocked_open, create=False):
+            _EAction(default_root_path="/tmp/.marvin", persistence_mode="local")._save_obj(object_reference, obj)
+
+        mocked_dump.assert_called_once_with(obj, ANY, indent=4, separators=(u',', u': '), sort_keys=True)
+        mocked_open.assert_called_once()
 
 
