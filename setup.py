@@ -56,13 +56,7 @@ REQUIREMENTS_EXTERNAL = [
     'jupyterlab>=0.32.1',
     'pep8>=1.7.0',
     'virtualenv>=15.0.1',
-    'pytest-cov>=1.8.1',
-    'mock>=2.0.0',
-    'tox==2.2.0',
-    'pytest-watch>=4.1.0',
-    'pytest-testmon>=0.8.2',
     'jsonschema>=2.5.1',
-    'pytest==2.9.2',
     'python-slugify==0.1.0',
     'paramiko==2.1.2',
     'PyHive==0.3.0',
@@ -88,14 +82,20 @@ REQUIREMENTS_EXTERNAL = [
     'progressbar2==3.34.3',
     'urllib3==1.21.1',
     'idna==2.5',
-    'Keras==2.2.0',
-    'tensorflow==1.8.0',
     'bleach==1.5.0',
 ]
 
 # Test dependencies
-REQUIREMENTS_TESTS = []
-
+REQUIREMENTS_TESTS = [
+    'tox==2.2.0',
+    'mock>=2.0.0',
+    'pytest==2.9.2',
+    'pytest-cov>=1.8.1',
+    'pytest-watch>=4.1.0',
+    'pytest-testmon>=0.8.2',
+    'Keras==2.2.0',
+    'tensorflow==1.8.0',
+]
 # This is normally an empty list
 DEPENDENCY_LINKS_EXTERNAL = []
 
@@ -251,6 +251,9 @@ setup(
     classifiers=CLASSIFIERS,
     install_requires=REQUIREMENTS_EXTERNAL,
     tests_require=REQUIREMENTS_TESTS,
+    extras_require={
+        'testing': REQUIREMENTS_TESTS,
+    },
     dependency_links=DEPENDENCY_LINKS_EXTERNAL,
     scripts=SCRIPTS,
     cmdclass={'test': Tox, 'develop': develop, 'install': install},
