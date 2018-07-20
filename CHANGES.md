@@ -1,5 +1,24 @@
 ## Changes log
 
+### 0.0.4
+
+   - Docs.yaml file update for metrics api
+   - Some adjustments in toolbox and template makefiles #104
+   - Removing some commands by install mode (dev and prod) #104
+   - Moving autocomplete and notebook extension from toolbox setup to engine template setup. Close #107
+   - Separating tests dependencies and creating a new make command. close #100
+   - Metrics as json and Keras serializser to Closes #86 and Closes #98
+   - Saving and loading metrics artifacts as json files to Fix #98
+   - Adding a symlink to the data path on engine generate. close #93
+   - Marvin is now installable with pip. fix #84
+   - ASCII encode error fix for accented words in predict message
+   - Add Jupyter Lab command. Fix #85
+   - Cli parameter conflit fix
+   - New param to force reload #80
+   - Improving test coverage
+   - New python binary parameter to be used in the creation of virtual env
+   - Fix tornado 4.5.3 and pip 9.0.1
+
 ### 0.0.3
 
 	- Python 3 support general compatibility refactoring (#68)

@@ -162,7 +162,7 @@ setup(
         'numpy==1.13.1',
         'pandas==0.20.3',
         'matplotlib==2.0.2',
-        'marvin-python-toolbox==0.0.3',
+        'marvin-python-toolbox==0.0.4',
         'Fabric==1.14.0',
     ],
     tests_require=REQUIREMENTS_TESTS,
