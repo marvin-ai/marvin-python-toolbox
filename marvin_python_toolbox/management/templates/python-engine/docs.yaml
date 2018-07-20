@@ -32,7 +32,7 @@ paths:
   /acquisitor/health:
     get:
       summary: Get acquisitor's service health
-      operationId: getHealth
+      operationId: getAcquisitorHealth
       tags:
         - Acquisitor
       responses:
@@ -54,14 +54,7 @@ paths:
             type: string
           required: true
           description: The Protocol value generated from last action
-      requestBody:
-        description: Use an empty json as body
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: getStatus
+      operationId: getAcquisitorStatus
       tags:
         - Acquisitor
       responses:
@@ -83,7 +76,7 @@ paths:
           application/json:
             schema:
               type: object
-      operationId: acquisit
+      operationId: acquisitor
       tags:
         - Acquisitor
       responses:
@@ -98,7 +91,7 @@ paths:
   /tpreparator/health:
     get:
       summary: Get trainer preparator's service health
-      operationId: getHealth
+      operationId: getTPreparatortorHealth
       tags:
         - Tpreparator
       responses:
@@ -120,14 +113,7 @@ paths:
             type: string
           required: true
           description: The Protocol value generated from last action
-      requestBody:
-        description: Use an empty json as body
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: getStatus
+      operationId: getTPreparatorStatus
       tags:
         - Tpreparator
       responses:
@@ -156,7 +142,7 @@ paths:
           application/json:
             schema:
               type: object
-      operationId: tpreparator
+      operationId: reloadTPreparator
       tags:
         - Tpreparator
       responses:
@@ -193,7 +179,7 @@ paths:
   /trainer/health:
     get:
       summary: Get trainer's service health
-      operationId: getHealth
+      operationId: getTrainerHealth
       tags:
         - Trainer
       responses:
@@ -215,14 +201,7 @@ paths:
             type: string
           required: true
           description: The Protocol value generated from last action
-      requestBody:
-        description: Use an empty json as body
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: getStatus
+      operationId: getTrainerStatus
       tags:
         - Trainer
       responses:
@@ -251,7 +230,7 @@ paths:
           application/json:
             schema:
               type: object
-      operationId: trainer
+      operationId: reloadTrainer
       tags:
         - Trainer
       responses:
@@ -288,7 +267,7 @@ paths:
   /evaluator/health:
     get:
       summary: Get evaluator's service health
-      operationId: getHealth
+      operationId: getEvaluatorHealth
       tags:
         - Evaluator
       responses:
@@ -310,14 +289,29 @@ paths:
             type: string
           required: true
           description: The Protocol value generated from last action
-      requestBody:
-        description: Use an empty json as body
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: getStatus
+      operationId: getEvaluatorStatus
+      tags:
+        - Evaluator
+      responses:
+        '200':
+          description: Result Message / Success
+        '400':
+          description: Bad Request / Illegal Argument / Missing Parameters
+        '500':
+          description: Internal Server Error / Timeout
+        '503':
+          description: Service Unavailable
+  /evaluator/metrics?protocol=:
+    get:
+      summary: Get metrics's value
+      parameters: 
+        - in: query
+          name: protocol
+          schema: 
+            type: string
+          required: true
+          description: Metrics protocol value
+      operationId: getMetrics
       tags:
         - Evaluator
       responses:
@@ -339,14 +333,7 @@ paths:
             type: string
           required: true
           description: The Protocol value generated from last action
-      requestBody:
-        description: The default value for body is an empty json object
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: evaluator
+      operationId: reloadEvaluator
       tags:
         - Evaluator
       responses:
@@ -383,7 +370,7 @@ paths:
   /predictor/health:
     get:
       summary: Get predictor's service health
-      operationId: getHealth
+      operationId: getPredictorHealth
       tags:
         - Predictor
       responses:
@@ -405,14 +392,7 @@ paths:
             type: string
           required: true
           description: The Protocol value generated from last action
-      requestBody:
-        description: Use an empty json as body
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: getStatus
+      operationId: getPredictorStatus
       tags:
         - Predictor
       responses:
@@ -441,7 +421,7 @@ paths:
           application/json:
             schema:
               type: object
-      operationId: reloadArtifact
+      operationId: reloadPredictor
       tags:
         - Predictor
       responses:
@@ -463,7 +443,7 @@ paths:
           application/json:
             schema:
               type: object
-      operationId: predict
+      operationId: predictor
       tags:
         - Predictor
       responses:
@@ -478,7 +458,7 @@ paths:
   /feedback/health:
     get:
       summary: Get feedback's service health
-      operationId: getHealth
+      operationId: getFeedbackHealth
       tags:
         - Feedback
       responses:
@@ -500,14 +480,7 @@ paths:
             type: string
           required: true
           description: The Protocol value generated from last action
-      requestBody:
-        description: Use an empty json as body
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      operationId: getStatus
+      operationId: getFeedbackStatus
       tags:
         - Feedback
       responses:
@@ -536,7 +509,7 @@ paths:
           application/json:
             schema:
               type: object
-      operationId: reloadArtifact
+      operationId: reloadFeedback
       tags:
         - Feedback
       responses:

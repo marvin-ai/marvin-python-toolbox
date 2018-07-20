@@ -5,6 +5,7 @@
 	"artifactsRemotePath": "/tmp/marvin",
 	"artifactManagerType": "FS",
 	"onlineActionTimeout": 1000,
+	"metricsTimeout": 10000,
     "healthCheckTimeout": 2000,
 	"reloadTimeout": 600000,
 	"batchActionTimeout": 600000,
