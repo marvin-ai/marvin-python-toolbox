@@ -22,9 +22,6 @@ import sys
 
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
-from setuptools.command.develop import develop as _develop
-from setuptools.command.install import install as _install
-import shutil
 
 # Package basic info
 PACKAGE_NAME = 'marvin_python_toolbox'
@@ -110,83 +107,6 @@ def _get_version():
     return version
 
 
-def _hooks(dir):
-    _set_autocomplete()
-    _install_notebook_extension()
-
-
-def _set_autocomplete():
-    virtualenv = os.environ.get('VIRTUAL_ENV', None)
-
-    if virtualenv:
-        postactivate = os.path.join(virtualenv, 'bin', 'postactivate')
-
-        if os.path.exists(postactivate):
-            shutil.copy(
-                os.path.join('marvin_python_toolbox', 'extras', 'marvin_bash_completion'),
-                os.path.join(virtualenv, 'marvin_bash_completion')
-            )
-
-            command = 'source "{}"'.format(os.path.join(virtualenv, 'marvin_bash_completion'))
-
-            with open(postactivate, 'r+') as fp:
-                lines = fp.readlines()
-                fp.seek(0)
-                configured = False
-                for line in lines:
-                    if 'marvin_bash_completion' in line:
-                        # Replacing old autocomplete configuration
-                        fp.write(command)
-                        configured = True
-                    else:
-                        fp.write(line)
-
-                if not configured:
-                    fp.write(command)
-                    # 'Autocomplete was successfully configured'
-                fp.write('\n')
-                fp.truncate()
-
-
-def _install_notebook_extension():
-    import marvin_python_toolbox as toolbox
-
-    install_command = [
-        "jupyter",
-        "nbextension",
-        "install",
-        os.path.join(toolbox.__path__[0], 'extras', 'notebook_extensions', 'main.js'),
-        "--destination",
-        "marvin.js",
-        "--sys-prefix",
-        "--overwrite"
-    ]
-
-    os.system(' '.join(install_command))
-
-    enable_command = [
-        "jupyter",
-        "nbextension",
-        "enable",
-        "marvin",
-        "--sys-prefix"
-    ]
-
-    os.system(' '.join(enable_command))
-
-
-class develop(_develop):
-    def run(self):
-        _develop.run(self)
-        self.execute(_hooks, (self.install_lib,), msg="Running develop preparation task")
-
-
-class install(_install):
-    def run(self):
-        _install.run(self)
-        self.execute(_hooks, (self.install_lib,), msg="Running install preparation task")
-
-
 class Tox(TestCommand):
     """Run the test cases using TOX command."""
     user_options = [('tox-args=', 'a', "Arguments to pass to tox")]
@@ -256,5 +176,5 @@ setup(
     },
     dependency_links=DEPENDENCY_LINKS_EXTERNAL,
     scripts=SCRIPTS,
-    cmdclass={'test': Tox, 'develop': develop, 'install': install},
+    cmdclass={'test': Tox},
 )

@@ -38,9 +38,12 @@ __all__ = ['create_cli']
 
 logger = get_logger('management')
 
+TOOL_EXCLUDE = ['engine-server', 'engine-dryrun', 'engine-httpserver', 'engine-grpcserver', 'engine-deploy', 'engine-httpserver-remote', 'pkg-showversion']
+PROD_EXCLUDE = ['test', 'test-tdd', 'test-tox', 'test-checkpep8', 'lab', 'notebook', 'pkg-bumpversion', 'pkg-createtag', 'pkg-showchanges', 'pkg-showinfo', 'pkg-updatedeps']
+
 EXCLUDE_BY_TYPE = {
     'python-engine': ['engine-generate', 'engine-generateenv'],
-    'tool': ['engine-server', 'engine-dryrun', 'engine-httpserver', 'engine-grpcserver', 'engine-deploy', 'engine-httpserver-remote']
+    'tool': TOOL_EXCLUDE
 }
 
 
@@ -65,6 +68,10 @@ def create_cli(package_name, package_path, type_=None, exclude=None, config=None
 
     if exclude is None:
         exclude = EXCLUDE_BY_TYPE.get(type_, [])
+
+    mode_file = os.path.join(base_path, '.dev')
+    if type_ == 'tool' and not os.path.exists(mode_file):
+        exclude = exclude + PROD_EXCLUDE
 
     if config is None:
         # Find the ini directory

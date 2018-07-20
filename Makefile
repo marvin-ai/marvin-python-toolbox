@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.PHONY: help marvin update clean-pyc clean-build clean-reports clean-deps clean grpc distribution
+.PHONY: help marvin marvin-prod update clean-pyc clean-build clean-reports clean-deps clean grpc distribution
 
 help:
 	@echo "    marvin"
 	@echo "        Prepare project to be used as a marvin package."
+	@echo "    marvin-prod"
+	@echo "        Prepare project to be used in production environment."
 	@echo "    update"
 	@echo "        Reinstall requirements and setup.py dependencies."
 	@echo "    clean-all"
@@ -36,13 +38,15 @@ help:
 
 marvin:
 	pip install -e ".[testing]" --process-dependency-links
+	touch .dev
 	marvin --help
 
 update:
 	pip install -e . --process-dependency-links -U 
 
 marvin-prod:
-	pip install -e . --process-dependency-links
+	pip install . --process-dependency-links
+	rm -f .dev 
 	marvin --help
 
 clean-pyc:
@@ -51,6 +55,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f  {} +
 
 clean-build:
+	rm -f .prod 
 	rm -rf *.egg-info
 	rm -rf .cache
 	rm -rf .eggs
