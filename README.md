@@ -13,97 +13,15 @@
 **Marvin** is an open-source Artificial Intelligence platform that focuses on helping data scientists deliver meaningful solutions to complex problems. Supported by a standardized large-scale, language-agnostic architecture, Marvin simplifies the process of exploration and modeling.
 
 ## Getting Started
-* [Installing Marvin (Ubuntu and MacOS user)](#installing-marvin-as-ubuntu-and-macos-user)
-* [Installing Marvin (Other OS)](#installing-marvin-with-other-os)
+* [Installing Marvin (Ubuntu)](https://www.marvin-ai.org/book/installing-marvin/ubuntu-debian-installation)
+* [Installing Marvin (MacOS)](https://www.marvin-ai.org/book/installing-marvin/macos-installation)
+* [Installing Marvin (Other OS) Vagrant](https://www.marvin-ai.org/book/installing-marvin/vagrant-installation)
 * [Creating a new engine](#creating-a-new-engine)
 * [Working in an existing engine](#working-in-an-existing-engine)
 * [Command line interface](#command-line-interface)
 * [Running an example engine](#running-a-example-engine)
 
-### Installing Marvin as Ubuntu and MacOS user
-Perform the following steps to install the Marvin Toolbox:
-1. Libsasl2-dev, Python-pip and Graphviz installation
-```
-Ubuntu: 
-sudo apt-get install libsasl2-dev python-pip graphviz -y
 
-MacOS: 
-sudo easy_install pip
-brew install openssl graphviz
-```
-2. VirtualEnvWrapper Installation
-```
-sudo pip install --upgrade pip
-sudo pip install virtualenvwrapper --ignore-installed six
-```
-3. Spark installation
-```
-curl https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.6.tgz -o /tmp/spark-2.1.1-bin-hadoop2.6.tgz
-
-sudo tar -xf /tmp/spark-2.1.1-bin-hadoop2.6.tgz -C /opt/
-sudo ln -s /opt/spark-2.1.1-bin-hadoop2.6 /opt/spark
-
-echo "export SPARK_HOME=/opt/spark" >> $HOME/.bash_profile
-```
-If there is no /opt directory present, before unpacking spark, run:
-```
-sudo mkdir /opt
-```
-4. Set environment variables
-```
-echo "export WORKON_HOME=$HOME/.virtualenvs" >> $HOME/.bash_profile
-echo "export MARVIN_HOME=$HOME/marvin" >> $HOME/.bash_profile
-echo "export MARVIN_DATA_PATH=$HOME/marvin/data" >> $HOME/.bash_profile
-echo "source virtualenvwrapper.sh" >> $HOME/.bash_profile
-
-source ~/.bash_profile
-````
-
-5. Clone and install python-toolbox
-
-```
-mkdir $MARVIN_HOME
-mkdir $MARVIN_DATA_PATH
-cd $MARVIN_HOME
-
-git clone https://github.com/marvin-ai/marvin-python-toolbox.git
-cd marvin-python-toolbox
-
-mkvirtualenv python-toolbox-env
-setvirtualenvproject
-
-make marvin
-````
-
-6. Test the installation
-```
-marvin test
-```
-### Installing Marvin with Other OS
-Perform the following steps to install Marvin Toolbox using Vagrant:
-1. Install requirements
-- [Virtual box](http://www.virtualbox.org) (Version 5.1 +)
-- [Vagrant](http://www.vagrantup.com) (Version 1.9.2 or +)
-
-
-2. Clone the repository and start provision
-```
-git clone https://github.com/marvin-ai/marvin-vagrant-dev.git
-cd marvin-vagrant-dev
-```
-
-3. Prepare the dev (engine creation) box
-```
-vagrant up dev
-vagrant ssh dev
-```
-Wait for provision process and follow interactive configuration script after access the dev box using vagrant ssh command.
-
-4. The marvin source projects will be located in your home folder; to compile and use the Marvin toolbox
-```
-workon python-toolbox-env
-make marvin
-```
 ### Creating a new engine
 1. To create a new engine
 ```
@@ -117,23 +35,29 @@ Respond to the prompt and wait for the engine environment preparation to complet
 workon <new_engine_name>-env
 marvin test
 ```
+
 3. For more information
 ```
 marvin --help
 ```
+
 ### Working in an existing engine
+
 1. Set VirtualEnv and get to the engine's path
 ```
 workon <engine_name>-env
 ```
+
 2. Test your engine
 ```
 marvin test
 ```
+
 3. Bring up the notebook and access it from your browser
 ```
 marvin notebook
 ```
+
 ### Command line interface
 Usage: marvin [OPTIONS] COMMAND [ARGS]
 
@@ -167,15 +91,18 @@ Commands:
 ```
 
 ### Running a example engine 
+
 1. Clone the example engine from the repository
 ```
 git clone https://github.com/marvin-ai/engines.git
 ```
+
 2. Generate a new Marvin engine environment for the Iris species engine
 ```
 workon python-toolbox-env
 marvin engine-generateenv ../engines/iris-species-engine/
 ```
+
 3. Run the Iris species engine
 ```
 workon iris-species-engine-env
