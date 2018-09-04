@@ -50,7 +50,7 @@ def notebook(ctx, port, enable_security, spark_conf, allow_root):
     ]
 
     command.append("--NotebookApp.token=") if not enable_security else None
-    command.append("--allow-root") if not allow_root else None
+    command.append("--allow-root") if allow_root else None
 
     ret = os.system(' '.join(command))
     sys.exit(ret)
