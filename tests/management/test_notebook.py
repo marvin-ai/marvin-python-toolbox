@@ -36,10 +36,11 @@ def test_notebook(system_mocked, sys_mocked):
     ctx = mocked_ctx()
     port = 8888
     enable_security = False
+    allow_root = False
     spark_conf = '/opt/spark/conf'
     system_mocked.return_value = 1
 
-    notebook(ctx, port, enable_security, spark_conf)
+    notebook(ctx, port, enable_security, spark_conf, allow_root)
 
     system_mocked.assert_called_once_with('SPARK_CONF_DIR=/opt/spark/conf YARN_CONF_DIR=/opt/spark/conf jupyter notebook --notebook-dir /tmp/notebooks --ip 0.0.0.0 --port 8888 --no-browser --config ' + os.environ["MARVIN_ENGINE_PATH"] + '/marvin_python_toolbox/extras/notebook_extensions/jupyter_notebook_config.py --NotebookApp.token=')
 
@@ -50,10 +51,11 @@ def test_notebook_with_security(system_mocked, sys_mocked):
     ctx = mocked_ctx()
     port = 8888
     enable_security = True
+    allow_root = False
     spark_conf = '/opt/spark/conf'
     system_mocked.return_value = 1
 
-    notebook(ctx, port, enable_security, spark_conf)
+    notebook(ctx, port, enable_security, spark_conf, allow_root)
 
     system_mocked.assert_called_once_with('SPARK_CONF_DIR=/opt/spark/conf YARN_CONF_DIR=/opt/spark/conf jupyter notebook --notebook-dir /tmp/notebooks --ip 0.0.0.0 --port 8888 --no-browser --config ' + os.environ["MARVIN_ENGINE_PATH"] + '/marvin_python_toolbox/extras/notebook_extensions/jupyter_notebook_config.py')
 
