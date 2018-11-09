@@ -13,9 +13,9 @@
 **Marvin** is an open-source Artificial Intelligence platform that focuses on helping data scientists deliver meaningful solutions to complex problems. Supported by a standardized large-scale, language-agnostic architecture, Marvin simplifies the process of exploration and modeling.
 
 ## Getting Started
-* [Installing Marvin (Ubuntu)](https://www.marvin-ai.org/book/installing-marvin/ubuntu-debian-installation)
-* [Installing Marvin (MacOS)](https://www.marvin-ai.org/book/installing-marvin/macos-installation)
-* [Installing Marvin (Other OS) Vagrant](https://www.marvin-ai.org/book/installing-marvin/vagrant-installation)
+* [Installing Marvin (Ubuntu)](https://www.marvin-ai.org/book/overview-1/ubuntu)
+* [Installing Marvin (MacOS)](https://www.marvin-ai.org/book/overview-1/mac)
+* [Installing Marvin (Other OS) Vagrant](https://www.marvin-ai.org/book/overview-1/vagrant)
 * [Creating a new engine](#creating-a-new-engine)
 * [Working in an existing engine](#working-in-an-existing-engine)
 * [Command line interface](#command-line-interface)
